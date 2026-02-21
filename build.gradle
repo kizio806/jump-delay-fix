@@ -1,0 +1,69 @@
+allprojects {
+    group = mod_group
+    version = mod_version
+
+    repositories {
+        mavenCentral()
+        maven {
+            url = 'https://maven.fabricmc.net/'
+        }
+        maven {
+            url = 'https://maven.neoforged.net/releases/'
+        }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(java_version.toInteger())
+        withSourcesJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = java_version.toInteger()
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+
+    tasks.withType(AbstractArchiveTask).configureEach {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+}
+
+tasks.register('buildAll') {
+    group = 'build'
+    description = 'Builds all mod loader artifacts.'
+    dependsOn(':common:test', ':fabric:build', ':neoforge:build')
+}
+
+tasks.register('verifySemverVersion') {
+    group = 'verification'
+    description = 'Ensures project version follows SemVer (MAJOR.MINOR.PATCH with optional pre-release/build metadata).'
+
+    doLast {
+        def versionText = project.version.toString()
+        def semverPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/
+
+        if (!(versionText ==~ semverPattern)) {
+            throw new GradleException("Version '${versionText}' is not valid SemVer.")
+        }
+    }
+}
+
+tasks.register('publishReadyCheck') {
+    group = 'verification'
+    description = 'Runs tests and production metadata checks before publication.'
+    dependsOn(
+            'verifySemverVersion',
+            ':common:test',
+            ':fabric:validateProductionMetadata',
+            ':neoforge:validateProductionMetadata',
+            ':neoforge:verifyDedicatedServerSafe'
+    )
+}

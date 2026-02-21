@@ -1,0 +1,60 @@
+name: Bug report
+description: Report a defect in Jump Delay Fix
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Please fill all required fields so the issue can be reproduced quickly."
+
+  - type: input
+    id: mc_version
+    attributes:
+      label: Minecraft version
+      placeholder: "e.g. 1.21.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Loader
+      options:
+        - Fabric
+        - NeoForge
+    validations:
+      required: true
+
+  - type: input
+    id: mod_version
+    attributes:
+      label: Mod version
+      placeholder: "e.g. 1.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Clear description of the observed behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or crash report
+      description: Paste a link (gist/pastebin) or the relevant stacktrace fragment.
+    validations:
+      required: false

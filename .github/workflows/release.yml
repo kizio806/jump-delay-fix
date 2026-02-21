@@ -1,0 +1,103 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  JAVA_VERSION: '21'
+
+jobs:
+  build-and-release:
+    name: Build and Publish Release Artifacts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Ensure Gradle executable bit
+        run: chmod +x ./gradlew
+
+      - name: Verify tag matches mod_version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          VERSION_FROM_PROPS=$(grep '^mod_version=' gradle.properties | cut -d'=' -f2)
+          TAG_VERSION=${GITHUB_REF_NAME#v}
+
+          if [ "$VERSION_FROM_PROPS" != "$TAG_VERSION" ]; then
+            echo "Tag version (${TAG_VERSION}) does not match gradle.properties mod_version (${VERSION_FROM_PROPS})."
+            exit 1
+          fi
+
+      - name: Build and verify release candidate
+        run: ./gradlew --no-daemon --stacktrace clean buildAll publishReadyCheck
+
+      - name: Generate checksums
+        run: |
+          sha256sum fabric/build/libs/*.jar > fabric/build/libs/SHA256SUMS.txt
+          sha256sum neoforge/build/libs/*.jar > neoforge/build/libs/SHA256SUMS.txt
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: jumpdelayfix-release-artifacts
+          path: |
+            fabric/build/libs/*.jar
+            fabric/build/libs/SHA256SUMS.txt
+            neoforge/build/libs/*.jar
+            neoforge/build/libs/SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            fabric/build/libs/*.jar
+            fabric/build/libs/SHA256SUMS.txt
+            neoforge/build/libs/*.jar
+            neoforge/build/libs/SHA256SUMS.txt
+
+      - name: Publish to Modrinth (optional)
+        if: startsWith(github.ref, 'refs/tags/') && secrets.MODRINTH_TOKEN != '' && secrets.MODRINTH_PROJECT_ID != ''
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          name: Jump Delay Fix ${{ github.ref_name }}
+          version: ${{ github.ref_name }}
+          version-type: release
+          game-versions: 1.21.1
+          loaders: |
+            fabric
+            neoforge
+          files: |
+            fabric/build/libs/*.jar
+            neoforge/build/libs/*.jar
+          changelog-file: CHANGELOG.md
