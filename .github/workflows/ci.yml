@@ -49,7 +49,7 @@ jobs:
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-reports
           path: |
@@ -59,7 +59,7 @@ jobs:
 
       - name: Upload Fabric artifact
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: jumpdelayfix-fabric
           path: fabric/build/libs/*.jar
@@ -67,7 +67,7 @@ jobs:
 
       - name: Upload NeoForge artifact
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: jumpdelayfix-neoforge
           path: neoforge/build/libs/*.jar
