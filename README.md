@@ -7,9 +7,11 @@
 - Fabric Loader
 - NeoForge
 
-## Supported Minecraft Version
+## Supported Minecraft Versions
 
-- `1.21.1` (current production target)
+- Current build target is controlled by `gradle.properties` (`minecraft_version`).
+- Default repository target: `1.21.1`.
+- Release process supports sequential updates for newer `1.21.x` versions.
 
 ## Optional Compatibility
 
@@ -89,30 +91,42 @@ Artifacts:
 - NeoForge dedicated-server safety guard
 - SemVer validation for `mod_version`
 
-## Release
+## Sequential Release Workflow (Next Minecraft Versions)
+
+Use the helper script to move the project to the next MC version:
+
+```bash
+./scripts/set-minecraft-version.sh \
+  --minecraft 1.21.2 \
+  --mod-version 1.1.1 \
+  --yarn 1.21.2+build.1 \
+  --fabric-api 0.103.0+1.21.2 \
+  --neoforge 21.2.10 \
+  --modrinth-game-versions "1.21.2"
+```
+
+Then run:
+
+```bash
+./gradlew --no-daemon clean buildAll publishReadyCheck
+git add gradle.properties
+```
+
+Commit and tag:
+
+```bash
+git commit -m "chore(release): prepare MC 1.21.2 and v1.1.1"
+git tag v1.1.1
+git push origin HEAD --tags
+```
+
+`release.yml` reads `minecraft_version` and `modrinth_game_versions` directly from `gradle.properties`, so you do not need to edit workflow YAML for every new MC version.
+
+## CI / Release
 
 - CI workflow: `.github/workflows/ci.yml`
 - Release workflow: `.github/workflows/release.yml`
 - Changelog file: `CHANGELOG.md`
-
-Pre-release checklist:
-
-1. `./gradlew clean buildAll publishReadyCheck`
-2. `CHANGELOG.md` updated
-3. `mod_version` in `gradle.properties` uses SemVer
-4. `fabric.mod.json` and `mods.toml` versions match `mod_version`
-5. Optional smoke test with Sodium/Iris/Lithium/JEI/REI/EMI
-6. Verify Fabric and NeoForge jars start correctly
-7. For Modrinth publish, set GitHub secrets:
-   - `MODRINTH_TOKEN`
-   - `MODRINTH_PROJECT_ID`
-
-Create a release tag matching `mod_version`:
-
-```bash
-git tag v<mod_version>
-git push origin v<mod_version>
-```
 
 ## License
 
