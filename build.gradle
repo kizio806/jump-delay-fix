@@ -1,0 +1,192 @@
+allprojects {
+    group = mod_group
+    version = mod_version
+
+    repositories {
+        mavenCentral()
+        maven {
+            url = 'https://maven.fabricmc.net/'
+        }
+        maven {
+            url = 'https://maven.neoforged.net/releases/'
+        }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(java_version.toInteger())
+        withSourcesJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = java_version.toInteger()
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+
+    tasks.withType(AbstractArchiveTask).configureEach {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+}
+
+tasks.register('buildAll') {
+    group = 'build'
+    description = 'Builds all mod loader artifacts.'
+    dependsOn(':common:test', ':fabric:build', ':neoforge:build')
+}
+
+tasks.register('verifySemverVersion') {
+    group = 'verification'
+    description = 'Ensures project version follows SemVer (MAJOR.MINOR.PATCH with optional pre-release/build metadata).'
+
+    doLast {
+        def versionText = project.version.toString()
+        def semverPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/
+
+        if (!(versionText ==~ semverPattern)) {
+            throw new GradleException("Version '${versionText}' is not valid SemVer.")
+        }
+    }
+}
+
+def parseMinecraftVersion = { String versionText ->
+    def matcher = (versionText =~ /^(\d+)\.(\d+)\.(\d+)$/)
+    if (!matcher.matches()) {
+        throw new GradleException("Invalid Minecraft version '${versionText}'. Expected format: MAJOR.MINOR.PATCH")
+    }
+
+    return [
+            text : versionText,
+            major: matcher.group(1).toInteger(),
+            minor: matcher.group(2).toInteger(),
+            patch: matcher.group(3).toInteger()
+    ]
+}
+
+def compareMinecraftVersions = { Map left, Map right ->
+    (left.major <=> right.major) ?: (left.minor <=> right.minor) ?: (left.patch <=> right.patch)
+}
+
+def incrementPatch = { Map version ->
+    "${version.major}.${version.minor}.${version.patch + 1}"
+}
+
+def parseVersionList = { String rawValue, String propertyName ->
+    def versions = rawValue
+            .split(',')
+            .collect { it.trim() }
+            .findAll { !it.isEmpty() }
+
+    if (versions.isEmpty()) {
+        throw new GradleException("${propertyName} must contain at least one version.")
+    }
+
+    def parsed = versions.collect(parseMinecraftVersion).sort(compareMinecraftVersions)
+    def expected = parsed.collect { it.text }.unique()
+
+    if (versions != expected) {
+        throw new GradleException(
+                "${propertyName} must be sorted ascending and unique. Expected: ${expected.join(',')}"
+        )
+    }
+
+    return parsed
+}
+
+tasks.register('verifyMinecraftVersionMatrix') {
+    group = 'verification'
+    description = 'Validates one-jar multi-version metadata consistency.'
+
+    doLast {
+        def baseVersionText = minecraft_version.toString().trim()
+        def baseVersion = parseMinecraftVersion(baseVersionText)
+
+        def modrinthSupported = parseVersionList(modrinth_game_versions.toString().trim(), 'modrinth_game_versions')
+        def fabricSupported = parseVersionList(
+                (project.findProperty('fabric_game_versions') ?: modrinth_game_versions).toString().trim(),
+                'fabric_game_versions'
+        )
+        def neoforgeSupported = parseVersionList(
+                (project.findProperty('neoforge_game_versions') ?: modrinth_game_versions).toString().trim(),
+                'neoforge_game_versions'
+        )
+
+        [modrinthSupported, fabricSupported, neoforgeSupported].eachWithIndex { versions, index ->
+            def propertyName = index == 0 ? 'modrinth_game_versions' : (index == 1 ? 'fabric_game_versions' : 'neoforge_game_versions')
+
+            if (!versions.any { it.text == baseVersionText }) {
+                throw new GradleException("minecraft_version '${baseVersionText}' must be included in ${propertyName}.")
+            }
+
+            def crossLineVersion = versions.find { it.major != baseVersion.major || it.minor != baseVersion.minor }
+            if (crossLineVersion != null) {
+                throw new GradleException(
+                        "${propertyName} must remain on one patch line (${baseVersion.major}.${baseVersion.minor}.x). " +
+                                "Found incompatible version: ${crossLineVersion.text}"
+                )
+            }
+        }
+
+        def fabricVersionTexts = fabricSupported.collect { it.text }
+        def neoforgeVersionSet = neoforgeSupported.collect { it.text } as Set
+        def expectedModrinthVersions = fabricVersionTexts.findAll { neoforgeVersionSet.contains(it) }
+
+        if (expectedModrinthVersions.isEmpty()) {
+            throw new GradleException(
+                    "modrinth_game_versions cannot be empty after intersection of fabric_game_versions and neoforge_game_versions."
+            )
+        }
+
+        def modrinthVersionTexts = modrinthSupported.collect { it.text }
+        if (modrinthVersionTexts != expectedModrinthVersions) {
+            throw new GradleException(
+                    "modrinth_game_versions must match the intersection of fabric_game_versions and neoforge_game_versions. " +
+                            "Expected: ${expectedModrinthVersions.join(',')}"
+            )
+        }
+
+        def minFabricVersion = fabricSupported.first()
+        def maxFabricVersion = fabricSupported.last()
+
+        def fabricRange = fabric_minecraft_version_range.toString().trim()
+        def expectedFabricLowerBound = ">=" + minFabricVersion.text
+        def expectedFabricUpperBound = "<" + incrementPatch(maxFabricVersion)
+        if (!fabricRange.contains(expectedFabricLowerBound) || !fabricRange.contains(expectedFabricUpperBound)) {
+            throw new GradleException(
+                    "fabric_minecraft_version_range '${fabricRange}' must include " +
+                            "'${expectedFabricLowerBound}' and '${expectedFabricUpperBound}'."
+            )
+        }
+
+        def neoRange = minecraft_version_range.toString().trim()
+        def expectedNeoRange = "[${baseVersion.major}.${baseVersion.minor},${baseVersion.major}.${baseVersion.minor + 1})"
+        if (neoRange != expectedNeoRange) {
+            throw new GradleException(
+                    "minecraft_version_range must equal '${expectedNeoRange}' for one-line support, got '${neoRange}'."
+            )
+        }
+    }
+}
+
+tasks.register('publishReadyCheck') {
+    group = 'verification'
+    description = 'Runs tests and production metadata checks before publication.'
+    dependsOn(
+            'verifySemverVersion',
+            'verifyMinecraftVersionMatrix',
+            ':common:test',
+            ':common:jacocoTestCoverageVerification',
+            ':fabric:test',
+            ':fabric:validateProductionMetadata',
+            ':neoforge:test',
+            ':neoforge:validateProductionMetadata',
+            ':neoforge:verifyDedicatedServerSafe'
+    )
+}

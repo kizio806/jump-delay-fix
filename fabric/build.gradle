@@ -1,0 +1,97 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+}
+
+base {
+    archivesName = "${mod_id}-fabric-${minecraft_version}"
+}
+
+sourceSets {
+    main {
+        java.srcDirs += project(':common').sourceSets.main.java.srcDirs
+        resources.srcDirs += project(':common').sourceSets.main.resources.srcDirs
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
+
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+loom {
+    runs {
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+        }
+        server {
+            server()
+            setConfigName('Fabric Dedicated Server')
+            ideConfigGenerated(true)
+        }
+    }
+}
+
+def metadataProperties = [
+        mod_id                        : mod_id,
+        mod_name                      : mod_name,
+        mod_version                   : project.version,
+        mod_description               : mod_description,
+        mod_author                    : mod_author,
+        mod_license                   : mod_license,
+        mod_icon                      : mod_icon,
+        mod_homepage                  : mod_homepage,
+        mod_sources                   : mod_sources,
+        mod_issues                    : mod_issues,
+        minecraft_version             : minecraft_version,
+        fabric_minecraft_version_range: fabric_minecraft_version_range,
+        loader_version                : loader_version,
+        fabric_api_version            : fabric_api_version
+]
+
+processResources {
+    inputs.properties(metadataProperties)
+
+    filesMatching('fabric.mod.json') {
+        expand(metadataProperties)
+    }
+}
+
+tasks.register('validateProductionMetadata') {
+    group = 'verification'
+    description = 'Validates Fabric production metadata and icon dimensions.'
+    dependsOn tasks.processResources
+
+    doLast {
+        def iconFile = file("${project(':common').projectDir}/src/main/resources/${mod_icon}")
+        if (!iconFile.exists()) {
+            throw new GradleException("Missing icon file: ${iconFile}")
+        }
+
+        def image = javax.imageio.ImageIO.read(iconFile)
+        if (image == null) {
+            throw new GradleException("Icon is not a valid image: ${iconFile}")
+        }
+        if (image.width != 512 || image.height != 512) {
+            throw new GradleException("Icon must be exactly 512x512, got ${image.width}x${image.height}")
+        }
+
+        def modJson = file("${projectDir}/src/main/resources/fabric.mod.json")
+        if (!modJson.exists()) {
+            throw new GradleException("Missing fabric.mod.json in ${projectDir}/src/main/resources")
+        }
+    }
+}
+
+jar {
+    from(rootProject.file('LICENSE')) {
+        rename { "${it}_${mod_id}" }
+    }
+}
