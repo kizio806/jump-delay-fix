@@ -3,6 +3,7 @@
 [![CI](https://github.com/kizio806/jump-delay-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/kizio806/jump-delay-fix/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/kizio806/jump-delay-fix?sort=semver)](https://github.com/kizio806/jump-delay-fix/releases)
 [![Modrinth Downloads](https://img.shields.io/modrinth/dt/jump-delay-fix?logo=modrinth&label=modrinth%20downloads)](https://modrinth.com/mod/jump-delay-fix)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord)](https://discord.com/invite/M9eqfP49Yy)
 [![License](https://img.shields.io/github/license/kizio806/jump-delay-fix)](LICENSE)
 
 Client-side Minecraft mod that improves jump responsiveness while preserving multiplayer stability.
