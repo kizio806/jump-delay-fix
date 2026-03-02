@@ -127,7 +127,7 @@ jobs:
           sha256sum neoforge/build/libs/!(*-dev|-sources).jar > neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: jumpdelayfix-release-artifacts
           path: |
