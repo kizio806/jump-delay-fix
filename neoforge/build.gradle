@@ -1,0 +1,110 @@
+plugins {
+    id 'net.neoforged.moddev' version "${neoforge_moddev_gradle_version}"
+}
+
+base {
+    archivesName = "${mod_id}-neoforge-${minecraft_version}"
+}
+
+sourceSets {
+    main {
+        java.srcDirs += project(':common').sourceSets.main.java.srcDirs
+        resources.srcDirs += project(':common').sourceSets.main.resources.srcDirs
+    }
+}
+
+neoForge {
+    version = "${neoforge_version}"
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+def metadataProperties = [
+        mod_id              : mod_id,
+        mod_name            : mod_name,
+        mod_version         : project.version,
+        mod_description     : mod_description,
+        mod_author          : mod_author,
+        mod_license         : mod_license,
+        mod_icon            : mod_icon,
+        mod_homepage        : mod_homepage,
+        mod_sources         : mod_sources,
+        mod_issues          : mod_issues,
+        minecraft_version_range: minecraft_version_range,
+        neoforge_loader_range : neoforge_loader_range,
+        resource_pack_format: resource_pack_format
+]
+
+processResources {
+    inputs.properties(metadataProperties)
+
+    filesMatching('META-INF/mods.toml') {
+        expand(metadataProperties)
+    }
+
+    filesMatching('pack.mcmeta') {
+        expand(metadataProperties)
+    }
+}
+
+tasks.register('validateProductionMetadata') {
+    group = 'verification'
+    description = 'Validates NeoForge production metadata and icon dimensions.'
+    dependsOn tasks.processResources
+
+    doLast {
+        def iconFile = file("${project(':common').projectDir}/src/main/resources/${mod_icon}")
+        if (!iconFile.exists()) {
+            throw new GradleException("Missing icon file: ${iconFile}")
+        }
+
+        def image = javax.imageio.ImageIO.read(iconFile)
+        if (image == null) {
+            throw new GradleException("Icon is not a valid image: ${iconFile}")
+        }
+        if (image.width != 512 || image.height != 512) {
+            throw new GradleException("Icon must be exactly 512x512, got ${image.width}x${image.height}")
+        }
+
+        def modsToml = file("${projectDir}/src/main/resources/META-INF/mods.toml")
+        if (!modsToml.exists()) {
+            throw new GradleException("Missing mods.toml in ${projectDir}/src/main/resources/META-INF")
+        }
+    }
+}
+
+tasks.register('verifyDedicatedServerSafe') {
+    group = 'verification'
+    description = 'Checks that the NeoForge mod entrypoint does not hard-reference client packages.'
+    dependsOn tasks.classes
+
+    doLast {
+        def classFile = sourceSets.main.output.classesDirs.files
+                .collect { new File(it, 'com/kizio/jumpdelayfix/neoforge/JumpDelayFixNeoForge.class') }
+                .find { it.exists() }
+
+        if (classFile == null || !classFile.exists()) {
+            throw new GradleException("Cannot validate dedicated server safety. Missing class: ${classFile}")
+        }
+
+        def bytecodeAsText = new String(classFile.bytes, java.nio.charset.StandardCharsets.ISO_8859_1)
+        if (bytecodeAsText.contains('net/minecraft/client')) {
+            throw new GradleException('Dedicated server safety check failed: mod entrypoint references net.minecraft.client')
+        }
+    }
+}
+
+jar {
+    from(rootProject.file('LICENSE')) {
+        rename { "${it}_${mod_id}" }
+    }
+}
