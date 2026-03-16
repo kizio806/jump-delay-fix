@@ -28,7 +28,24 @@ Example:
 Ensure the project builds correctly with the new metadata.
 
 ```bash
-./gradlew --no-daemon clean buildAll publishReadyCheck
+./gradlew --no-daemon --stacktrace \
+  verifySemverVersion \
+  verifyMinecraftVersionMatrix \
+  :common:test \
+  :common:jacocoTestCoverageVerification \
+  :fabric:test \
+  :fabric:build \
+  :fabric:validateProductionMetadata
+
+./gradlew --no-daemon --stacktrace \
+  verifySemverVersion \
+  verifyMinecraftVersionMatrix \
+  :common:test \
+  :common:jacocoTestCoverageVerification \
+  :neoforge:test \
+  :neoforge:build \
+  :neoforge:validateProductionMetadata \
+  :neoforge:verifyDedicatedServerSafe
 ```
 
 ## 4. Prepare Changelog
@@ -37,18 +54,19 @@ Update `CHANGELOG.md` for user-visible changes for the new `<mod_version>`.
 
 ## 5. Tag and Push
 
-Commit the changes, then create and push a git tag matching the `mod_version` to trigger the release workflow.
+Commit the changes, then create and push loader-specific tags to trigger the release workflow.
 
 ```bash
 git add -A
 git commit -m "chore(release): v<mod_version>"
-git tag v<mod_version>
+git tag v<mod_version>-fabric
+git tag v<mod_version>-neoforge
 git push origin main --tags
 ```
 
 ## 6. Automated Delivery
 
-Pushing the tag triggers the `.github/workflows/release.yml` workflow, which handles the entire release process automatically:
+Each tag triggers `.github/workflows/release.yml` for its loader and handles the entire release process automatically:
 
 - Build and verification
 - Release notes generation

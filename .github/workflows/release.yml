@@ -3,7 +3,8 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*.*.*-fabric'
+      - 'v*.*.*-neoforge'
   workflow_dispatch:
 
 concurrency:
@@ -64,53 +65,110 @@ jobs:
             echo "modrinth_game_versions=$MODRINTH_VERSIONS"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Normalize Modrinth game versions
-        id: modrinth_versions
+      - name: Parse release tag
+        id: release_tag
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          NORMALIZED=$(echo "${{ steps.metadata.outputs.modrinth_game_versions }}" \
+          TAG="${GITHUB_REF_NAME}"
+          if [[ "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)-(fabric|neoforge)$ ]]; then
+            echo "release_version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+            echo "release_loader=${BASH_REMATCH[2]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Tag must match vX.Y.Z-fabric or vX.Y.Z-neoforge. Got: $TAG"
+            exit 1
+          fi
+
+      - name: Normalize Fabric game versions
+        id: fabric_versions
+        run: |
+          NORMALIZED=$(echo "${{ steps.metadata.outputs.fabric_game_versions }}" \
             | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
           if [ -z "$NORMALIZED" ]; then
-            echo "No valid Modrinth versions found."
+            echo "No valid Fabric versions found."
             exit 1
           fi
           echo "list<<EOF_LIST" >> "$GITHUB_OUTPUT"
           echo "$NORMALIZED" >> "$GITHUB_OUTPUT"
           echo "EOF_LIST" >> "$GITHUB_OUTPUT"
 
-      - name: Compute supported range label
-        id: supported_range
+      - name: Normalize NeoForge game versions
+        id: neoforge_versions
         run: |
-          FIRST=$(echo "${{ steps.modrinth_versions.outputs.list }}" | head -n1)
-          LAST=$(echo "${{ steps.modrinth_versions.outputs.list }}" | tail -n1)
+          NORMALIZED=$(echo "${{ steps.metadata.outputs.neoforge_game_versions }}" \
+            | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
+          if [ -z "$NORMALIZED" ]; then
+            echo "No valid NeoForge versions found."
+            exit 1
+          fi
+          echo "list<<EOF_LIST" >> "$GITHUB_OUTPUT"
+          echo "$NORMALIZED" >> "$GITHUB_OUTPUT"
+          echo "EOF_LIST" >> "$GITHUB_OUTPUT"
+
+      - name: Compute Fabric supported range label
+        id: fabric_range
+        run: |
+          FIRST=$(echo "${{ steps.fabric_versions.outputs.list }}" | head -n1)
+          LAST=$(echo "${{ steps.fabric_versions.outputs.list }}" | tail -n1)
+          LABEL=$([ "$FIRST" = "$LAST" ] && echo "$FIRST" || echo "$FIRST-$LAST")
+          echo "label=$LABEL" >> "$GITHUB_OUTPUT"
+
+      - name: Compute NeoForge supported range label
+        id: neoforge_range
+        run: |
+          FIRST=$(echo "${{ steps.neoforge_versions.outputs.list }}" | head -n1)
+          LAST=$(echo "${{ steps.neoforge_versions.outputs.list }}" | tail -n1)
           LABEL=$([ "$FIRST" = "$LAST" ] && echo "$FIRST" || echo "$FIRST-$LAST")
           echo "label=$LABEL" >> "$GITHUB_OUTPUT"
 
       - name: Verify tag matches mod_version
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          TAG_VERSION=${GITHUB_REF_NAME#v}
+          TAG_VERSION="${{ steps.release_tag.outputs.release_version }}"
+          if [ -z "$TAG_VERSION" ]; then
+            echo "Release tag parsing failed."
+            exit 1
+          fi
           if [ "${{ steps.metadata.outputs.mod_version }}" != "$TAG_VERSION" ]; then
             echo "Tag version ($TAG_VERSION) does not match mod_version (${{ steps.metadata.outputs.mod_version }})."
             exit 1
           fi
 
-      - name: Build all loaders
-        run: ./gradlew --no-daemon --stacktrace clean buildAll publishReadyCheck
+      - name: Build Fabric
+        if: steps.release_tag.outputs.release_loader == 'fabric'
+        run: |
+          ./gradlew --no-daemon --stacktrace \
+            verifySemverVersion \
+            verifyMinecraftVersionMatrix \
+            :common:test \
+            :common:jacocoTestCoverageVerification \
+            :fabric:test \
+            :fabric:build \
+            :fabric:validateProductionMetadata
 
-      - name: Generate release notes
-        id: release_notes
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Build NeoForge
+        if: steps.release_tag.outputs.release_loader == 'neoforge'
+        run: |
+          ./gradlew --no-daemon --stacktrace \
+            verifySemverVersion \
+            verifyMinecraftVersionMatrix \
+            :common:test \
+            :common:jacocoTestCoverageVerification \
+            :neoforge:test \
+            :neoforge:build \
+            :neoforge:validateProductionMetadata \
+            :neoforge:verifyDedicatedServerSafe
+
+      - name: Generate release notes - Fabric
+        if: steps.release_tag.outputs.release_loader == 'fabric'
         run: |
           CURRENT="${GITHUB_REF_NAME}"
-          PREV=$(git tag --sort=-v:refname | grep -v "^${CURRENT}$" | head -n1 || true)
+          PREV=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+-fabric$' | grep -v "^${CURRENT}$" | head -n1 || true)
           {
-            echo "## Jump Delay Fix ${CURRENT}"
+            echo "## Jump Delay Fix ${CURRENT} (Fabric)"
             echo
             echo "- Mod version: ${{ steps.metadata.outputs.mod_version }}"
-            echo "- Minecraft version: ${{ steps.metadata.outputs.minecraft_version }}"
-            echo "- Fabric versions: ${{ steps.metadata.outputs.fabric_game_versions }}"
-            echo "- NeoForge versions: ${{ steps.metadata.outputs.neoforge_game_versions }}"
-            echo "- Shared Modrinth versions: ${{ steps.metadata.outputs.modrinth_game_versions }}"
+            echo "- Loader: Fabric"
+            echo "- Minecraft versions: ${{ steps.metadata.outputs.fabric_game_versions }}"
             echo
             if [ -n "$PREV" ]; then
               echo "### Changes since ${PREV}"
@@ -121,58 +179,101 @@ jobs:
             fi
           } > release-notes.md
 
-      - name: Generate checksums
+      - name: Generate release notes - NeoForge
+        if: steps.release_tag.outputs.release_loader == 'neoforge'
+        run: |
+          CURRENT="${GITHUB_REF_NAME}"
+          PREV=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+-neoforge$' | grep -v "^${CURRENT}$" | head -n1 || true)
+          {
+            echo "## Jump Delay Fix ${CURRENT} (NeoForge)"
+            echo
+            echo "- Mod version: ${{ steps.metadata.outputs.mod_version }}"
+            echo "- Loader: NeoForge"
+            echo "- Minecraft versions: ${{ steps.metadata.outputs.neoforge_game_versions }}"
+            echo
+            if [ -n "$PREV" ]; then
+              echo "### Changes since ${PREV}"
+              git log --pretty='- %s (%h)' "${PREV}..${CURRENT}"
+            else
+              echo "### Changes"
+              git log --pretty='- %s (%h)' "${CURRENT}"
+            fi
+          } > release-notes.md
+
+      - name: Generate checksums - Fabric
+        if: steps.release_tag.outputs.release_loader == 'fabric'
         run: |
           sha256sum fabric/build/libs/!(*-dev|-sources).jar > fabric/build/libs/FABRIC-SHA256SUMS.txt
+
+      - name: Generate checksums - NeoForge
+        if: steps.release_tag.outputs.release_loader == 'neoforge'
+        run: |
           sha256sum neoforge/build/libs/!(*-dev|-sources).jar > neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
 
-      - name: Upload artifacts
+      - name: Upload artifacts - Fabric
+        if: steps.release_tag.outputs.release_loader == 'fabric'
         uses: actions/upload-artifact@v6
         with:
-          name: jumpdelayfix-release-artifacts
+          name: jumpdelayfix-release-artifacts-fabric
           path: |
             fabric/build/libs/!(*-dev|-sources).jar
             fabric/build/libs/FABRIC-SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Upload artifacts - NeoForge
+        if: steps.release_tag.outputs.release_loader == 'neoforge'
+        uses: actions/upload-artifact@v6
+        with:
+          name: jumpdelayfix-release-artifacts-neoforge
+          path: |
             neoforge/build/libs/!(*-dev|-sources).jar
             neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
           if-no-files-found: error
 
-      - name: Create GitHub release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Create GitHub release - Fabric
+        if: steps.release_tag.outputs.release_loader == 'fabric'
         uses: softprops/action-gh-release@v2
         with:
-          name: Jump Delay Fix ${{ github.ref_name }} (MC ${{ steps.supported_range.outputs.label }})
+          name: Jump Delay Fix v${{ steps.release_tag.outputs.release_version }} (Fabric, MC ${{ steps.fabric_range.outputs.label }})
           body_path: release-notes.md
           files: |
             fabric/build/libs/!(*-dev|-sources).jar
             fabric/build/libs/FABRIC-SHA256SUMS.txt
+
+      - name: Create GitHub release - NeoForge
+        if: steps.release_tag.outputs.release_loader == 'neoforge'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Jump Delay Fix v${{ steps.release_tag.outputs.release_version }} (NeoForge, MC ${{ steps.neoforge_range.outputs.label }})
+          body_path: release-notes.md
+          files: |
             neoforge/build/libs/!(*-dev|-sources).jar
             neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
 
       - name: Publish to Modrinth - Fabric
-        if: startsWith(github.ref, 'refs/tags/')
+        if: steps.release_tag.outputs.release_loader == 'fabric'
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for Fabric ${{ steps.modrinth_versions.outputs.list }}
+          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for Fabric ${{ steps.metadata.outputs.fabric_game_versions }}
           version: ${{ steps.metadata.outputs.mod_version }}-fabric
           version-type: release
-          game-versions: ${{ steps.modrinth_versions.outputs.list }}
+          game-versions: ${{ steps.fabric_versions.outputs.list }}
           loaders: fabric
           files: fabric/build/libs/!(*-dev|-sources).jar
           changelog-file: release-notes.md
 
       - name: Publish to Modrinth - NeoForge
-        if: startsWith(github.ref, 'refs/tags/')
+        if: steps.release_tag.outputs.release_loader == 'neoforge'
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for NeoForge ${{ steps.modrinth_versions.outputs.list }}
+          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for NeoForge ${{ steps.metadata.outputs.neoforge_game_versions }}
           version: ${{ steps.metadata.outputs.mod_version }}-neoforge
           version-type: release
-          game-versions: ${{ steps.modrinth_versions.outputs.list }}
+          game-versions: ${{ steps.neoforge_versions.outputs.list }}
           loaders: neoforge
           files: neoforge/build/libs/!(*-dev|-sources).jar
           changelog-file: release-notes.md
