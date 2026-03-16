@@ -212,7 +212,7 @@ jobs:
 
       - name: Upload artifacts - Fabric
         if: steps.release_tag.outputs.release_loader == 'fabric'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: jumpdelayfix-release-artifacts-fabric
           path: |
@@ -222,7 +222,7 @@ jobs:
 
       - name: Upload artifacts - NeoForge
         if: steps.release_tag.outputs.release_loader == 'neoforge'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: jumpdelayfix-release-artifacts-neoforge
           path: |
