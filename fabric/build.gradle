@@ -1,3 +1,7 @@
+import groovy.json.JsonSlurper
+
+import java.util.zip.ZipFile
+
 plugins {
     id 'fabric-loom' version "${loom_version}"
 }
@@ -27,6 +31,8 @@ dependencies {
 }
 
 loom {
+    getEnableModProvidedJavadoc().set(false)
+
     runs {
         client {
             client()
@@ -90,6 +96,125 @@ tasks.register('validateProductionMetadata') {
             throw new GradleException("Missing fabric.mod.json in ${projectDir}/src/main/resources")
         }
     }
+}
+
+def parseMinecraftVersion = { String versionText ->
+    def matcher = (versionText =~ /^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/)
+    if (!matcher.matches()) {
+        throw new GradleException("Invalid Minecraft version '${versionText}'. Expected format: MAJOR.MINOR.PATCH")
+    }
+
+    [
+            major: matcher.group(1).toInteger(),
+            minor: matcher.group(2).toInteger(),
+            patch: matcher.group(3).toInteger()
+    ]
+}
+
+def compareMinecraftVersions = { String left, String right ->
+    def parsedLeft = parseMinecraftVersion(left)
+    def parsedRight = parseMinecraftVersion(right)
+
+    (parsedLeft.major <=> parsedRight.major) ?:
+            (parsedLeft.minor <=> parsedRight.minor) ?:
+            (parsedLeft.patch <=> parsedRight.patch)
+}
+
+def supportsMinecraftRequirement = { String versionText, String requirementText ->
+    def normalizedRequirement = requirementText?.trim()
+    if (normalizedRequirement == null || normalizedRequirement.isEmpty() || normalizedRequirement == '*') {
+        return true
+    }
+
+    def clauses = normalizedRequirement.split(/\s+/).findAll { !it.isEmpty() }
+    clauses.every { clause ->
+        if (clause == '*') {
+            return true
+        }
+        if (clause.startsWith(">=")) {
+            return compareMinecraftVersions(versionText, clause.substring(2)) >= 0
+        }
+        if (clause.startsWith("<=")) {
+            return compareMinecraftVersions(versionText, clause.substring(2)) <= 0
+        }
+        if (clause.startsWith(">")) {
+            return compareMinecraftVersions(versionText, clause.substring(1)) > 0
+        }
+        if (clause.startsWith("<")) {
+            return compareMinecraftVersions(versionText, clause.substring(1)) < 0
+        }
+        if (clause.startsWith("=")) {
+            return compareMinecraftVersions(versionText, clause.substring(1)) == 0
+        }
+        if (!(clause ==~ /^\d+\.\d+\.\d+$/)) {
+            throw new GradleException("Unsupported Fabric Minecraft requirement syntax '${requirementText}' in dependency metadata.")
+        }
+        return compareMinecraftVersions(versionText, clause) == 0
+    }
+}
+
+def readFabricModMetadata = { File jarFile ->
+    try (def zip = new ZipFile(jarFile)) {
+        def entry = zip.getEntry('fabric.mod.json')
+        if (entry == null) {
+            return null
+        }
+
+        try (def stream = zip.getInputStream(entry)) {
+            return new JsonSlurper().parse(stream)
+        }
+    }
+}
+
+tasks.register('verifyRuntimeDependencyCompatibility') {
+    group = 'verification'
+    description = 'Checks whether declared Fabric runtime dependencies support every configured Fabric game version.'
+
+    doLast {
+        def supportedVersions = fabric_game_versions
+                .toString()
+                .split(',')
+                .collect { it.trim() }
+                .findAll { !it.isEmpty() }
+        def incompatibleDependencies = []
+
+        [
+                "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}",
+                "com.terraformersmc:modmenu:${modmenu_version}"
+        ].each { notation ->
+            def compatibilityConfig = configurations.detachedConfiguration(dependencies.create(notation))
+            compatibilityConfig.transitive = false
+
+            def artifact = compatibilityConfig.resolvedConfiguration.resolvedArtifacts.first()
+            def metadata = readFabricModMetadata(artifact.file)
+            if (metadata == null) {
+                throw new GradleException("Missing fabric.mod.json in resolved dependency ${artifact.moduleVersion.id}")
+            }
+
+            def minecraftRequirement = metadata.depends?.minecraft?.toString()
+            if (minecraftRequirement == null) {
+                throw new GradleException("Resolved dependency ${artifact.moduleVersion.id} does not declare a minecraft dependency in fabric.mod.json")
+            }
+
+            def incompatibleVersions = supportedVersions.findAll { version ->
+                !supportsMinecraftRequirement(version, minecraftRequirement)
+            }
+            if (!incompatibleVersions.isEmpty()) {
+                incompatibleDependencies << "${artifact.moduleVersion.id} requires '${minecraftRequirement}' but fabric_game_versions declares ${supportedVersions} (fails: ${incompatibleVersions.join(', ')})"
+            }
+        }
+
+        if (!incompatibleDependencies.isEmpty()) {
+            throw new GradleException(
+                    "Fabric runtime dependency metadata is incompatible with configured Fabric support:\n - " +
+                            incompatibleDependencies.join('\n - ')
+            )
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn(tasks.named('verifyRuntimeDependencyCompatibility'))
 }
 
 jar {

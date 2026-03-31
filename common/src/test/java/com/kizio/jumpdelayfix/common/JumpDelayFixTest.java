@@ -2,7 +2,6 @@ package com.kizio.jumpdelayfix.common;
 
 import com.kizio.jumpdelayfix.common.api.JumpInput;
 import com.kizio.jumpdelayfix.common.api.ToggleFeedback;
-import com.kizio.jumpdelayfix.common.config.JumpRuntimeConfig;
 import com.kizio.jumpdelayfix.common.model.JumpProfile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -53,121 +52,69 @@ class JumpDelayFixTest {
     }
 
     @Test
-    void shouldCycleJumpProfile() {
+    void shouldCycleJumpProfileAndDisableAutoSwitch() {
         JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
 
         JumpProfile before = JumpDelayFix.getProfile();
         JumpProfile after = JumpDelayFix.cycleProfile();
 
         assertNotEquals(before, after);
-    }
-
-    @Test
-    void shouldExportAndImportPreset() {
-        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
-        JumpDelayFix.toggleShadowMode();
-
-        String preset = JumpDelayFix.exportCurrentPresetCode();
-
-        JumpDelayFix.toggleShadowMode();
-        assertFalse(JumpDelayFix.isShadowModeEnabled());
-
-        assertTrue(JumpDelayFix.importPresetCode(preset));
-        assertTrue(JumpDelayFix.isShadowModeEnabled());
-    }
-
-    @Test
-    void shouldAllowDirectProfileSelectionAndDisableAutoSwitch() {
-        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
-
-        JumpDelayFix.setProfile(JumpProfile.COMPETITIVE);
-
-        assertEquals(JumpProfile.COMPETITIVE, JumpDelayFix.getProfile());
         assertFalse(JumpDelayFix.isAutoProfileSwitchEnabled());
     }
 
     @Test
-    void shouldNormalizeRollbackThresholdOrdering() {
+    void shouldPersistAutoSwitchSettingAcrossReloads() {
         JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
 
-        JumpDelayFix.setCompetitiveRollbackRateMax(0.72D);
-        JumpDelayFix.setStableRollbackRateMin(0.31D);
-        JumpDelayFix.setFailsafeRollbackRate(0.42D);
-
-        JumpRuntimeConfig config = JumpDelayFix.getRuntimeConfig();
-
-        assertEquals(0.72D, config.competitiveRollbackRateMax(), 0.0001D);
-        assertEquals(0.72D, config.stableRollbackRateMin(), 0.0001D);
-        assertEquals(0.72D, config.failsafeRollbackRate(), 0.0001D);
-    }
-
-    @Test
-    void shouldAdjustAdaptiveSettingsByDelta() {
-        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
-
-        JumpDelayFix.setMinAttemptsForProfileSwitch(10);
-        JumpDelayFix.setCompetitiveRollbackRateMax(0.10D);
-        JumpDelayFix.setStableRollbackRateMin(0.30D);
-        JumpDelayFix.setFailsafeRollbackRate(0.50D);
-
-        assertEquals(12, JumpDelayFix.adjustMinAttemptsForProfileSwitch(2));
-        assertEquals(0.12D, JumpDelayFix.adjustCompetitiveRollbackRateMax(0.02D), 0.0001D);
-        assertEquals(0.33D, JumpDelayFix.adjustStableRollbackRateMin(0.03D), 0.0001D);
-        assertEquals(0.54D, JumpDelayFix.adjustFailsafeRollbackRate(0.04D), 0.0001D);
-    }
-
-    @Test
-    void shouldClampHudLayoutValues() {
-        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
-
-        JumpDelayFix.setHudPosition(100_000, -100_000);
-        JumpDelayFix.setHudScale(99.0D);
-
-        JumpRuntimeConfig config = JumpDelayFix.getRuntimeConfig();
-
-        assertEquals(10_000, config.hudOffsetX());
-        assertEquals(-10_000, config.hudOffsetY());
-        assertEquals(2.20D, config.hudScale(), 0.0001D);
-    }
-
-    @Test
-    void shouldExportAndImportHudCustomizationInPreset() {
-        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
-
-        JumpDelayFix.setHudPosition(123, 77);
-        JumpDelayFix.setHudScale(1.35D);
-        JumpDelayFix.toggleHudProfileAndPing();
-        JumpDelayFix.toggleHudRollbackAndPenalty();
-        JumpDelayFix.toggleHudQualityBar();
-
-        String preset = JumpDelayFix.exportCurrentPresetCode();
-
-        JumpDelayFix.resetSettingsToDefaults();
-        assertEquals(6, JumpDelayFix.getHudOffsetX());
-        assertEquals(6, JumpDelayFix.getHudOffsetY());
-        assertTrue(JumpDelayFix.isHudProfileAndPingVisible());
-        assertTrue(JumpDelayFix.isHudRollbackAndPenaltyVisible());
-        assertTrue(JumpDelayFix.isHudQualityBarVisible());
-
-        assertTrue(JumpDelayFix.importPresetCode(preset));
-        assertEquals(123, JumpDelayFix.getHudOffsetX());
-        assertEquals(77, JumpDelayFix.getHudOffsetY());
-        assertEquals(1.35D, JumpDelayFix.getHudScale(), 0.0001D);
-        assertFalse(JumpDelayFix.isHudProfileAndPingVisible());
-        assertFalse(JumpDelayFix.isHudRollbackAndPenaltyVisible());
-        assertFalse(JumpDelayFix.isHudQualityBarVisible());
-    }
-
-    @Test
-    void shouldPersistPendingConfigWhenFlushed() {
-        Path configFile = tempDir.resolve("jumpdelayfix.properties");
-        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
-
-        JumpDelayFix.toggleHudEnabled();
-        assertFalse(Files.exists(configFile));
-
+        assertFalse(JumpDelayFix.toggleAutoProfileSwitch());
         JumpDelayFix.flushPendingConfiguration();
-        assertTrue(Files.exists(configFile));
+
+        JumpDelayFix.resetForTests();
+        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
+
+        assertFalse(JumpDelayFix.isAutoProfileSwitchEnabled());
+    }
+
+    @Test
+    void shouldRememberManualProfilePerServer() {
+        MutableServerJumpInput input = new MutableServerJumpInput();
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        input.serverId = "server-a";
+        JumpDelayFix.onClientTick();
+        JumpDelayFix.setProfile(JumpProfile.COMPETITIVE);
+
+        input.serverId = "server-b";
+        JumpDelayFix.onClientTick();
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
+
+        JumpDelayFix.setProfile(JumpProfile.STABLE);
+        input.serverId = "server-a";
+        JumpDelayFix.onClientTick();
+
+        assertEquals(JumpProfile.COMPETITIVE, JumpDelayFix.getProfile());
+    }
+
+    @Test
+    void shouldAutoSwitchToStableOnHighLatencyServer() {
+        AdaptiveJumpInput input = new AdaptiveJumpInput("high-ping", 220);
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        runTicks(input, 24);
+
+        assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
+        assertEquals(JumpProfile.STABLE, JumpDelayFix.getProfile());
+    }
+
+    @Test
+    void shouldAutoSwitchToCompetitiveOnLowLatencyServer() {
+        AdaptiveJumpInput input = new AdaptiveJumpInput("low-ping", 40);
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        runTicks(input, 24);
+
+        assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
+        assertEquals(JumpProfile.COMPETITIVE, JumpDelayFix.getProfile());
     }
 
     @Test
@@ -194,6 +141,13 @@ class JumpDelayFixTest {
                 .count();
 
         assertTrue(storedProfiles <= 128, "Expected <= 128 server profiles, got " + storedProfiles);
+    }
+
+    private static void runTicks(AdaptiveJumpInput input, int count) {
+        for (int index = 0; index < count; index++) {
+            input.advanceTick();
+            JumpDelayFix.onClientTick();
+        }
     }
 
     private static final class NoOpJumpInput implements JumpInput {
@@ -238,6 +192,7 @@ class JumpDelayFixTest {
     }
 
     private static final class MutableServerJumpInput implements JumpInput {
+
         private String serverId = "global";
 
         @Override
@@ -252,6 +207,71 @@ class JumpDelayFixTest {
 
         @Override
         public void jump() {
+        }
+
+        @Override
+        public String getServerIdentifier() {
+            return serverId;
+        }
+    }
+
+    private static final class AdaptiveJumpInput implements JumpInput {
+
+        private final String serverId;
+        private final int latencyMs;
+        private boolean riseNextTick;
+        private boolean landNextTick;
+        private boolean onGround = true;
+        private double playerY = 64.0D;
+
+        private AdaptiveJumpInput(String serverId, int latencyMs) {
+            this.serverId = serverId;
+            this.latencyMs = latencyMs;
+        }
+
+        private void advanceTick() {
+            if (riseNextTick) {
+                playerY = 65.0D;
+                onGround = false;
+                riseNextTick = false;
+                landNextTick = true;
+                return;
+            }
+
+            if (landNextTick) {
+                playerY = 64.0D;
+                onGround = true;
+                landNextTick = false;
+                return;
+            }
+
+            playerY = 64.0D;
+            onGround = true;
+        }
+
+        @Override
+        public boolean isJumpPressed() {
+            return true;
+        }
+
+        @Override
+        public boolean isPlayerOnGround() {
+            return onGround;
+        }
+
+        @Override
+        public void jump() {
+            riseNextTick = true;
+        }
+
+        @Override
+        public double getPlayerY() {
+            return playerY;
+        }
+
+        @Override
+        public int getLatencyMs() {
+            return latencyMs;
         }
 
         @Override

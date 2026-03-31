@@ -7,7 +7,6 @@ public final class ServerAdaptiveStats {
 
     private int confirmedJumps;
     private int rejectedJumps;
-    private int shadowPredictions;
     private double smoothedRollbackRate;
 
     /**
@@ -15,12 +14,10 @@ public final class ServerAdaptiveStats {
      *
      * @param confirmedDelta newly observed confirmed jumps
      * @param rejectedDelta  newly observed rejected jumps
-     * @param shadowDelta    newly observed shadow predictions
      */
-    public void update(int confirmedDelta, int rejectedDelta, int shadowDelta) {
+    public void update(int confirmedDelta, int rejectedDelta) {
         confirmedJumps += Math.max(0, confirmedDelta);
         rejectedJumps += Math.max(0, rejectedDelta);
-        shadowPredictions += Math.max(0, shadowDelta);
 
         int sampleSize = Math.max(0, confirmedDelta) + Math.max(0, rejectedDelta);
         if (sampleSize > 0) {
@@ -37,10 +34,6 @@ public final class ServerAdaptiveStats {
 
     public int rejectedJumps() {
         return rejectedJumps;
-    }
-
-    public int shadowPredictions() {
-        return shadowPredictions;
     }
 
     public double rollbackRate() {

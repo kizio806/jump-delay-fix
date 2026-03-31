@@ -3,10 +3,8 @@ package com.kizio.jumpdelayfix.common;
 import com.kizio.jumpdelayfix.common.api.JumpInput;
 import com.kizio.jumpdelayfix.common.api.ToggleFeedback;
 import com.kizio.jumpdelayfix.common.config.JumpConfigStorage;
-import com.kizio.jumpdelayfix.common.config.JumpPresetCodec;
 import com.kizio.jumpdelayfix.common.config.JumpRuntimeConfig;
 import com.kizio.jumpdelayfix.common.feature.JumpHandler;
-import com.kizio.jumpdelayfix.common.model.JumpDiagnostics;
 import com.kizio.jumpdelayfix.common.model.JumpProfile;
 import com.kizio.jumpdelayfix.common.model.ServerAdaptiveStats;
 import com.kizio.jumpdelayfix.common.state.ModState;
@@ -21,9 +19,6 @@ import java.util.Objects;
 
 /**
  * Main runtime facade for the client-side jump delay controller.
- * <p>
- * Loader-specific code only depends on this class and {@link com.kizio.jumpdelayfix.common.api.JumpInput},
- * while all gameplay logic, profile adaptation and persistent configuration are handled here.
  */
 public final class JumpDelayFix {
 
@@ -31,6 +26,11 @@ public final class JumpDelayFix {
 
     private static final String DEFAULT_SERVER_ID = "global";
     private static final int AUTO_SWITCH_COOLDOWN_TICKS = 40;
+    private static final int AUTO_SWITCH_MIN_ATTEMPTS = 8;
+    private static final int STABLE_PROFILE_MIN_LATENCY_MS = 210;
+    private static final int COMPETITIVE_PROFILE_MAX_LATENCY_MS = 95;
+    private static final double COMPETITIVE_PROFILE_MAX_ROLLBACK_RATE = 0.08D;
+    private static final double STABLE_PROFILE_MIN_ROLLBACK_RATE = 0.30D;
     private static final int MAX_TRACKED_SERVERS = 128;
     private static final int CONFIG_SAVE_DEBOUNCE_TICKS = 10;
 
@@ -49,7 +49,6 @@ public final class JumpDelayFix {
 
     private static int lastConfirmedJumps;
     private static int lastRejectedJumps;
-    private static int lastShadowPredictions;
     private static int profileSwitchCooldownTicks;
     private static int configSaveCooldownTicks;
     private static boolean configDirty;
@@ -70,11 +69,9 @@ public final class JumpDelayFix {
 
         ModState.setEnabled(true);
         ModState.setProfile(resolveProfileForServer(activeServerId));
-        jumpHandler.setShadowMode(runtimeConfig.shadowMode());
 
         lastConfirmedJumps = 0;
         lastRejectedJumps = 0;
-        lastShadowPredictions = 0;
         profileSwitchCooldownTicks = 0;
         configSaveCooldownTicks = 0;
         configDirty = false;
@@ -91,9 +88,7 @@ public final class JumpDelayFix {
             return;
         }
 
-        jumpHandler.setShadowMode(runtimeConfig.shadowMode());
         jumpHandler.tick();
-
         synchronizeServerContext();
         updateServerStats();
 
@@ -126,11 +121,7 @@ public final class JumpDelayFix {
 
     public static synchronized JumpProfile cycleProfile() {
         JumpProfile profile = ModState.cycleProfile();
-        rememberProfileForActiveServer(profile);
-
-        // Manual profile switch implies user intent. Keep this deterministic until user re-enables auto mode.
-        runtimeConfig.setAutoProfileSwitch(false);
-        markConfigurationDirty();
+        rememberManualProfileSelection(profile);
 
         LOGGER.debug("{} profile {}", ModConstants.MOD_NAME, profile.name());
         return profile;
@@ -138,294 +129,23 @@ public final class JumpDelayFix {
 
     public static synchronized JumpProfile setProfile(JumpProfile profile) {
         JumpProfile resolvedProfile = Objects.requireNonNull(profile, "profile");
-
         ModState.setProfile(resolvedProfile);
-        rememberProfileForActiveServer(resolvedProfile);
-
-        // Manual profile switch implies user intent. Keep this deterministic until user re-enables auto mode.
-        runtimeConfig.setAutoProfileSwitch(false);
-        markConfigurationDirty();
+        rememberManualProfileSelection(resolvedProfile);
 
         LOGGER.debug("{} profile {}", ModConstants.MOD_NAME, resolvedProfile.name());
         return resolvedProfile;
     }
 
     public static synchronized boolean toggleAutoProfileSwitch() {
-        runtimeConfig.setAutoProfileSwitch(!runtimeConfig.autoProfileSwitch());
+        boolean enabled = !runtimeConfig.autoProfileSwitch();
+        runtimeConfig.setAutoProfileSwitch(enabled);
+        profileSwitchCooldownTicks = 0;
         markConfigurationDirty();
-        return runtimeConfig.autoProfileSwitch();
+        return enabled;
     }
 
     public static synchronized boolean isAutoProfileSwitchEnabled() {
         return runtimeConfig.autoProfileSwitch();
-    }
-
-    public static synchronized boolean toggleHudEnabled() {
-        runtimeConfig.setHudEnabled(!runtimeConfig.hudEnabled());
-        markConfigurationDirty();
-        return runtimeConfig.hudEnabled();
-    }
-
-    public static synchronized boolean isHudEnabled() {
-        return runtimeConfig.hudEnabled();
-    }
-
-    public static synchronized void setHudPosition(int x, int y) {
-        int previousX = runtimeConfig.hudOffsetX();
-        int previousY = runtimeConfig.hudOffsetY();
-
-        runtimeConfig.setHudOffsetX(x);
-        runtimeConfig.setHudOffsetY(y);
-
-        if (runtimeConfig.hudOffsetX() != previousX || runtimeConfig.hudOffsetY() != previousY) {
-            markConfigurationDirty();
-        }
-    }
-
-    public static synchronized void moveHudBy(int dx, int dy) {
-        setHudPosition(runtimeConfig.hudOffsetX() + dx, runtimeConfig.hudOffsetY() + dy);
-    }
-
-    public static synchronized int getHudOffsetX() {
-        return runtimeConfig.hudOffsetX();
-    }
-
-    public static synchronized int getHudOffsetY() {
-        return runtimeConfig.hudOffsetY();
-    }
-
-    public static synchronized double setHudScale(double scale) {
-        double previousScale = runtimeConfig.hudScale();
-        runtimeConfig.setHudScale(scale);
-
-        if (Double.compare(runtimeConfig.hudScale(), previousScale) != 0) {
-            markConfigurationDirty();
-        }
-        return runtimeConfig.hudScale();
-    }
-
-    public static synchronized double adjustHudScale(double delta) {
-        return setHudScale(runtimeConfig.hudScale() + delta);
-    }
-
-    public static synchronized double getHudScale() {
-        return runtimeConfig.hudScale();
-    }
-
-    public static synchronized void resetHudLayout() {
-        JumpRuntimeConfig defaults = JumpRuntimeConfig.defaults();
-        runtimeConfig.setHudOffsetX(defaults.hudOffsetX());
-        runtimeConfig.setHudOffsetY(defaults.hudOffsetY());
-        runtimeConfig.setHudScale(defaults.hudScale());
-        markConfigurationDirty();
-    }
-
-    public static synchronized boolean toggleHudProfileAndPing() {
-        runtimeConfig.setHudShowProfileAndPing(!runtimeConfig.hudShowProfileAndPing());
-        markConfigurationDirty();
-        return runtimeConfig.hudShowProfileAndPing();
-    }
-
-    public static synchronized boolean isHudProfileAndPingVisible() {
-        return runtimeConfig.hudShowProfileAndPing();
-    }
-
-    public static synchronized boolean toggleHudRollbackAndPenalty() {
-        runtimeConfig.setHudShowRollbackAndPenalty(!runtimeConfig.hudShowRollbackAndPenalty());
-        markConfigurationDirty();
-        return runtimeConfig.hudShowRollbackAndPenalty();
-    }
-
-    public static synchronized boolean isHudRollbackAndPenaltyVisible() {
-        return runtimeConfig.hudShowRollbackAndPenalty();
-    }
-
-    public static synchronized boolean toggleHudModeAndQuality() {
-        runtimeConfig.setHudShowModeAndQuality(!runtimeConfig.hudShowModeAndQuality());
-        markConfigurationDirty();
-        return runtimeConfig.hudShowModeAndQuality();
-    }
-
-    public static synchronized boolean isHudModeAndQualityVisible() {
-        return runtimeConfig.hudShowModeAndQuality();
-    }
-
-    public static synchronized boolean toggleHudServer() {
-        runtimeConfig.setHudShowServer(!runtimeConfig.hudShowServer());
-        markConfigurationDirty();
-        return runtimeConfig.hudShowServer();
-    }
-
-    public static synchronized boolean isHudServerVisible() {
-        return runtimeConfig.hudShowServer();
-    }
-
-    public static synchronized boolean toggleHudQualityBar() {
-        runtimeConfig.setHudShowQualityBar(!runtimeConfig.hudShowQualityBar());
-        markConfigurationDirty();
-        return runtimeConfig.hudShowQualityBar();
-    }
-
-    public static synchronized boolean isHudQualityBarVisible() {
-        return runtimeConfig.hudShowQualityBar();
-    }
-
-    public static synchronized boolean toggleShadowMode() {
-        runtimeConfig.setShadowMode(!runtimeConfig.shadowMode());
-        jumpHandler.setShadowMode(runtimeConfig.shadowMode());
-        markConfigurationDirty();
-        return runtimeConfig.shadowMode();
-    }
-
-    public static synchronized boolean isShadowModeEnabled() {
-        return runtimeConfig.shadowMode();
-    }
-
-    public static synchronized boolean toggleSafetyFailsafe() {
-        runtimeConfig.setSafetyFailsafe(!runtimeConfig.safetyFailsafe());
-        markConfigurationDirty();
-        return runtimeConfig.safetyFailsafe();
-    }
-
-    public static synchronized boolean isSafetyFailsafeEnabled() {
-        return runtimeConfig.safetyFailsafe();
-    }
-
-    public static synchronized int setMinAttemptsForProfileSwitch(int minAttemptsForProfileSwitch) {
-        int previous = runtimeConfig.minAttemptsForProfileSwitch();
-        runtimeConfig.setMinAttemptsForProfileSwitch(minAttemptsForProfileSwitch);
-
-        if (runtimeConfig.minAttemptsForProfileSwitch() != previous) {
-            markConfigurationDirty();
-        }
-        return runtimeConfig.minAttemptsForProfileSwitch();
-    }
-
-    public static synchronized int adjustMinAttemptsForProfileSwitch(int delta) {
-        return setMinAttemptsForProfileSwitch(runtimeConfig.minAttemptsForProfileSwitch() + delta);
-    }
-
-    public static synchronized double setCompetitiveRollbackRateMax(double rollbackRateMax) {
-        double previousCompetitive = runtimeConfig.competitiveRollbackRateMax();
-        double previousStable = runtimeConfig.stableRollbackRateMin();
-        double previousFailsafe = runtimeConfig.failsafeRollbackRate();
-
-        runtimeConfig.setCompetitiveRollbackRateMax(rollbackRateMax);
-        normalizeRuntimeThresholds();
-
-        if (Double.compare(runtimeConfig.competitiveRollbackRateMax(), previousCompetitive) != 0
-                || Double.compare(runtimeConfig.stableRollbackRateMin(), previousStable) != 0
-                || Double.compare(runtimeConfig.failsafeRollbackRate(), previousFailsafe) != 0) {
-            markConfigurationDirty();
-        }
-        return runtimeConfig.competitiveRollbackRateMax();
-    }
-
-    public static synchronized double adjustCompetitiveRollbackRateMax(double delta) {
-        return setCompetitiveRollbackRateMax(runtimeConfig.competitiveRollbackRateMax() + delta);
-    }
-
-    public static synchronized double setStableRollbackRateMin(double rollbackRateMin) {
-        double previousStable = runtimeConfig.stableRollbackRateMin();
-        double previousFailsafe = runtimeConfig.failsafeRollbackRate();
-
-        runtimeConfig.setStableRollbackRateMin(rollbackRateMin);
-        normalizeRuntimeThresholds();
-
-        if (Double.compare(runtimeConfig.stableRollbackRateMin(), previousStable) != 0
-                || Double.compare(runtimeConfig.failsafeRollbackRate(), previousFailsafe) != 0) {
-            markConfigurationDirty();
-        }
-        return runtimeConfig.stableRollbackRateMin();
-    }
-
-    public static synchronized double adjustStableRollbackRateMin(double delta) {
-        return setStableRollbackRateMin(runtimeConfig.stableRollbackRateMin() + delta);
-    }
-
-    public static synchronized double setFailsafeRollbackRate(double rollbackRate) {
-        double previous = runtimeConfig.failsafeRollbackRate();
-        runtimeConfig.setFailsafeRollbackRate(rollbackRate);
-        normalizeRuntimeThresholds();
-
-        if (Double.compare(runtimeConfig.failsafeRollbackRate(), previous) != 0) {
-            markConfigurationDirty();
-        }
-        return runtimeConfig.failsafeRollbackRate();
-    }
-
-    public static synchronized double adjustFailsafeRollbackRate(double delta) {
-        return setFailsafeRollbackRate(runtimeConfig.failsafeRollbackRate() + delta);
-    }
-
-    public static synchronized void resetSettingsToDefaults() {
-        runtimeConfig = JumpRuntimeConfig.defaults();
-        normalizeRuntimeThresholds();
-        jumpHandler.setShadowMode(runtimeConfig.shadowMode());
-        markConfigurationDirty();
-    }
-
-    public static synchronized void clearServerProfileMemory() {
-        serverProfileMemory.clear();
-        serverStats.clear();
-        ModState.setProfile(JumpProfile.SMART);
-        markConfigurationDirty();
-    }
-
-    public static synchronized JumpRuntimeConfig getRuntimeConfig() {
-        return runtimeConfig.copy();
-    }
-
-    public static synchronized JumpDiagnostics getDiagnostics() {
-        if (!initialized) {
-            return JumpDiagnostics.empty();
-        }
-
-        ServerAdaptiveStats stats = serverStats.get(activeServerId);
-        int confirmed = stats == null ? 0 : stats.confirmedJumps();
-        int rejected = stats == null ? 0 : stats.rejectedJumps();
-        int shadowPredictions = stats == null ? 0 : stats.shadowPredictions();
-        double rollbackRate = stats == null ? 0.0D : stats.rollbackRate();
-
-        return new JumpDiagnostics(
-                activeServerId,
-                ModState.getProfile(),
-                ModState.isEnabled(),
-                runtimeConfig.autoProfileSwitch(),
-                runtimeConfig.shadowMode(),
-                runtimeConfig.hudEnabled(),
-                runtimeConfig.safetyFailsafe(),
-                jumpHandler.getLatencyMs(),
-                jumpHandler.getAdaptivePenaltyTicks(),
-                jumpHandler.getRequiredGroundedTicks(),
-                confirmed,
-                rejected,
-                shadowPredictions,
-                rollbackRate
-        );
-    }
-
-    public static synchronized String exportCurrentPresetCode() {
-        return JumpPresetCodec.exportPreset(ModState.getProfile(), runtimeConfig);
-    }
-
-    public static synchronized boolean importPresetCode(String presetCode) {
-        JumpPresetCodec.ImportedPreset importedPreset = JumpPresetCodec.importPreset(
-                presetCode,
-                runtimeConfig,
-                ModState.getProfile()
-        );
-        if (importedPreset == null) {
-            return false;
-        }
-
-        runtimeConfig = importedPreset.runtimeConfig();
-        normalizeRuntimeThresholds();
-        jumpHandler.setShadowMode(runtimeConfig.shadowMode());
-        ModState.setProfile(importedPreset.profile());
-        rememberProfileForActiveServer(importedPreset.profile());
-        markConfigurationDirty();
-        return true;
     }
 
     /**
@@ -437,9 +157,19 @@ public final class JumpDelayFix {
         flushConfigurationNow();
     }
 
+    private static void rememberManualProfileSelection(JumpProfile profile) {
+        rememberProfileForActiveServer(profile);
+
+        if (runtimeConfig.autoProfileSwitch()) {
+            runtimeConfig.setAutoProfileSwitch(false);
+        }
+
+        profileSwitchCooldownTicks = 0;
+        markConfigurationDirty();
+    }
+
     private static void synchronizeServerContext() {
         String serverId = normalizeServerId(jumpHandler.getServerIdentifier());
-
         if (Objects.equals(serverId, activeServerId)) {
             return;
         }
@@ -450,24 +180,20 @@ public final class JumpDelayFix {
         // Avoid cross-server stat deltas after switching sessions.
         lastConfirmedJumps = jumpHandler.getConfirmedJumpCount();
         lastRejectedJumps = jumpHandler.getRejectedJumpCount();
-        lastShadowPredictions = jumpHandler.getShadowJumpPredictionCount();
     }
 
     private static void updateServerStats() {
         int confirmed = jumpHandler.getConfirmedJumpCount();
         int rejected = jumpHandler.getRejectedJumpCount();
-        int shadowPredictions = jumpHandler.getShadowJumpPredictionCount();
 
         int confirmedDelta = Math.max(0, confirmed - lastConfirmedJumps);
         int rejectedDelta = Math.max(0, rejected - lastRejectedJumps);
-        int shadowDelta = Math.max(0, shadowPredictions - lastShadowPredictions);
 
         lastConfirmedJumps = confirmed;
         lastRejectedJumps = rejected;
-        lastShadowPredictions = shadowPredictions;
 
         ServerAdaptiveStats stats = serverStats.computeIfAbsent(activeServerId, ignored -> new ServerAdaptiveStats());
-        stats.update(confirmedDelta, rejectedDelta, shadowDelta);
+        stats.update(confirmedDelta, rejectedDelta);
     }
 
     private static void applyAutoProfileSwitch() {
@@ -481,18 +207,11 @@ public final class JumpDelayFix {
         }
 
         int attempts = stats.confirmedJumps() + stats.rejectedJumps();
-        if (attempts < runtimeConfig.minAttemptsForProfileSwitch()) {
+        if (attempts < AUTO_SWITCH_MIN_ATTEMPTS) {
             return;
         }
 
-        int latencyMs = jumpHandler.getLatencyMs();
-        double rollbackRate = stats.rollbackRate();
-
-        JumpProfile targetProfile = chooseAutoProfile(latencyMs, rollbackRate);
-        if (runtimeConfig.safetyFailsafe() && rollbackRate >= runtimeConfig.failsafeRollbackRate()) {
-            targetProfile = JumpProfile.STABLE;
-        }
-
+        JumpProfile targetProfile = chooseAutoProfile(jumpHandler.getLatencyMs(), stats.rollbackRate());
         JumpProfile currentProfile = ModState.getProfile();
         if (targetProfile == currentProfile) {
             return;
@@ -503,20 +222,23 @@ public final class JumpDelayFix {
         markConfigurationDirty();
         profileSwitchCooldownTicks = AUTO_SWITCH_COOLDOWN_TICKS;
 
-        LOGGER.debug("Auto-switched profile to {} (server={}, ping={}ms, rollbackRate={})",
+        LOGGER.debug(
+                "Auto-switched profile to {} (server={}, ping={}ms, rollbackRate={})",
                 targetProfile.name(),
                 activeServerId,
-                latencyMs,
-                rollbackRate
+                jumpHandler.getLatencyMs(),
+                stats.rollbackRate()
         );
     }
 
     private static JumpProfile chooseAutoProfile(int latencyMs, double rollbackRate) {
-        if (rollbackRate >= runtimeConfig.stableRollbackRateMin() || latencyMs >= 210) {
+        if (rollbackRate >= STABLE_PROFILE_MIN_ROLLBACK_RATE || latencyMs >= STABLE_PROFILE_MIN_LATENCY_MS) {
             return JumpProfile.STABLE;
         }
 
-        if (rollbackRate <= runtimeConfig.competitiveRollbackRateMax() && latencyMs >= 0 && latencyMs <= 95) {
+        if (rollbackRate <= COMPETITIVE_PROFILE_MAX_ROLLBACK_RATE
+                && latencyMs >= 0
+                && latencyMs <= COMPETITIVE_PROFILE_MAX_LATENCY_MS) {
             return JumpProfile.COMPETITIVE;
         }
 
@@ -542,9 +264,8 @@ public final class JumpDelayFix {
         configFilePath = configDirectory.resolve("jumpdelayfix.properties");
 
         JumpConfigStorage.LoadedConfig loadedConfig = JumpConfigStorage.load(configFilePath);
-
         runtimeConfig = loadedConfig.config().copy();
-        normalizeRuntimeThresholds();
+
         serverProfileMemory.clear();
         serverProfileMemory.putAll(loadedConfig.serverProfiles());
 
@@ -619,23 +340,6 @@ public final class JumpDelayFix {
         };
     }
 
-    private static void normalizeRuntimeThresholds() {
-        double competitiveRate = runtimeConfig.competitiveRollbackRateMax();
-        double stableRate = runtimeConfig.stableRollbackRateMin();
-        double failsafeRate = runtimeConfig.failsafeRollbackRate();
-
-        if (stableRate < competitiveRate) {
-            stableRate = competitiveRate;
-        }
-
-        if (failsafeRate < stableRate) {
-            failsafeRate = stableRate;
-        }
-
-        runtimeConfig.setStableRollbackRateMin(stableRate);
-        runtimeConfig.setFailsafeRollbackRate(failsafeRate);
-    }
-
     static synchronized void resetForTests() {
         jumpHandler = JumpHandler.noOp();
         toggleFeedback = ToggleFeedback.NO_OP;
@@ -646,7 +350,6 @@ public final class JumpDelayFix {
         activeServerId = DEFAULT_SERVER_ID;
         lastConfirmedJumps = 0;
         lastRejectedJumps = 0;
-        lastShadowPredictions = 0;
         profileSwitchCooldownTicks = 0;
         configSaveCooldownTicks = 0;
         configDirty = false;

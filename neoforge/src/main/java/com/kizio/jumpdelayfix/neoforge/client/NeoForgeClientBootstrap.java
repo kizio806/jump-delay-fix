@@ -3,7 +3,6 @@ package com.kizio.jumpdelayfix.neoforge.client;
 import com.kizio.jumpdelayfix.common.JumpDelayFix;
 import com.kizio.jumpdelayfix.common.ModConstants;
 import com.kizio.jumpdelayfix.neoforge.client.gui.NeoForgeSettingsScreen;
-import com.kizio.jumpdelayfix.neoforge.client.hud.NeoForgeHudOverlay;
 import com.kizio.jumpdelayfix.neoforge.client.input.NeoForgeJumpInput;
 import com.kizio.jumpdelayfix.neoforge.client.input.NeoForgeKeyMappings;
 import net.minecraft.client.Minecraft;
@@ -38,7 +37,6 @@ public final class NeoForgeClientBootstrap {
         modEventBus.addListener(NeoForgeClientBootstrap::onClientSetup);
         NeoForge.EVENT_BUS.addListener(NeoForgeClientBootstrap::onClientTick);
         NeoForge.EVENT_BUS.addListener(NeoForgeClientBootstrap::onClientLogout);
-        NeoForge.EVENT_BUS.addListener(NeoForgeHudOverlay::onRenderGui);
         initialized = true;
     }
 

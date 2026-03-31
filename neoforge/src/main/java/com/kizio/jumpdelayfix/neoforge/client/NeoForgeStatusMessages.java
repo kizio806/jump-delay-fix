@@ -37,13 +37,4 @@ public final class NeoForgeStatusMessages {
         MutableComponent profileComponent = Component.translatable(profile.translationKey()).withStyle(ChatFormatting.AQUA);
         client.player.displayClientMessage(Component.translatable("message.jumpdelayfix.profile_status", profileComponent), true);
     }
-
-    public static void sendSimpleInfo(String translationKey) {
-        Minecraft client = Minecraft.getInstance();
-        if (client == null || client.player == null) {
-            return;
-        }
-
-        client.player.displayClientMessage(Component.translatable(translationKey).withStyle(ChatFormatting.YELLOW), true);
-    }
 }

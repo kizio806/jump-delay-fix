@@ -188,6 +188,7 @@ tasks.register('publishReadyCheck') {
             ':common:test',
             ':common:jacocoTestCoverageVerification',
             ':fabric:test',
+            ':fabric:verifyRuntimeDependencyCompatibility',
             ':fabric:validateProductionMetadata',
             ':neoforge:test',
             ':neoforge:validateProductionMetadata',

@@ -2,9 +2,9 @@
 
 ## Repository Layout
 
-- `common` -> loader-agnostic logic, config, profiles, diagnostics, HUD model
-- `fabric` -> Fabric bootstrap, keybinds, overlays, UI integration
-- `neoforge` -> NeoForge bootstrap, keybinds, overlays, UI integration
+- `common` -> loader-agnostic logic, config, profiles, and auto-switching
+- `fabric` -> Fabric bootstrap, keybinds, and UI integration
+- `neoforge` -> NeoForge bootstrap, keybinds, and UI integration
 - `scripts` -> version probing and metadata update helpers
 - `.github/workflows` -> CI and release automation
 
@@ -26,6 +26,7 @@ Build commands:
 
 - SemVer validation (`mod_version`)
 - Minecraft version matrix validation
+- Fabric runtime dependency compatibility validation
 - Common tests
 - Fabric metadata validation
 - NeoForge metadata validation
@@ -44,7 +45,7 @@ Build commands:
 ```bash
 ./scripts/set-minecraft-version.sh \
   --base-minecraft 1.21.11 \
-  --fabric-supported-versions "1.21.9,1.21.10,1.21.11" \
+  --fabric-supported-versions "1.21.11" \
   --neoforge-supported-versions "1.21.9,1.21.10,1.21.11" \
   --mod-version 1.0.0
 ```
