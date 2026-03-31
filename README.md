@@ -6,15 +6,15 @@
 [![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord)](https://discord.com/invite/M9eqfP49Yy)
 [![License](https://img.shields.io/github/license/kizio806/jump-delay-fix)](LICENSE)
 
-Client-side Minecraft mod that improves jump responsiveness while preserving multiplayer stability.
+Lightweight client-side Minecraft mod focused on smoother and more responsive jumping while staying practical for normal gameplay, including multiplayer.
 
 ## Highlights
 
-- Client-only implementation (no gameplay authority moved to server)
-- Fabric + NeoForge support from one repository
-- One-JAR release strategy for one Minecraft patch line
-- Adaptive profiles (`Competitive`, `Smart`, `Stable`) with rollback-aware switching
-- Runtime HUD + settings screens + preset import/export
+- Improved jump responsiveness with multiplayer-friendly behavior
+- In-game toggle with simple Minecraft-style settings screens
+- Manual profile cycling for quick per-server adjustments
+- Optional auto profile switching based on rollback history and latency
+- Client-only implementation for Fabric and NeoForge
 
 ## Supported Platforms
 
@@ -31,12 +31,13 @@ Current version metadata is managed in `gradle.properties`:
 - `minecraft_version_range`: NeoForge runtime support range
 
 The build enforces a single patch line (for example `1.21.x`) so one release can target multiple patch versions when technically compatible.
+Fabric support can still be narrower than NeoForge support when upstream Fabric dependencies are locked to one specific patch.
 
 ## Architecture
 
 Multi-project Gradle layout:
 
-- `common`: loader-agnostic jump logic, config, presets, diagnostics, HUD presentation model
+- `common`: loader-agnostic jump logic, auto-switching, config, and per-server memory
 - `fabric`: Fabric entrypoints and rendering/input adapters
 - `neoforge`: NeoForge entrypoints and rendering/input adapters
 
@@ -96,7 +97,7 @@ Use the helper script to update one patch-line release metadata consistently:
 ```bash
 ./scripts/set-minecraft-version.sh \
   --base-minecraft 1.21.11 \
-  --fabric-supported-versions "1.21.9,1.21.10,1.21.11" \
+  --fabric-supported-versions "1.21.11" \
   --neoforge-supported-versions "1.21.9,1.21.10,1.21.11" \
   --mod-version 1.0.0
 ```
@@ -120,7 +121,8 @@ git tag v1.0.0
 git push origin main --tags
 ```
 
-Current validated upper bound from the `1.21.9` line is `1.21.11`.
+Current validated Fabric target is `1.21.11`.
+NeoForge metadata still covers the `1.21.x` patch line.
 `1.21.12+` currently fails because that Minecraft patch is not yet available in Loom setup (`Failed to find minecraft version`).
 
 ## Modrinth Project Content

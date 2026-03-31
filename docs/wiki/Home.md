@@ -32,8 +32,8 @@ Version metadata is managed in `gradle.properties` and validated during build by
 - Fully client-side implementation
 - Shared logic in `common` with thin loader integrations (`fabric`, `neoforge`)
 - One-release, multi-patch strategy within one Minecraft line when technically valid
-- Adaptive profiles with rollback-aware switching
-- In-game settings, HUD editor, and preset import/export
+- Adaptive profiles with optional rollback-aware auto switching
+- In-game settings focused on toggle, profile selection, and auto mode
 
 ## Keybind Defaults
 

@@ -31,22 +31,11 @@ Check:
 
 Check in settings:
 
-- `Auto Profile` is enabled if you expect auto switching
-- `Safety Failsafe` is enabled if you want forced stable behavior on high rollback
-- adaptive thresholds are not set too aggressively
+- `Auto Profile` is enabled if you expect automatic switching
+- you did not manually cycle the profile recently, because manual selection turns Auto Profile off
+- the current server has enough recent jump samples for the mod to adapt
 
-You can always reset defaults in the settings screen.
-
-## HUD Not Visible
-
-Check:
-
-- HUD is enabled in settings
-- HUD position is on-screen
-- HUD scale is not too small
-- individual HUD sections are not disabled
-
-Use HUD editor reset if needed.
+If needed, turn Auto Profile off, pick a profile manually, and then re-enable Auto Profile when you want automatic switching back.
 
 ## Release Workflow Failed
 

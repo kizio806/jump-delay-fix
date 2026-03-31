@@ -37,13 +37,4 @@ public final class FabricStatusMessages {
         MutableText profileText = Text.translatable(profile.translationKey()).formatted(Formatting.AQUA);
         client.player.sendMessage(Text.translatable("message.jumpdelayfix.profile_status", profileText), true);
     }
-
-    public static void sendSimpleInfo(String translationKey) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.player == null) {
-            return;
-        }
-
-        client.player.sendMessage(Text.translatable(translationKey).formatted(Formatting.YELLOW), true);
-    }
 }

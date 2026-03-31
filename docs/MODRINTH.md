@@ -2,15 +2,15 @@
 
 ## Description Template
 
-Jump Delay Fix is a client-side movement quality-of-life mod focused on responsive jumping and multiplayer-safe behavior.
+Jump Delay Fix is a lightweight client-side mod focused on smoother, more responsive jumping and multiplayer-friendly behavior.
 
 ### Features
 
-- Removes client-side jump delay while preserving multiplayer stability
-- Adaptive jump profiles for different latency conditions
-- Runtime toggle, profile cycle, and in-game settings screens
-- Configurable HUD with drag editor and rollback quality indicator
-- Preset export/import for quick sharing
+- Improved jump responsiveness for everyday play
+- In-game ON/OFF toggle and clean settings GUI
+- Manual profile cycling for quick per-server tuning
+- Optional auto profile switching based on rollback history and latency
+- Client-side only, with no server installation required
 
 ### Compatibility
 

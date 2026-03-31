@@ -22,9 +22,7 @@ public final class JumpHandler {
     private int successfulJumpStreak;
     private int confirmedJumpCount;
     private int rejectedJumpCount;
-    private int shadowJumpPredictionCount;
     private int lastRequiredGroundedTicks = 1;
-    private boolean shadowMode;
 
     private boolean awaitingJumpResult;
     private int jumpResultTicksLeft;
@@ -79,12 +77,6 @@ public final class JumpHandler {
             return;
         }
 
-        if (shadowMode) {
-            shadowJumpPredictionCount++;
-            ticksSinceLastJumpAttempt = 0;
-            return;
-        }
-
         input.jump();
         ticksSinceLastJumpAttempt = 0;
         startJumpResultTracking();
@@ -136,10 +128,6 @@ public final class JumpHandler {
         adaptivePenaltyTicks = Math.min(profile.maxAdaptivePenaltyTicks(), adaptivePenaltyTicks + 1);
     }
 
-    public void setShadowMode(boolean shadowMode) {
-        this.shadowMode = shadowMode;
-    }
-
     public int getAdaptivePenaltyTicks() {
         return adaptivePenaltyTicks;
     }
@@ -154,10 +142,6 @@ public final class JumpHandler {
 
     public int getRejectedJumpCount() {
         return rejectedJumpCount;
-    }
-
-    public int getShadowJumpPredictionCount() {
-        return shadowJumpPredictionCount;
     }
 
     public int getLatencyMs() {

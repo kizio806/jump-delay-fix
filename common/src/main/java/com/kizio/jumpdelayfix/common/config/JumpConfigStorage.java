@@ -23,22 +23,6 @@ public final class JumpConfigStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(JumpConfigStorage.class);
 
     private static final String KEY_AUTO_PROFILE_SWITCH = "autoProfileSwitch";
-    private static final String KEY_HUD_ENABLED = "hudEnabled";
-    private static final String KEY_SHADOW_MODE = "shadowMode";
-    private static final String KEY_SAFETY_FAILSAFE = "safetyFailsafe";
-    private static final String KEY_HUD_OFFSET_X = "hudOffsetX";
-    private static final String KEY_HUD_OFFSET_Y = "hudOffsetY";
-    private static final String KEY_HUD_SCALE = "hudScale";
-    private static final String KEY_HUD_SHOW_PROFILE = "hudShowProfileAndPing";
-    private static final String KEY_HUD_SHOW_TIMING = "hudShowRollbackAndPenalty";
-    private static final String KEY_HUD_SHOW_MODE = "hudShowModeAndQuality";
-    private static final String KEY_HUD_SHOW_SERVER = "hudShowServer";
-    private static final String KEY_HUD_SHOW_BAR = "hudShowQualityBar";
-    private static final String KEY_MIN_ATTEMPTS = "minAttemptsForProfileSwitch";
-    private static final String KEY_COMPETITIVE_RATE = "competitiveRollbackRateMax";
-    private static final String KEY_STABLE_RATE = "stableRollbackRateMin";
-    private static final String KEY_FAILSAFE_RATE = "failsafeRollbackRate";
-
     private static final String KEY_SERVER_PROFILE_PREFIX = "serverProfile.";
 
     private JumpConfigStorage() {
@@ -69,21 +53,6 @@ public final class JumpConfigStorage {
         }
 
         config.setAutoProfileSwitch(getBoolean(properties, KEY_AUTO_PROFILE_SWITCH, config.autoProfileSwitch()));
-        config.setHudEnabled(getBoolean(properties, KEY_HUD_ENABLED, config.hudEnabled()));
-        config.setShadowMode(getBoolean(properties, KEY_SHADOW_MODE, config.shadowMode()));
-        config.setSafetyFailsafe(getBoolean(properties, KEY_SAFETY_FAILSAFE, config.safetyFailsafe()));
-        config.setHudOffsetX(getInt(properties, KEY_HUD_OFFSET_X, config.hudOffsetX()));
-        config.setHudOffsetY(getInt(properties, KEY_HUD_OFFSET_Y, config.hudOffsetY()));
-        config.setHudScale(getDouble(properties, KEY_HUD_SCALE, config.hudScale()));
-        config.setHudShowProfileAndPing(getBoolean(properties, KEY_HUD_SHOW_PROFILE, config.hudShowProfileAndPing()));
-        config.setHudShowRollbackAndPenalty(getBoolean(properties, KEY_HUD_SHOW_TIMING, config.hudShowRollbackAndPenalty()));
-        config.setHudShowModeAndQuality(getBoolean(properties, KEY_HUD_SHOW_MODE, config.hudShowModeAndQuality()));
-        config.setHudShowServer(getBoolean(properties, KEY_HUD_SHOW_SERVER, config.hudShowServer()));
-        config.setHudShowQualityBar(getBoolean(properties, KEY_HUD_SHOW_BAR, config.hudShowQualityBar()));
-        config.setMinAttemptsForProfileSwitch(getInt(properties, KEY_MIN_ATTEMPTS, config.minAttemptsForProfileSwitch()));
-        config.setCompetitiveRollbackRateMax(getDouble(properties, KEY_COMPETITIVE_RATE, config.competitiveRollbackRateMax()));
-        config.setStableRollbackRateMin(getDouble(properties, KEY_STABLE_RATE, config.stableRollbackRateMin()));
-        config.setFailsafeRollbackRate(getDouble(properties, KEY_FAILSAFE_RATE, config.failsafeRollbackRate()));
 
         for (String key : properties.stringPropertyNames()) {
             if (!key.startsWith(KEY_SERVER_PROFILE_PREFIX)) {
@@ -120,21 +89,6 @@ public final class JumpConfigStorage {
         Properties properties = new Properties();
 
         properties.setProperty(KEY_AUTO_PROFILE_SWITCH, Boolean.toString(config.autoProfileSwitch()));
-        properties.setProperty(KEY_HUD_ENABLED, Boolean.toString(config.hudEnabled()));
-        properties.setProperty(KEY_SHADOW_MODE, Boolean.toString(config.shadowMode()));
-        properties.setProperty(KEY_SAFETY_FAILSAFE, Boolean.toString(config.safetyFailsafe()));
-        properties.setProperty(KEY_HUD_OFFSET_X, Integer.toString(config.hudOffsetX()));
-        properties.setProperty(KEY_HUD_OFFSET_Y, Integer.toString(config.hudOffsetY()));
-        properties.setProperty(KEY_HUD_SCALE, Double.toString(config.hudScale()));
-        properties.setProperty(KEY_HUD_SHOW_PROFILE, Boolean.toString(config.hudShowProfileAndPing()));
-        properties.setProperty(KEY_HUD_SHOW_TIMING, Boolean.toString(config.hudShowRollbackAndPenalty()));
-        properties.setProperty(KEY_HUD_SHOW_MODE, Boolean.toString(config.hudShowModeAndQuality()));
-        properties.setProperty(KEY_HUD_SHOW_SERVER, Boolean.toString(config.hudShowServer()));
-        properties.setProperty(KEY_HUD_SHOW_BAR, Boolean.toString(config.hudShowQualityBar()));
-        properties.setProperty(KEY_MIN_ATTEMPTS, Integer.toString(config.minAttemptsForProfileSwitch()));
-        properties.setProperty(KEY_COMPETITIVE_RATE, Double.toString(config.competitiveRollbackRateMax()));
-        properties.setProperty(KEY_STABLE_RATE, Double.toString(config.stableRollbackRateMin()));
-        properties.setProperty(KEY_FAILSAFE_RATE, Double.toString(config.failsafeRollbackRate()));
 
         serverProfiles.forEach((serverId, profile) -> {
             if (serverId != null && !serverId.isBlank() && profile != null) {
@@ -174,30 +128,6 @@ public final class JumpConfigStorage {
     private static boolean getBoolean(Properties properties, String key, boolean fallback) {
         String value = properties.getProperty(key);
         return value == null ? fallback : Boolean.parseBoolean(value);
-    }
-
-    private static int getInt(Properties properties, String key, int fallback) {
-        String value = properties.getProperty(key);
-        if (value == null) {
-            return fallback;
-        }
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException ignored) {
-            return fallback;
-        }
-    }
-
-    private static double getDouble(Properties properties, String key, double fallback) {
-        String value = properties.getProperty(key);
-        if (value == null) {
-            return fallback;
-        }
-        try {
-            return Double.parseDouble(value);
-        } catch (NumberFormatException ignored) {
-            return fallback;
-        }
     }
 
     private static JumpProfile parseProfile(String value) {
