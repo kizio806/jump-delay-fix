@@ -1,20 +1,9 @@
 package com.kizio.jumpdelayfix.common.model;
-
-/**
- * Rolling per-server counters used for auto profile adaptation.
- */
 public final class ServerAdaptiveStats {
 
     private int confirmedJumps;
     private int rejectedJumps;
     private double smoothedRollbackRate;
-
-    /**
-     * Updates counters and exponentially-smoothed rollback rate.
-     *
-     * @param confirmedDelta newly observed confirmed jumps
-     * @param rejectedDelta  newly observed rejected jumps
-     */
     public void update(int confirmedDelta, int rejectedDelta) {
         confirmedJumps += Math.max(0, confirmedDelta);
         rejectedJumps += Math.max(0, rejectedDelta);

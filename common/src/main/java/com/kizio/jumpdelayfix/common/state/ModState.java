@@ -4,16 +4,13 @@ import com.kizio.jumpdelayfix.common.model.JumpProfile;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
-/**
- * Atomic runtime state for enabled flag and selected profile.
- */
 public final class ModState {
 
     private static final AtomicBoolean ENABLED = new AtomicBoolean(true);
     private static final AtomicReference<JumpProfile> PROFILE = new AtomicReference<>(JumpProfile.SMART);
 
     private ModState() {
+
     }
 
     public static boolean isEnabled() {

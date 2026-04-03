@@ -1,8 +1,4 @@
 package com.kizio.jumpdelayfix.common.model;
-
-/**
- * Runtime jump behavior profiles.
- */
 public enum JumpProfile {
 
     COMPETITIVE("message.jumpdelayfix.profile.competitive", -1, 1, 5),
@@ -38,10 +34,6 @@ public enum JumpProfile {
     public int successfulJumpsToReducePenalty() {
         return successfulJumpsToReducePenalty;
     }
-
-    /**
-     * @return next profile in cyclic order for keybind cycling
-     */
     public JumpProfile next() {
         return VALUES[(ordinal() + 1) % VALUES.length];
     }

@@ -34,6 +34,7 @@ Ensure the project builds correctly with the new metadata.
 ## 4. Prepare Changelog
 
 Update `CHANGELOG.md` for user-visible changes for the new `<mod_version>`.
+That section becomes the release body for both GitHub Releases and Modrinth.
 
 ## 5. Tag and Push
 

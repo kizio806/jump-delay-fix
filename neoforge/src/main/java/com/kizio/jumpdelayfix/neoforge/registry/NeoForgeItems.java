@@ -1,27 +1,29 @@
 package com.kizio.jumpdelayfix.neoforge.registry;
 
-import com.kizio.jumpdelayfix.common.ModConstants;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.kizio.jumpdelayfix.common.JumpDelayFixConstants;
+import com.kizio.jumpdelayfix.common.api.IItemRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 
 import java.util.Objects;
+import java.util.function.Supplier;
+public final class NeoForgeItems implements IItemRegistry {
 
-/**
- * Owns NeoForge item deferred registrations for this mod.
- */
-public final class NeoForgeItems {
-
-    private static final DeferredRegister.Items ITEM_REGISTRY = DeferredRegister.createItems(ModConstants.MOD_ID);
+    private static final NeoForgeItems INSTANCE = new NeoForgeItems();
 
     private NeoForgeItems() {
+
     }
 
-    /**
-     * Registers all item deferred registers to the mod event bus.
-     *
-     * @param modEventBus mod-scoped event bus
-     */
-    public static void register(IEventBus modEventBus) {
-        ITEM_REGISTRY.register(Objects.requireNonNull(modEventBus, "modEventBus"));
+    public static NeoForgeItems getInstance() {
+        return INSTANCE;
+    }
+
+    @Override
+    public void register(String path, Supplier<?> factory) {
+        Item item = (Item) Objects.requireNonNull(factory.get(), "factory");
+        Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(JumpDelayFixConstants.MOD_ID, path), item);
     }
 }

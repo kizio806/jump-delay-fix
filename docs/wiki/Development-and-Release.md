@@ -77,7 +77,7 @@ git push origin main --tags
 Pipeline steps:
 
 - build + verification
-- changelog generation from git history
+- release notes generated from the matching `CHANGELOG.md` section
 - GitHub Release with Fabric/NeoForge jars and checksums
 - Modrinth publish (when secrets exist)
 

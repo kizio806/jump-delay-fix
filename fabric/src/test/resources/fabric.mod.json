@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "jumpdelayfix-fabric-test",
+  "version": "1.0.0-test",
+  "name": "Jump Delay Fix Fabric Tests",
+  "environment": "server",
+  "entrypoints": {
+    "fabric-gametest": [
+      "com.kizio.jumpdelayfix.fabric.FabricHeadlessGameTest"
+    ]
+  },
+  "depends": {
+    "fabricloader": "*",
+    "minecraft": "*",
+    "fabric-api": "*"
+  }
+}

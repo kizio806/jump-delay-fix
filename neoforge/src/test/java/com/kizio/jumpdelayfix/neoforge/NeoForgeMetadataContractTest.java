@@ -14,9 +14,9 @@ class NeoForgeMetadataContractTest {
 
     @Test
     void shouldDeclareProductionMetadataContract() throws IOException {
-        String metadata = readResource("/META-INF/mods.toml");
+        String metadata = readResource("/META-INF/neoforge.mods.toml");
 
-        assertFalse(metadata.contains("${"), "mods.toml still contains unresolved placeholders");
+        assertFalse(metadata.contains("${"), "neoforge.mods.toml still contains unresolved placeholders");
         assertTrue(metadata.contains("[[mods]]"));
         assertTrue(metadata.contains("modId=\"jumpdelayfix\""));
         assertTrue(metadata.contains("displayTest=\"IGNORE_SERVER_VERSION\""));

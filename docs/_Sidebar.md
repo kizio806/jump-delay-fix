@@ -1,0 +1,5 @@
+- [Docs Home](Home.md)
+- [Wiki Home](wiki/Home.md)
+- [Code Style](Code-Style.md)
+- [Modrinth](MODRINTH.md)
+- [Releases](RELEASES.md)

@@ -42,3 +42,9 @@ Use clear conventional messages:
 - Avoid duplicated logic between Fabric and NeoForge.
 - Add tests for behavioral changes in `common/src/test`.
 - Do not commit secrets or local environment files.
+
+## Repository Standards
+
+- keep GitHub-facing docs aligned with the shared project shape: `CHANGELOG.md`, `docs/Home.md`, `docs/Code-Style.md`, `docs/MODRINTH.md`, `docs/RELEASES.md`, and `docs/wiki/*`
+- package root is `com.kizio.<project>`, with `kizio` as the maintainer name in code metadata
+- naming and repo hygiene should follow [docs/Code-Style.md](docs/Code-Style.md)

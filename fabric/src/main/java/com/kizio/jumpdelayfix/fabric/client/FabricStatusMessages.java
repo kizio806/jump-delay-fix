@@ -12,6 +12,7 @@ import net.minecraft.util.Formatting;
 public final class FabricStatusMessages {
 
     private FabricStatusMessages() {
+
     }
 
     public static void sendToggleStatus(boolean enabled) {

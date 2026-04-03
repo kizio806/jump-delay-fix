@@ -1,37 +1,44 @@
 package com.kizio.jumpdelayfix.common.bootstrap;
 
-import com.kizio.jumpdelayfix.common.event.CommonEvents;
-import com.kizio.jumpdelayfix.common.network.CommonNetworking;
+import com.kizio.jumpdelayfix.common.api.IKeyBindingProvider;
 import com.kizio.jumpdelayfix.common.registry.CommonBlockRegistry;
 import com.kizio.jumpdelayfix.common.registry.CommonItemRegistry;
 
-/**
- * Initializes common registration pipelines shared by all loaders.
- */
+import java.util.Objects;
+
 public final class CommonBootstrap {
 
     private static boolean bootstrapped;
+    private static CommonBootstrapServices services = CommonBootstrapServices.noOp();
 
     private CommonBootstrap() {
     }
 
-    public static synchronized void bootstrap() {
+    public static synchronized void bootstrap(CommonBootstrapServices bootstrapServices) {
         if (bootstrapped) {
             return;
         }
 
-        CommonBlockRegistry.register();
-        CommonItemRegistry.register();
-        CommonEvents.register();
-        CommonNetworking.register();
+        services = Objects.requireNonNull(bootstrapServices, "bootstrapServices");
+        CommonBlockRegistry.registerAll(services.createBlockRegistry());
+        CommonItemRegistry.registerAll(services.createItemRegistry());
         bootstrapped = true;
+    }
+
+    public static synchronized IKeyBindingProvider getKeyBindingProvider() {
+        return services.keyBindingProvider();
+    }
+
+    public static synchronized void installClientServices(IKeyBindingProvider keyBindingProvider) {
+        services = new CommonBootstrapServices(
+                services.blockRegistryFactory(),
+                services.itemRegistryFactory(),
+                Objects.requireNonNull(keyBindingProvider, "keyBindingProvider")
+        );
     }
 
     static synchronized void resetForTests() {
         bootstrapped = false;
-        CommonBlockRegistry.resetForTests();
-        CommonItemRegistry.resetForTests();
-        CommonEvents.resetForTests();
-        CommonNetworking.resetForTests();
+        services = CommonBootstrapServices.noOp();
     }
 }

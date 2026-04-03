@@ -1,9 +1,6 @@
 package com.kizio.jumpdelayfix.common.bootstrap;
 
-import com.kizio.jumpdelayfix.common.event.CommonEvents;
-import com.kizio.jumpdelayfix.common.network.CommonNetworking;
-import com.kizio.jumpdelayfix.common.registry.CommonBlockRegistry;
-import com.kizio.jumpdelayfix.common.registry.CommonItemRegistry;
+import com.kizio.jumpdelayfix.common.api.IKeyBindingProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,11 +15,33 @@ class CommonBootstrapTest {
 
     @Test
     void shouldRegisterCommonPipelines() {
-        CommonBootstrap.bootstrap();
+        TrackingKeyBindingProvider keyBindingProvider = new TrackingKeyBindingProvider();
 
-        assertTrue(CommonBlockRegistry.isRegistered());
-        assertTrue(CommonItemRegistry.isRegistered());
-        assertTrue(CommonEvents.isRegistered());
-        assertTrue(CommonNetworking.isRegistered());
+        CommonBootstrap.bootstrap(new CommonBootstrapServices(
+                () -> (path, factory) -> {
+                },
+                () -> (path, factory) -> {
+                },
+                keyBindingProvider
+        ));
+
+        assertTrue(CommonBootstrap.getKeyBindingProvider() == keyBindingProvider);
+    }
+
+    private static final class TrackingKeyBindingProvider implements IKeyBindingProvider {
+        @Override
+        public boolean consumeTogglePress() {
+            return false;
+        }
+
+        @Override
+        public boolean consumeProfileCyclePress() {
+            return false;
+        }
+
+        @Override
+        public boolean consumeConfigScreenPress() {
+            return false;
+        }
     }
 }

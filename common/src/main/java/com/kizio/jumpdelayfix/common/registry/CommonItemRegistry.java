@@ -1,21 +1,20 @@
 package com.kizio.jumpdelayfix.common.registry;
 
+import com.kizio.jumpdelayfix.common.api.IItemRegistry;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Supplier;
+
 public final class CommonItemRegistry {
 
-    private static boolean registered;
+    private static final Map<String, Supplier<?>> ITEMS = Map.of();
 
     private CommonItemRegistry() {
-    }
 
-    public static void register() {
-        registered = true;
     }
-
-    public static boolean isRegistered() {
-        return registered;
-    }
-
-    public static void resetForTests() {
-        registered = false;
+    public static void registerAll(IItemRegistry registry) {
+        IItemRegistry resolvedRegistry = Objects.requireNonNull(registry, "registry");
+        ITEMS.forEach(resolvedRegistry::register);
     }
 }

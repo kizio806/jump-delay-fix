@@ -1,7 +1,9 @@
 package com.kizio.jumpdelayfix.neoforge.client;
 
 import com.kizio.jumpdelayfix.common.JumpDelayFix;
-import com.kizio.jumpdelayfix.common.ModConstants;
+import com.kizio.jumpdelayfix.common.JumpDelayFixConstants;
+import com.kizio.jumpdelayfix.common.api.IKeyBindingProvider;
+import com.kizio.jumpdelayfix.common.bootstrap.CommonBootstrap;
 import com.kizio.jumpdelayfix.neoforge.client.gui.NeoForgeSettingsScreen;
 import com.kizio.jumpdelayfix.neoforge.client.input.NeoForgeJumpInput;
 import com.kizio.jumpdelayfix.neoforge.client.input.NeoForgeKeyMappings;
@@ -21,10 +23,11 @@ import java.nio.file.Path;
 @OnlyIn(Dist.CLIENT)
 public final class NeoForgeClientBootstrap {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModConstants.MOD_NAME);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_NAME);
     private static boolean initialized;
 
     private NeoForgeClientBootstrap() {
+
     }
 
     public static synchronized void init(IEventBus modEventBus) {
@@ -32,7 +35,8 @@ public final class NeoForgeClientBootstrap {
             return;
         }
 
-        LOGGER.info("{} NeoForge client bootstrap starting", ModConstants.MOD_NAME);
+        LOGGER.info("{} NeoForge client bootstrap starting", JumpDelayFixConstants.MOD_NAME);
+        CommonBootstrap.installClientServices(NeoForgeKeyMappings.getInstance());
         modEventBus.addListener(NeoForgeKeyMappings::onRegisterKeyMappings);
         modEventBus.addListener(NeoForgeClientBootstrap::onClientSetup);
         NeoForge.EVENT_BUS.addListener(NeoForgeClientBootstrap::onClientTick);
@@ -48,19 +52,20 @@ public final class NeoForgeClientBootstrap {
                     : Path.of("config");
 
             JumpDelayFix.init(new NeoForgeJumpInput(), NeoForgeStatusMessages::sendToggleStatus, configDir);
-            LOGGER.info("{} NeoForge config directory: {}", ModConstants.MOD_NAME, configDir.toAbsolutePath());
+            LOGGER.info("{} NeoForge config directory: {}", JumpDelayFixConstants.MOD_NAME, configDir.toAbsolutePath());
         });
     }
 
     private static void onClientTick(ClientTickEvent.Post event) {
+        IKeyBindingProvider keyBindings = CommonBootstrap.getKeyBindingProvider();
         JumpDelayFix.onClientTick();
-        if (NeoForgeKeyMappings.consumeTogglePress()) {
+        if (keyBindings.consumeTogglePress()) {
             JumpDelayFix.toggleEnabled();
         }
-        if (NeoForgeKeyMappings.consumeProfileCyclePress()) {
+        if (keyBindings.consumeProfileCyclePress()) {
             NeoForgeStatusMessages.sendProfileStatus(JumpDelayFix.cycleProfile());
         }
-        if (NeoForgeKeyMappings.consumeConfigScreenPress()) {
+        if (keyBindings.consumeConfigScreenPress()) {
             Minecraft client = Minecraft.getInstance();
             if (client != null) {
                 client.setScreen(new NeoForgeSettingsScreen(client.screen));
@@ -69,6 +74,6 @@ public final class NeoForgeClientBootstrap {
     }
 
     private static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
-        JumpDelayFix.flushPendingConfiguration();
+        JumpDelayFix.onClientDisconnect();
     }
 }
