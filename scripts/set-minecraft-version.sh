@@ -45,7 +45,6 @@ require_value() {
 
 trim() {
   local value="$1"
-  # shellcheck disable=SC2001
   echo "$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 }
 

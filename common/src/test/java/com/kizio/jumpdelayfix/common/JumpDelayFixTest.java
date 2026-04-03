@@ -100,7 +100,7 @@ class JumpDelayFixTest {
         AdaptiveJumpInput input = new AdaptiveJumpInput("high-ping", 220);
         JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
 
-        runTicks(input, 24);
+        runTicks(input, 48);
 
         assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
         assertEquals(JumpProfile.STABLE, JumpDelayFix.getProfile());
@@ -111,7 +111,7 @@ class JumpDelayFixTest {
         AdaptiveJumpInput input = new AdaptiveJumpInput("low-ping", 40);
         JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
 
-        runTicks(input, 24);
+        runTicks(input, 48);
 
         assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
         assertEquals(JumpProfile.COMPETITIVE, JumpDelayFix.getProfile());
@@ -141,6 +141,20 @@ class JumpDelayFixTest {
                 .count();
 
         assertTrue(storedProfiles <= 128, "Expected <= 128 server profiles, got " + storedProfiles);
+    }
+
+    @Test
+    void shouldResetActiveSessionToGlobalOnDisconnect() {
+        MutableServerJumpInput input = new MutableServerJumpInput();
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        input.serverId = "server-a";
+        JumpDelayFix.onClientTick();
+        JumpDelayFix.setProfile(JumpProfile.COMPETITIVE);
+
+        JumpDelayFix.onClientDisconnect();
+
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
     }
 
     private static void runTicks(AdaptiveJumpInput input, int count) {
@@ -220,6 +234,7 @@ class JumpDelayFixTest {
         private final String serverId;
         private final int latencyMs;
         private boolean riseNextTick;
+        private boolean sustainAirNextTick;
         private boolean landNextTick;
         private boolean onGround = true;
         private double playerY = 64.0D;
@@ -234,6 +249,14 @@ class JumpDelayFixTest {
                 playerY = 65.0D;
                 onGround = false;
                 riseNextTick = false;
+                sustainAirNextTick = true;
+                return;
+            }
+
+            if (sustainAirNextTick) {
+                playerY = 65.0D;
+                onGround = false;
+                sustainAirNextTick = false;
                 landNextTick = true;
                 return;
             }

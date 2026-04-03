@@ -8,6 +8,8 @@
 
 Lightweight client-side Minecraft mod focused on smoother and more responsive jumping while staying practical for normal gameplay, including multiplayer.
 
+The repository follows the same GitHub-facing structure used across `item-display-control` and `event-hub`: explicit maintainer metadata, top-level technical docs, `docs/wiki` source pages, and release/publication guides kept inside the repo.
+
 ## Highlights
 
 - Improved jump responsiveness with multiplayer-friendly behavior
@@ -37,22 +39,48 @@ Fabric support can still be narrower than NeoForge support when upstream Fabric 
 
 Multi-project Gradle layout:
 
-- `common`: loader-agnostic jump logic, auto-switching, config, and per-server memory
-- `fabric`: Fabric entrypoints and rendering/input adapters
-- `neoforge`: NeoForge entrypoints and rendering/input adapters
+- `common`: loader-agnostic jump logic, config/state, shared API, bootstrap contracts, and registration object definitions exposed as suppliers
+- `fabric`: Fabric bootstrap, key bindings, screens, networking, and headless GameTest wiring
+- `neoforge`: NeoForge bootstrap, key bindings, screens, networking, and headless GameTest wiring
+
+Platform modules implement the client-facing interfaces from `common/api` and provide the concrete block/item registry bridges used during bootstrap. This keeps the shared module free from loader-specific imports while letting each platform own its own registration mechanics and client hooks.
+
+Data flow:
+
+```text
+common/api + common/feature + common/config
+                |
+                v
+        CommonBootstrapServices
+           /               \
+          v                 v
+   fabric adapters     neoforge adapters
+          |                 |
+          v                 v
+   Minecraft Fabric     Minecraft NeoForge
+```
 
 Design goals:
 
-- Shared behavior in `common`
-- Thin loader integration layers
-- No dedicated server classloading from client-only features
+- Shared jump-delay logic stays in `common`
+- `common` exposes the shared API, while Fabric and NeoForge implement the client/service interfaces and registries
+- Platform modules own all client-only entrypoints, screens, HUD hooks, and key bindings
+- Dedicated-server-safe bootstrap keeps `common` free from `net.fabricmc` and `net.neoforged` imports
+- The runtime fix does not mutate private vanilla jump-cooldown fields, so no accessor/invoker mixins are required
 
 ## Build
 
 Requirements:
 
 - Java `21`
+- Minecraft branch baseline for this architecture: `1.21.1` to `1.21.4`
+- Fabric Loom `1.7+`
+- NeoGradle `7.0+`
 - Gradle wrapper (`./gradlew`)
+
+Repository note:
+
+- Checked-in `gradle.properties` stays pinned for reproducible CI and release automation
 
 Main commands:
 
@@ -74,7 +102,7 @@ Main commands:
 Tag-based release (`vX.Y.Z`) is fully automated by `.github/workflows/release.yml`:
 
 1. Build + verify artifacts
-2. Generate release changelog from git history
+2. Generate release notes from the matching `CHANGELOG.md` section
 3. Publish GitHub Release with Fabric/NeoForge jars + SHA256 checksums
 4. Publish to Modrinth (if secrets are configured)
 
@@ -129,9 +157,13 @@ NeoForge metadata still covers the `1.21.x` patch line.
 
 The project description template and publishing notes are in `docs/MODRINTH.md`.
 
-## Project Standards
+## Project Docs
 
-- Contribution rules: `CONTRIBUTING.md`
-- Security policy: `SECURITY.md`
-- Changelog: `CHANGELOG.md`
-- License: `LICENSE`
+- Technical docs index: [docs/Home.md](docs/Home.md)
+- Wiki home: [docs/wiki/Home.md](docs/wiki/Home.md)
+- Code style: [docs/Code-Style.md](docs/Code-Style.md)
+- Release guide: [docs/RELEASES.md](docs/RELEASES.md)
+- Modrinth guide: [docs/MODRINTH.md](docs/MODRINTH.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Security: [SECURITY.md](SECURITY.md)

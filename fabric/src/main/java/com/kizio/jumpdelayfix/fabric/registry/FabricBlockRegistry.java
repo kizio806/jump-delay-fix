@@ -1,21 +1,30 @@
 package com.kizio.jumpdelayfix.fabric.registry;
 
-import com.kizio.jumpdelayfix.common.ModConstants;
+import com.kizio.jumpdelayfix.common.JumpDelayFixConstants;
+import com.kizio.jumpdelayfix.common.api.IBlockRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
-public final class FabricBlockRegistry {
+import java.util.Objects;
+import java.util.function.Supplier;
+
+public final class FabricBlockRegistry implements IBlockRegistry {
+
+    private static final FabricBlockRegistry INSTANCE = new FabricBlockRegistry();
 
     private FabricBlockRegistry() {
+
     }
 
-    public static void register() {
-        // No block content yet. Keep registration helper for future additions.
+    public static FabricBlockRegistry getInstance() {
+        return INSTANCE;
     }
 
-    public static <T extends Block> T register(String path, T block) {
-        return Registry.register(Registries.BLOCK, Identifier.of(ModConstants.MOD_ID, path), block);
+    @Override
+    public void register(String path, Supplier<?> factory) {
+        Block block = (Block) Objects.requireNonNull(factory.get(), "factory");
+        Registry.register(Registries.BLOCK, Identifier.of(JumpDelayFixConstants.MOD_ID, path), block);
     }
 }

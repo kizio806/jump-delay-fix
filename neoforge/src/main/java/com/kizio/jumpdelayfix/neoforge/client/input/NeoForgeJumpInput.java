@@ -6,6 +6,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.Locale;
+
 @OnlyIn(Dist.CLIENT)
 public final class NeoForgeJumpInput implements JumpInput {
 
@@ -91,14 +93,13 @@ public final class NeoForgeJumpInput implements JumpInput {
             return "singleplayer";
         }
 
-        var listener = client.getConnection();
-        if (listener != null && listener.getConnection() != null && listener.getConnection().getRemoteAddress() != null) {
-            return listener.getConnection().getRemoteAddress().toString();
+        var serverData = client.getCurrentServer();
+        if (serverData != null && serverData.ip != null && !serverData.ip.isBlank()) {
+            return serverData.ip.toLowerCase(Locale.ROOT);
         }
 
         return "multiplayer-unknown";
     }
-
     private int getEstimatedLatencyMs(Minecraft client) {
         LocalPlayer player = client.player;
         var connection = client.getConnection();

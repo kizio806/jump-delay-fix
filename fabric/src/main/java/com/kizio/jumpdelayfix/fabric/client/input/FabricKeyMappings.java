@@ -1,6 +1,7 @@
 package com.kizio.jumpdelayfix.fabric.client.input;
 
-import com.kizio.jumpdelayfix.common.ModConstants;
+import com.kizio.jumpdelayfix.common.JumpDelayFixConstants;
+import com.kizio.jumpdelayfix.common.api.IKeyBindingProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -10,22 +11,28 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public final class FabricKeyMappings {
+public final class FabricKeyMappings implements IKeyBindingProvider {
 
+    private static final FabricKeyMappings INSTANCE = new FabricKeyMappings();
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
     private static final KeyBinding.Category KEY_CATEGORY = KeyBinding.Category.create(
-            Identifier.of(ModConstants.MOD_ID, "jumpdelayfix")
+            Identifier.of(JumpDelayFixConstants.MOD_ID, "jumpdelayfix")
     );
     private static KeyBinding toggleKey;
     private static KeyBinding profileKey;
     private static KeyBinding configKey;
 
     private FabricKeyMappings() {
+
     }
 
-    public static void register() {
+    public static FabricKeyMappings getInstance() {
+        return INSTANCE;
+    }
+
+    public void register() {
         if (toggleKey != null) {
             return;
         }
@@ -52,7 +59,8 @@ public final class FabricKeyMappings {
         ));
     }
 
-    public static boolean consumeTogglePress() {
+    @Override
+    public boolean consumeTogglePress() {
         if (toggleKey == null) {
             return false;
         }
@@ -64,7 +72,8 @@ public final class FabricKeyMappings {
         return pressed;
     }
 
-    public static boolean consumeProfileCyclePress() {
+    @Override
+    public boolean consumeProfileCyclePress() {
         if (profileKey == null) {
             return false;
         }
@@ -76,7 +85,8 @@ public final class FabricKeyMappings {
         return pressed;
     }
 
-    public static boolean consumeConfigScreenPress() {
+    @Override
+    public boolean consumeConfigScreenPress() {
         if (configKey == null) {
             return false;
         }

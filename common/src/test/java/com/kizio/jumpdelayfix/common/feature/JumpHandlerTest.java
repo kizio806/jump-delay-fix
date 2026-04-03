@@ -70,10 +70,11 @@ class JumpHandlerTest {
         input.onGround = true;
         input.playerY = 64.0D;
 
-        handler.tick(); // first attempt
-        handler.tick(); // wait 1
-        handler.tick(); // wait 2
-        handler.tick(); // wait 3, rejection -> penalty + retry
+        handler.tick();
+        handler.tick();
+        handler.tick();
+        handler.tick();
+        handler.tick();
 
         assertEquals(2, input.jumpCalls);
     }
@@ -91,6 +92,20 @@ class JumpHandlerTest {
         assertEquals(1, input.jumpCalls);
     }
 
+    @Test
+    void shouldBufferJumpPressedBeforeLanding() {
+        input.jumpPressed = true;
+        input.onGround = false;
+
+        handler.tick();
+
+        input.jumpPressed = false;
+        input.onGround = true;
+        handler.tick();
+
+        assertEquals(1, input.jumpCalls);
+    }
+
     private static final class FakeJumpInput implements JumpInput {
 
         private boolean jumpPressed;
@@ -98,7 +113,6 @@ class JumpHandlerTest {
         private int jumpCalls;
         private int requiredGroundedTicksBeforeJump = 1;
         private double playerY;
-
         @Override
         public boolean isJumpPressed() {
             return jumpPressed;

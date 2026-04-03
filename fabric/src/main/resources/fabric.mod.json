@@ -19,9 +19,6 @@
     "client": [
       "com.kizio.jumpdelayfix.fabric.JumpDelayFixFabric"
     ],
-    "fabric-datagen": [
-      "com.kizio.jumpdelayfix.fabric.datagen.JumpDelayFixFabricDataGen"
-    ],
     "modmenu": [
       "com.kizio.jumpdelayfix.fabric.client.ModMenuIntegration"
     ]

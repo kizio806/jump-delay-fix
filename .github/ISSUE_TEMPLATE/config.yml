@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Read the docs first
+    url: https://github.com/kizio806/jump-delay-fix/blob/main/docs/wiki/Home.md
+    about: Check the wiki-ready documentation before opening support issues.
   - name: Security report
     url: https://github.com/kizio806/jump-delay-fix/security
     about: Please report security vulnerabilities privately.

@@ -17,6 +17,13 @@ allprojects {
     }
 }
 
+ext.sharedVersions = [
+        minecraft: providers.gradleProperty('minecraft_version').get(),
+        mappings : providers.gradleProperty('yarn_mappings').get(),
+        loom     : providers.gradleProperty('loom_version').get(),
+        neoGradle: providers.gradleProperty('neoforge_moddev_gradle_version').get()
+]
+
 subprojects {
     apply plugin: 'java'
 
@@ -183,6 +190,7 @@ tasks.register('publishReadyCheck') {
     group = 'verification'
     description = 'Runs tests and production metadata checks before publication.'
     dependsOn(
+            'validateStructure',
             'verifySemverVersion',
             'verifyMinecraftVersionMatrix',
             ':common:test',
@@ -194,4 +202,10 @@ tasks.register('publishReadyCheck') {
             ':neoforge:validateProductionMetadata',
             ':neoforge:verifyDedicatedServerSafe'
     )
+}
+
+tasks.register('validateStructure', Exec) {
+    group = 'verification'
+    description = 'Validates the multi-loader source layout and test coverage expectations.'
+    commandLine('bash', 'scripts/validate-structure.sh')
 }

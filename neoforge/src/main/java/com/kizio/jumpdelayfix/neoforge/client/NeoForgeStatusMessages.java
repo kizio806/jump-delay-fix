@@ -12,6 +12,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 public final class NeoForgeStatusMessages {
 
     private NeoForgeStatusMessages() {
+
     }
 
     public static void sendToggleStatus(boolean enabled) {

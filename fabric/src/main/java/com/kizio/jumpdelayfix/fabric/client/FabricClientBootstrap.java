@@ -1,11 +1,11 @@
 package com.kizio.jumpdelayfix.fabric.client;
 
 import com.kizio.jumpdelayfix.common.JumpDelayFix;
-import com.kizio.jumpdelayfix.common.ModConstants;
+import com.kizio.jumpdelayfix.common.JumpDelayFixConstants;
 import com.kizio.jumpdelayfix.common.bootstrap.CommonBootstrap;
+import com.kizio.jumpdelayfix.common.bootstrap.CommonBootstrapServices;
 import com.kizio.jumpdelayfix.fabric.client.input.FabricJumpInput;
 import com.kizio.jumpdelayfix.fabric.client.input.FabricKeyMappings;
-import com.kizio.jumpdelayfix.fabric.network.FabricNetworking;
 import com.kizio.jumpdelayfix.fabric.registry.FabricBlockRegistry;
 import com.kizio.jumpdelayfix.fabric.registry.FabricItemRegistry;
 import net.fabricmc.api.EnvType;
@@ -19,7 +19,7 @@ import java.nio.file.Path;
 @Environment(EnvType.CLIENT)
 public final class FabricClientBootstrap {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModConstants.MOD_NAME);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_NAME);
     private static boolean initialized;
 
     private FabricClientBootstrap() {
@@ -30,12 +30,14 @@ public final class FabricClientBootstrap {
             return;
         }
 
-        LOGGER.info("{} Fabric client bootstrap starting", ModConstants.MOD_NAME);
-        CommonBootstrap.bootstrap();
-        FabricBlockRegistry.register();
-        FabricItemRegistry.register();
-        FabricNetworking.registerClient();
-        FabricKeyMappings.register();
+        LOGGER.info("{} Fabric client bootstrap starting", JumpDelayFixConstants.MOD_NAME);
+        FabricKeyMappings keyBindings = FabricKeyMappings.getInstance();
+        CommonBootstrap.bootstrap(new CommonBootstrapServices(
+                FabricBlockRegistry::getInstance,
+                FabricItemRegistry::getInstance,
+                keyBindings
+        ));
+        keyBindings.register();
 
         MinecraftClient client = MinecraftClient.getInstance();
         Path configDir = client != null && client.runDirectory != null
@@ -43,7 +45,7 @@ public final class FabricClientBootstrap {
                 : Path.of("config");
 
         JumpDelayFix.init(new FabricJumpInput(), FabricStatusMessages::sendToggleStatus, configDir);
-        LOGGER.info("{} Fabric config directory: {}", ModConstants.MOD_NAME, configDir.toAbsolutePath());
+        LOGGER.info("{} Fabric config directory: {}", JumpDelayFixConstants.MOD_NAME, configDir.toAbsolutePath());
         FabricEvents.registerClientEvents();
         initialized = true;
     }

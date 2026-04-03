@@ -5,19 +5,19 @@ import com.kizio.jumpdelayfix.common.model.JumpProfile;
 import com.kizio.jumpdelayfix.common.state.ModState;
 
 import java.util.Objects;
-
-/**
- * Core jump execution controller independent from loader APIs.
- */
 public final class JumpHandler {
 
     private static final JumpHandler NO_OP = new JumpHandler(NoOpJumpInput.INSTANCE);
-    private static final int JUMP_RESULT_TIMEOUT_TICKS = 3;
+    private static final int JUMP_INPUT_BUFFER_TICKS = 3;
+    private static final int JUMP_NO_LIFT_TIMEOUT_TICKS = 3;
+    private static final int JUMP_LANDING_TIMEOUT_TICKS = 20;
+    private static final int MIN_AIRBORNE_TICKS_FOR_CONFIRMATION = 2;
     private static final double JUMP_SUCCESS_MIN_HEIGHT_DELTA = 0.005D;
 
     private final JumpInput input;
     private int groundedTicks;
     private int ticksSinceLastJumpAttempt;
+    private int bufferedJumpTicks;
     private int adaptivePenaltyTicks;
     private int successfulJumpStreak;
     private int confirmedJumpCount;
@@ -25,7 +25,10 @@ public final class JumpHandler {
     private int lastRequiredGroundedTicks = 1;
 
     private boolean awaitingJumpResult;
-    private int jumpResultTicksLeft;
+    private boolean jumpLiftObserved;
+    private int jumpAirborneTicks;
+    private int jumpNoLiftTicksLeft;
+    private int jumpLandingTicksLeft;
     private double jumpStartY = Double.NaN;
 
     public JumpHandler(JumpInput input) {
@@ -35,28 +38,27 @@ public final class JumpHandler {
     public static JumpHandler noOp() {
         return NO_OP;
     }
-
-    /**
-     * Ticks jump handling once per client tick.
-     */
     public void tick() {
         if (!ModState.isEnabled()) {
+            resetTransientState();
             return;
         }
 
-        updateAdaptivePenaltyFromJumpResult();
+        updateJumpBuffer();
+        if (updateAdaptivePenaltyFromJumpResult()) {
+            return;
+        }
 
         boolean onGround = input.isPlayerOnGround();
         if (!onGround) {
             groundedTicks = 0;
-            ticksSinceLastJumpAttempt = 0;
             return;
         }
 
         groundedTicks++;
         ticksSinceLastJumpAttempt++;
 
-        if (!input.isJumpPressed()) {
+        if (bufferedJumpTicks <= 0) {
             return;
         }
 
@@ -78,36 +80,73 @@ public final class JumpHandler {
         }
 
         input.jump();
+        bufferedJumpTicks = 0;
         ticksSinceLastJumpAttempt = 0;
         startJumpResultTracking();
     }
 
-    private void updateAdaptivePenaltyFromJumpResult() {
+    private void updateJumpBuffer() {
+        if (input.isJumpPressed()) {
+            bufferedJumpTicks = JUMP_INPUT_BUFFER_TICKS;
+        } else if (bufferedJumpTicks > 0) {
+            bufferedJumpTicks--;
+        }
+    }
+
+    private boolean updateAdaptivePenaltyFromJumpResult() {
         if (!awaitingJumpResult) {
-            return;
+            return false;
         }
 
+        boolean onGround = input.isPlayerOnGround();
         double currentY = input.getPlayerY();
         if (!Double.isNaN(currentY) && !Double.isNaN(jumpStartY) && currentY > jumpStartY + JUMP_SUCCESS_MIN_HEIGHT_DELTA) {
-            onJumpConfirmed();
-            return;
+            jumpLiftObserved = true;
         }
 
-        jumpResultTicksLeft--;
-        if (jumpResultTicksLeft <= 0) {
-            onJumpRejected();
+        if (!onGround) {
+            jumpLiftObserved = true;
+            jumpAirborneTicks++;
         }
+
+        if (!jumpLiftObserved) {
+            jumpNoLiftTicksLeft--;
+            if (jumpNoLiftTicksLeft <= 0) {
+                onJumpRejected();
+                return true;
+            }
+            return false;
+        }
+
+        if (onGround) {
+            if (jumpAirborneTicks >= MIN_AIRBORNE_TICKS_FOR_CONFIRMATION) {
+                onJumpConfirmed();
+            } else {
+                onJumpRejected();
+            }
+            return true;
+        }
+
+        jumpLandingTicksLeft--;
+        if (jumpLandingTicksLeft <= 0) {
+            onJumpRejected();
+            return true;
+        }
+
+        return false;
     }
 
     private void startJumpResultTracking() {
         awaitingJumpResult = true;
-        jumpResultTicksLeft = JUMP_RESULT_TIMEOUT_TICKS;
+        jumpLiftObserved = false;
+        jumpAirborneTicks = 0;
+        jumpNoLiftTicksLeft = JUMP_NO_LIFT_TIMEOUT_TICKS;
+        jumpLandingTicksLeft = JUMP_LANDING_TIMEOUT_TICKS;
         jumpStartY = input.getPlayerY();
     }
 
     private void onJumpConfirmed() {
-        awaitingJumpResult = false;
-        jumpStartY = Double.NaN;
+        clearPendingJumpResult();
         confirmedJumpCount++;
 
         JumpProfile profile = ModState.getProfile();
@@ -119,13 +158,29 @@ public final class JumpHandler {
     }
 
     private void onJumpRejected() {
-        awaitingJumpResult = false;
-        jumpStartY = Double.NaN;
+        clearPendingJumpResult();
         successfulJumpStreak = 0;
         rejectedJumpCount++;
 
         JumpProfile profile = ModState.getProfile();
         adaptivePenaltyTicks = Math.min(profile.maxAdaptivePenaltyTicks(), adaptivePenaltyTicks + 1);
+    }
+
+    private void clearPendingJumpResult() {
+        awaitingJumpResult = false;
+        jumpLiftObserved = false;
+        jumpAirborneTicks = 0;
+        jumpNoLiftTicksLeft = 0;
+        jumpLandingTicksLeft = 0;
+        jumpStartY = Double.NaN;
+    }
+    public void resetTransientState() {
+        groundedTicks = 0;
+        ticksSinceLastJumpAttempt = 0;
+        bufferedJumpTicks = 0;
+        adaptivePenaltyTicks = 0;
+        successfulJumpStreak = 0;
+        clearPendingJumpResult();
     }
 
     public int getAdaptivePenaltyTicks() {
@@ -167,7 +222,7 @@ public final class JumpHandler {
 
         @Override
         public void jump() {
-            // Intentional no-op.
+
         }
     }
 }

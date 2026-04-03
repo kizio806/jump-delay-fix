@@ -97,7 +97,6 @@ public final class FabricJumpInput implements JumpInput {
 
         return "multiplayer-unknown";
     }
-
     private int getEstimatedLatencyMs(MinecraftClient client) {
         if (client.player == null || client.getNetworkHandler() == null) {
             return UNKNOWN_LATENCY_MS;

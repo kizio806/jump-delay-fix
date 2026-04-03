@@ -1,27 +1,29 @@
 package com.kizio.jumpdelayfix.neoforge.registry;
 
-import com.kizio.jumpdelayfix.common.ModConstants;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.kizio.jumpdelayfix.common.JumpDelayFixConstants;
+import com.kizio.jumpdelayfix.common.api.IBlockRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 
 import java.util.Objects;
+import java.util.function.Supplier;
+public final class NeoForgeBlocks implements IBlockRegistry {
 
-/**
- * Owns NeoForge block deferred registrations for this mod.
- */
-public final class NeoForgeBlocks {
-
-    private static final DeferredRegister.Blocks BLOCK_REGISTRY = DeferredRegister.createBlocks(ModConstants.MOD_ID);
+    private static final NeoForgeBlocks INSTANCE = new NeoForgeBlocks();
 
     private NeoForgeBlocks() {
+
     }
 
-    /**
-     * Registers all block deferred registers to the mod event bus.
-     *
-     * @param modEventBus mod-scoped event bus
-     */
-    public static void register(IEventBus modEventBus) {
-        BLOCK_REGISTRY.register(Objects.requireNonNull(modEventBus, "modEventBus"));
+    public static NeoForgeBlocks getInstance() {
+        return INSTANCE;
+    }
+
+    @Override
+    public void register(String path, Supplier<?> factory) {
+        Block block = (Block) Objects.requireNonNull(factory.get(), "factory");
+        Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(JumpDelayFixConstants.MOD_ID, path), block);
     }
 }

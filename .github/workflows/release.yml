@@ -137,7 +137,32 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           CURRENT="${GITHUB_REF_NAME}"
-          PREV=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -v "^${CURRENT}$" | head -n1 || true)
+          VERSION="${CURRENT#v}"
+          CHANGELOG_SECTION="$(mktemp)"
+
+          awk -v heading="## ${VERSION}" '
+            $0 == heading { in_section = 1; next }
+            /^## / && in_section { exit }
+            in_section { print }
+          ' CHANGELOG.md > "$CHANGELOG_SECTION"
+
+          if [ -s "$CHANGELOG_SECTION" ]; then
+            NOTES_SOURCE="$CHANGELOG_SECTION"
+          else
+            PREV=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -v "^${CURRENT}$" | head -n1 || true)
+            NOTES_SOURCE="$(mktemp)"
+
+            {
+              if [ -n "$PREV" ]; then
+                echo "### Changes since ${PREV}"
+                git log --pretty='- %s (%h)' "${PREV}..${CURRENT}"
+              else
+                echo "### Changes"
+                git log --pretty='- %s (%h)' "${CURRENT}"
+              fi
+            } > "$NOTES_SOURCE"
+          fi
+
           {
             echo "## Jump Delay Fix ${CURRENT}"
             echo
@@ -146,13 +171,7 @@ jobs:
             echo "- Fabric versions: ${{ steps.metadata.outputs.fabric_game_versions }}"
             echo "- NeoForge versions: ${{ steps.metadata.outputs.neoforge_game_versions }}"
             echo
-            if [ -n "$PREV" ]; then
-              echo "### Changes since ${PREV}"
-              git log --pretty='- %s (%h)' "${PREV}..${CURRENT}"
-            else
-              echo "### Changes"
-              git log --pretty='- %s (%h)' "${CURRENT}"
-            fi
+            cat "$NOTES_SOURCE"
           } > release-notes.md
 
       - name: Generate checksums

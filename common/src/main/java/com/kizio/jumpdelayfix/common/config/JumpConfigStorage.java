@@ -22,18 +22,11 @@ public final class JumpConfigStorage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JumpConfigStorage.class);
 
-    private static final String KEY_AUTO_PROFILE_SWITCH = "autoProfileSwitch";
     private static final String KEY_SERVER_PROFILE_PREFIX = "serverProfile.";
 
     private JumpConfigStorage() {
-    }
 
-    /**
-     * Loads persisted runtime settings and per-server profiles.
-     *
-     * @param filePath properties file path
-     * @return loaded config bundle, or defaults when file is missing/invalid
-     */
+    }
     public static LoadedConfig load(Path filePath) {
         Objects.requireNonNull(filePath, "filePath");
 
@@ -52,7 +45,7 @@ public final class JumpConfigStorage {
             return new LoadedConfig(config, profiles);
         }
 
-        config.setAutoProfileSwitch(getBoolean(properties, KEY_AUTO_PROFILE_SWITCH, config.autoProfileSwitch()));
+        config = JumpRuntimeConfig.fromProperties(properties);
 
         for (String key : properties.stringPropertyNames()) {
             if (!key.startsWith(KEY_SERVER_PROFILE_PREFIX)) {
@@ -73,22 +66,12 @@ public final class JumpConfigStorage {
 
         return new LoadedConfig(config, profiles);
     }
-
-    /**
-     * Persists runtime settings and per-server profiles.
-     *
-     * @param filePath       target properties file
-     * @param config         runtime configuration to persist
-     * @param serverProfiles per-server profile map
-     */
     public static void save(Path filePath, JumpRuntimeConfig config, Map<String, JumpProfile> serverProfiles) {
         Objects.requireNonNull(filePath, "filePath");
         Objects.requireNonNull(config, "config");
         Objects.requireNonNull(serverProfiles, "serverProfiles");
 
-        Properties properties = new Properties();
-
-        properties.setProperty(KEY_AUTO_PROFILE_SWITCH, Boolean.toString(config.autoProfileSwitch()));
+        Properties properties = config.toProperties();
 
         serverProfiles.forEach((serverId, profile) -> {
             if (serverId != null && !serverId.isBlank() && profile != null) {
@@ -120,16 +103,10 @@ public final class JumpConfigStorage {
                 Files.deleteIfExists(temporaryFile);
             }
         } catch (IOException exception) {
-            // Keep runtime state even if disk write fails.
+
             LOGGER.warn("Failed to persist config to {}. Runtime state remains active.", filePath, exception);
         }
     }
-
-    private static boolean getBoolean(Properties properties, String key, boolean fallback) {
-        String value = properties.getProperty(key);
-        return value == null ? fallback : Boolean.parseBoolean(value);
-    }
-
     private static JumpProfile parseProfile(String value) {
         if (value == null) {
             return null;
@@ -154,13 +131,6 @@ public final class JumpConfigStorage {
             return null;
         }
     }
-
-    /**
-     * Loaded config bundle.
-     *
-     * @param config         runtime configuration
-     * @param serverProfiles remembered per-server profile selection
-     */
     public record LoadedConfig(JumpRuntimeConfig config, Map<String, JumpProfile> serverProfiles) {
     }
 }

@@ -1,5 +1,6 @@
 package com.kizio.jumpdelayfix.neoforge.client.input;
 
+import com.kizio.jumpdelayfix.common.api.IKeyBindingProvider;
 import net.minecraft.client.KeyMapping;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -7,8 +8,9 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
-public final class NeoForgeKeyMappings {
+public final class NeoForgeKeyMappings implements IKeyBindingProvider {
 
+    private static final NeoForgeKeyMappings INSTANCE = new NeoForgeKeyMappings();
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
@@ -29,6 +31,11 @@ public final class NeoForgeKeyMappings {
     );
 
     private NeoForgeKeyMappings() {
+
+    }
+
+    public static NeoForgeKeyMappings getInstance() {
+        return INSTANCE;
     }
 
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
@@ -37,7 +44,8 @@ public final class NeoForgeKeyMappings {
         event.register(CONFIG_KEY);
     }
 
-    public static boolean consumeTogglePress() {
+    @Override
+    public boolean consumeTogglePress() {
         boolean pressed = false;
         while (TOGGLE_KEY.consumeClick()) {
             pressed = true;
@@ -45,7 +53,8 @@ public final class NeoForgeKeyMappings {
         return pressed;
     }
 
-    public static boolean consumeProfileCyclePress() {
+    @Override
+    public boolean consumeProfileCyclePress() {
         boolean pressed = false;
         while (PROFILE_KEY.consumeClick()) {
             pressed = true;
@@ -53,7 +62,8 @@ public final class NeoForgeKeyMappings {
         return pressed;
     }
 
-    public static boolean consumeConfigScreenPress() {
+    @Override
+    public boolean consumeConfigScreenPress() {
         boolean pressed = false;
         while (CONFIG_KEY.consumeClick()) {
             pressed = true;
