@@ -23,7 +23,7 @@ import java.nio.file.Path;
 @OnlyIn(Dist.CLIENT)
 public final class NeoForgeClientBootstrap {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_NAME);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_ID);
     private static boolean initialized;
 
     private NeoForgeClientBootstrap() {

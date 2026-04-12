@@ -86,6 +86,9 @@ def metadataProperties = [
         fabric_api_version            : fabric_api_version
 ]
 
+def commonIconFile = project(':common').layout.projectDirectory.file("src/main/resources/${mod_icon}").asFile
+def productionModJsonFile = layout.projectDirectory.file('src/main/resources/fabric.mod.json').asFile
+
 processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     inputs.properties(metadataProperties)
@@ -101,22 +104,20 @@ tasks.register('validateProductionMetadata') {
     dependsOn tasks.processResources
 
     doLast {
-        def iconFile = file("${project(':common').projectDir}/src/main/resources/${mod_icon}")
-        if (!iconFile.exists()) {
-            throw new GradleException("Missing icon file: ${iconFile}")
+        if (!commonIconFile.exists()) {
+            throw new GradleException("Missing icon file: ${commonIconFile}")
         }
 
-        def image = javax.imageio.ImageIO.read(iconFile)
+        def image = javax.imageio.ImageIO.read(commonIconFile)
         if (image == null) {
-            throw new GradleException("Icon is not a valid image: ${iconFile}")
+            throw new GradleException("Icon is not a valid image: ${commonIconFile}")
         }
         if (image.width != 512 || image.height != 512) {
             throw new GradleException("Icon must be exactly 512x512, got ${image.width}x${image.height}")
         }
 
-        def modJson = file("${projectDir}/src/main/resources/fabric.mod.json")
-        if (!modJson.exists()) {
-            throw new GradleException("Missing fabric.mod.json in ${projectDir}/src/main/resources")
+        if (!productionModJsonFile.exists()) {
+            throw new GradleException("Missing fabric.mod.json in ${productionModJsonFile.parentFile}")
         }
     }
 }

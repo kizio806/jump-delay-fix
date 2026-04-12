@@ -35,6 +35,14 @@ Practical rule:
 - docs should describe what the repository actually targets
 - release automation should publish the same verified artifacts described by the README and docs
 
+## Hard Quality Gates
+
+- `strictCheck` is mandatory for CI and release workflows
+- Java sources in `src/main/java` and `src/test/java` must not contain `//` or `/* */` comments
+- Java sources must not contain `TODO`, `FIXME`, or `XXX` markers
+- wildcard imports are forbidden
+- compilation is enforced with `-Xlint:all -Werror`
+
 ## Documentation Style
 
 - short sections

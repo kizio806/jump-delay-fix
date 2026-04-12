@@ -35,6 +35,7 @@ subprojects {
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
         options.release = java_version.toInteger()
+        options.compilerArgs += ['-Xlint:all', '-Werror']
     }
 
     tasks.withType(Test).configureEach {
@@ -47,6 +48,10 @@ subprojects {
     }
 }
 
+def resolvedModVersion = version.toString()
+def resolvedFabricGameVersions = (findProperty('fabric_game_versions') ?: modrinth_game_versions).toString().trim()
+def resolvedNeoForgeGameVersions = (findProperty('neoforge_game_versions') ?: modrinth_game_versions).toString().trim()
+
 tasks.register('buildAll') {
     group = 'build'
     description = 'Builds all mod loader artifacts.'
@@ -58,7 +63,7 @@ tasks.register('verifySemverVersion') {
     description = 'Ensures project version follows SemVer (MAJOR.MINOR.PATCH with optional pre-release/build metadata).'
 
     doLast {
-        def versionText = project.version.toString()
+        def versionText = resolvedModVersion
         def semverPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/
 
         if (!(versionText ==~ semverPattern)) {
@@ -121,11 +126,11 @@ tasks.register('verifyMinecraftVersionMatrix') {
 
         def modrinthSupported = parseVersionList(modrinth_game_versions.toString().trim(), 'modrinth_game_versions')
         def fabricSupported = parseVersionList(
-                (project.findProperty('fabric_game_versions') ?: modrinth_game_versions).toString().trim(),
+                resolvedFabricGameVersions,
                 'fabric_game_versions'
         )
         def neoforgeSupported = parseVersionList(
-                (project.findProperty('neoforge_game_versions') ?: modrinth_game_versions).toString().trim(),
+                resolvedNeoForgeGameVersions,
                 'neoforge_game_versions'
         )
 
@@ -208,4 +213,16 @@ tasks.register('validateStructure', Exec) {
     group = 'verification'
     description = 'Validates the multi-loader source layout and test coverage expectations.'
     commandLine('bash', 'scripts/validate-structure.sh')
+}
+
+tasks.register('validateSourceHygiene', Exec) {
+    group = 'verification'
+    description = 'Fails build on source hygiene violations in Java sources.'
+    commandLine('bash', 'scripts/validate-source-hygiene.sh')
+}
+
+tasks.register('strictCheck') {
+    group = 'verification'
+    description = 'Runs full hard quality gate checks.'
+    dependsOn('publishReadyCheck', 'validateSourceHygiene')
 }
