@@ -1,0 +1,59 @@
+name: Wiki Sync
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/wiki/**'
+      - '.github/workflows/wiki-sync.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: wiki-sync-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sync docs/wiki to GitHub Wiki
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Clone wiki repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki-repo || {
+            echo "Failed to clone ${GITHUB_REPOSITORY}.wiki.git."
+            echo "Ensure GitHub Wiki is enabled in repository settings."
+            exit 1
+          }
+
+      - name: Sync wiki content
+        run: |
+          rsync -av --delete --exclude='.git' docs/wiki/ wiki-repo/
+
+      - name: Commit and push changes
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          cd wiki-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No wiki changes to publish."
+            exit 0
+          fi
+
+          git commit -m "docs: sync wiki from ${GITHUB_SHA::7}"
+          git push origin HEAD:master
