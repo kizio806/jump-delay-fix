@@ -10,6 +10,7 @@ This `docs/` tree has two purposes:
 - [Wiki Home](wiki/Home.md)
 - [Wiki Source Guide](wiki/README.md)
 - [Code Style](Code-Style.md)
+- [Architecture Assessment](Architecture-Assessment.md)
 - [Release Guide](RELEASES.md)
 - [Modrinth Guide](MODRINTH.md)
 

@@ -19,7 +19,7 @@ import java.nio.file.Path;
 @Environment(EnvType.CLIENT)
 public final class FabricClientBootstrap {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_NAME);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_ID);
     private static boolean initialized;
 
     private FabricClientBootstrap() {

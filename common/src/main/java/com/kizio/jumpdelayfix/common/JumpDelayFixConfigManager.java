@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 final class JumpDelayFixConfigManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_NAME);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_ID);
     private static final int CONFIG_SAVE_DEBOUNCE_TICKS = 10;
     private static final int MAX_TRACKED_SERVERS = 128;
     private static final ExecutorService CONFIG_IO = Executors.newSingleThreadExecutor(runnable -> {

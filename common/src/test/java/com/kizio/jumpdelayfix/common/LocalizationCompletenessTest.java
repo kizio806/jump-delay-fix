@@ -1,16 +1,18 @@
 package com.kizio.jumpdelayfix.common;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LocalizationCompletenessTest {
 
+    private static final Gson GSON = new Gson();
     private static final Path LANG_DIR = Path.of("src", "main", "resources", "assets", "jumpdelayfix", "lang");
     private static final String BASE_LOCALE = "en_us.json";
-    private static final Pattern ENTRY_PATTERN = Pattern.compile("^\\s*\"([^\"]+)\"\\s*:\\s*\"(.*)\"\\s*,?\\s*$");
 
     @Test
     void shouldContainMultipleLanguageFiles() throws IOException {
@@ -76,17 +78,20 @@ class LocalizationCompletenessTest {
 
     private static Map<String, String> readEntries(Path file) throws IOException {
         Map<String, String> entries = new LinkedHashMap<>();
-        List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
-
-        for (String line : lines) {
-            Matcher matcher = ENTRY_PATTERN.matcher(line);
-            if (!matcher.matches()) {
-                continue;
+        try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            JsonObject object = GSON.fromJson(reader, JsonObject.class);
+            if (object == null) {
+                return entries;
             }
 
-            String key = matcher.group(1);
-            String value = matcher.group(2);
-            entries.put(key, value);
+            for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+                JsonElement value = entry.getValue();
+                if (value == null || !value.isJsonPrimitive()) {
+                    throw new IllegalStateException("Localization value must be a JSON string: " + entry.getKey());
+                }
+
+                entries.put(entry.getKey(), value.getAsString());
+            }
         }
 
         return entries;

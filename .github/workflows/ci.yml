@@ -45,7 +45,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build and verify
-        run: ./gradlew --no-daemon --stacktrace clean buildAll publishReadyCheck
+        run: ./gradlew --no-daemon --stacktrace clean buildAll strictCheck
 
       - name: Upload test reports
         if: always()

@@ -131,7 +131,7 @@ jobs:
           fi
 
       - name: Build all loaders
-        run: ./gradlew --no-daemon --stacktrace clean buildAll publishReadyCheck
+        run: ./gradlew --no-daemon --stacktrace clean buildAll strictCheck
 
       - name: Generate release notes
         if: startsWith(github.ref, 'refs/tags/')

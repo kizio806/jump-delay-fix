@@ -29,12 +29,40 @@ if [[ -n "$FORBIDDEN_ACCESSORS" ]]; then
     exit 1
 fi
 
+required_docs=(
+    "CHANGELOG.md"
+    "CONTRIBUTING.md"
+    "SECURITY.md"
+    "docs/Architecture-Assessment.md"
+    "docs/Home.md"
+    "docs/Code-Style.md"
+    "docs/MODRINTH.md"
+    "docs/RELEASES.md"
+    "docs/wiki/Home.md"
+    "docs/wiki/README.md"
+)
+
+missing_docs=()
+for doc_file in "${required_docs[@]}"; do
+    if [[ ! -f "$doc_file" ]]; then
+        missing_docs+=("$doc_file")
+    fi
+done
+
+if (( ${#missing_docs[@]} > 0 )); then
+    echo "Missing required documentation files:"
+    printf '%s\n' "${missing_docs[@]}"
+    exit 1
+fi
+
 required_tests=(
     "common/src/test/java/com/kizio/jumpdelayfix/common/bootstrap/CommonBootstrapTest.java"
     "common/src/test/java/com/kizio/jumpdelayfix/common/config/JumpRuntimeConfigTest.java"
     "common/src/test/java/com/kizio/jumpdelayfix/common/feature/JumpHandlerIntegrationTest.java"
     "fabric/src/test/java/com/kizio/jumpdelayfix/fabric/FabricHeadlessGameTest.java"
+    "fabric/src/test/java/com/kizio/jumpdelayfix/fabric/FabricMetadataContractTest.java"
     "neoforge/src/test/java/com/kizio/jumpdelayfix/neoforge/NeoForgeHeadlessGameTest.java"
+    "neoforge/src/test/java/com/kizio/jumpdelayfix/neoforge/NeoForgeMetadataContractTest.java"
 )
 
 missing_tests=()

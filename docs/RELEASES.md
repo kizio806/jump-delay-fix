@@ -28,7 +28,7 @@ Example:
 Ensure the project builds correctly with the new metadata.
 
 ```bash
-./gradlew --no-daemon --stacktrace clean buildAll publishReadyCheck
+./gradlew --no-daemon --stacktrace clean buildAll strictCheck
 ```
 
 ## 4. Prepare Changelog

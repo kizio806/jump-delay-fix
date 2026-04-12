@@ -85,17 +85,25 @@ Repository note:
 Main commands:
 
 ```bash
-./gradlew --no-daemon clean buildAll
+./gradlew --no-daemon clean buildAll strictCheck
 ./gradlew --no-daemon publishReadyCheck
 ```
 
 `publishReadyCheck` runs:
 
+- Structure and contract validation (`validateStructure`)
 - SemVer validation (`mod_version`)
 - Minecraft version matrix validation
-- Common tests
+- Common tests + coverage threshold verification
 - Fabric + NeoForge metadata checks
 - NeoForge dedicated-server safety check
+
+`strictCheck` runs the hard quality gate used by CI and release:
+
+- `publishReadyCheck`
+- `validateSourceHygiene` (`src/main/java` + `src/test/java`):
+  no `//` or `/* */` comments, no `TODO`/`FIXME`/`XXX`, no wildcard imports
+- Java compilation with `-Xlint:all -Werror`
 
 ## Release Workflow
 
@@ -142,7 +150,7 @@ The script updates:
 Then verify and release:
 
 ```bash
-./gradlew --no-daemon clean buildAll publishReadyCheck
+./gradlew --no-daemon clean buildAll strictCheck
 git add -A
 git commit -m "chore(release): v1.0.0"
 git tag v1.0.0
@@ -162,6 +170,7 @@ The project description template and publishing notes are in `docs/MODRINTH.md`.
 - Technical docs index: [docs/Home.md](docs/Home.md)
 - Wiki home: [docs/wiki/Home.md](docs/wiki/Home.md)
 - Code style: [docs/Code-Style.md](docs/Code-Style.md)
+- Architecture assessment: [docs/Architecture-Assessment.md](docs/Architecture-Assessment.md)
 - Release guide: [docs/RELEASES.md](docs/RELEASES.md)
 - Modrinth guide: [docs/MODRINTH.md](docs/MODRINTH.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)

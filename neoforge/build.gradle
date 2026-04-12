@@ -61,6 +61,9 @@ def metadataProperties = [
         resource_pack_format: resource_pack_format
 ]
 
+def commonIconFile = project(':common').layout.projectDirectory.file("src/main/resources/${mod_icon}").asFile
+def productionModsTomlFile = layout.projectDirectory.file('src/main/resources/META-INF/neoforge.mods.toml').asFile
+
 processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     inputs.properties(metadataProperties)
@@ -80,43 +83,65 @@ tasks.register('validateProductionMetadata') {
     dependsOn tasks.processResources
 
     doLast {
-        def iconFile = file("${project(':common').projectDir}/src/main/resources/${mod_icon}")
-        if (!iconFile.exists()) {
-            throw new GradleException("Missing icon file: ${iconFile}")
+        if (!commonIconFile.exists()) {
+            throw new GradleException("Missing icon file: ${commonIconFile}")
         }
 
-        def image = javax.imageio.ImageIO.read(iconFile)
+        def image = javax.imageio.ImageIO.read(commonIconFile)
         if (image == null) {
-            throw new GradleException("Icon is not a valid image: ${iconFile}")
+            throw new GradleException("Icon is not a valid image: ${commonIconFile}")
         }
         if (image.width != 512 || image.height != 512) {
             throw new GradleException("Icon must be exactly 512x512, got ${image.width}x${image.height}")
         }
 
-        def modsToml = file("${projectDir}/src/main/resources/META-INF/neoforge.mods.toml")
-        if (!modsToml.exists()) {
-            throw new GradleException("Missing neoforge.mods.toml in ${projectDir}/src/main/resources/META-INF")
+        if (!productionModsTomlFile.exists()) {
+            throw new GradleException("Missing neoforge.mods.toml in ${productionModsTomlFile.parentFile}")
         }
     }
 }
 
 tasks.register('verifyDedicatedServerSafe') {
     group = 'verification'
-    description = 'Checks that the NeoForge mod entrypoint does not hard-reference client packages.'
+    description = 'Checks that non-client NeoForge classes do not hard-reference client-only packages.'
     dependsOn tasks.classes
 
     doLast {
-        def classFile = sourceSets.main.output.classesDirs.files
-                .collect { new File(it, 'com/kizio/jumpdelayfix/neoforge/JumpDelayFixNeoForge.class') }
-                .find { it.exists() }
+        def disallowedPackages = [
+                'net/minecraft/client',
+                'net/neoforged/neoforge/client',
+                'com/terraformersmc/modmenu',
+                'net/fabricmc/fabric/api/client'
+        ]
+        def offenders = new LinkedHashSet<String>()
 
-        if (classFile == null || !classFile.exists()) {
-            throw new GradleException("Cannot validate dedicated server safety. Missing class: ${classFile}")
+        sourceSets.main.output.classesDirs.files.each { classesDir ->
+            if (!classesDir.exists()) {
+                return
+            }
+
+            fileTree(classesDir).matching {
+                include 'com/kizio/jumpdelayfix/**/*.class'
+            }.files.each { classFile ->
+                def relativePath = classesDir.toPath().relativize(classFile.toPath()).toString().replace(File.separator, '/')
+                if (relativePath.contains('/client/')) {
+                    return
+                }
+
+                def bytecodeAsText = new String(classFile.bytes, java.nio.charset.StandardCharsets.ISO_8859_1)
+                disallowedPackages.each { disallowed ->
+                    if (bytecodeAsText.contains(disallowed)) {
+                        offenders.add("${relativePath} -> ${disallowed}")
+                    }
+                }
+            }
         }
 
-        def bytecodeAsText = new String(classFile.bytes, java.nio.charset.StandardCharsets.ISO_8859_1)
-        if (bytecodeAsText.contains('net/minecraft/client')) {
-            throw new GradleException('Dedicated server safety check failed: mod entrypoint references net.minecraft.client')
+        if (!offenders.isEmpty()) {
+            throw new GradleException(
+                    "Dedicated server safety check failed. Non-client classes reference client-only packages:\n - " +
+                            offenders.join('\n - ')
+            )
         }
     }
 }

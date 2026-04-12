@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public final class JumpDelayFix {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_NAME);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JumpDelayFixConstants.MOD_ID);
 
     private static final String DEFAULT_SERVER_ID = "global";
     private static final int AUTO_SWITCH_COOLDOWN_TICKS = 40;
