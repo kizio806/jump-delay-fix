@@ -10,7 +10,7 @@ import java.util.Locale;
 @Environment(EnvType.CLIENT)
 public final class FabricJumpInput implements JumpInput {
 
-    private static final int LOCAL_REQUIRED_GROUNDED_TICKS = 1;
+    private static final int LOCAL_REQUIRED_GROUNDED_TICKS = 72000;
     private static final int REMOTE_TICKS_LOW_LATENCY = 2;
     private static final int REMOTE_TICKS_MEDIUM_LATENCY = 3;
     private static final int REMOTE_TICKS_HIGH_LATENCY = 4;
