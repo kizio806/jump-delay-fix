@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Read the docs first
-    url: https://github.com/kizio806/jump-delay-fix/blob/main/docs/wiki/Home.md
-    about: Check the wiki-ready documentation before opening support issues.
-  - name: Security report
-    url: https://github.com/kizio806/jump-delay-fix/security
-    about: Please report security vulnerabilities privately.
+  - name: 💬 General Discussion
+    url: https://github.com/kizio806/jump-delay-fix/discussions
+    about: Questions, ideas, and general chat about Jump Delay Fix.
+  - name: 📦 Download on Modrinth
+    url: https://modrinth.com/mod/jump-delay-fix
+    about: Download the latest release.
+  - name: 📖 Wiki
+    url: https://github.com/kizio806/jump-delay-fix/wiki
+    about: Installation, usage, and troubleshooting guides.

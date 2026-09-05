@@ -18,57 +18,190 @@ env:
   JAVA_VERSION: '21'
 
 jobs:
-  verify:
-    name: Verify Multi-Loader Build
+  # ──────────────────────────────────────────────────────────────────────────────
+  # JOB 1 – Validate wrapper, structure and code hygiene (fast gate, no MC download)
+  # ──────────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint & Structure
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@v5
+        uses: gradle/actions/wrapper-validation@v4
 
       - name: Setup JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Ensure Gradle executable bit
         run: chmod +x ./gradlew
 
-      - name: Build and verify
-        run: ./gradlew --no-daemon --stacktrace clean buildAll strictCheck
+      - name: Structure, hygiene and semver validation
+        run: ./gradlew --no-daemon validateStructure validateSourceHygiene verifySemverVersion verifyMinecraftVersionMatrix
+
+  # ──────────────────────────────────────────────────────────────────────────────
+  # JOB 2 – Common unit tests (no Minecraft, fast)
+  # ──────────────────────────────────────────────────────────────────────────────
+  test-common:
+    name: Unit Tests (Common)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: lint
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Ensure Gradle executable bit
+        run: chmod +x ./gradlew
+
+      - name: Run common tests
+        run: ./gradlew --no-daemon :common:test :common:jacocoTestReport :common:jacocoTestCoverageVerification
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-common
+          path: common/build/reports/jacoco/
+          if-no-files-found: ignore
+
+  # ──────────────────────────────────────────────────────────────────────────────
+  # JOB 3a – Fabric build + game tests
+  # ──────────────────────────────────────────────────────────────────────────────
+  test-fabric:
+    name: Build & Test (Fabric)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    needs: lint
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Ensure Gradle executable bit
+        run: chmod +x ./gradlew
+
+      - name: Build and test Fabric
+        run: ./gradlew --no-daemon :fabric:build :fabric:check
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
-          name: test-reports
+          name: test-reports-fabric
           path: |
-            **/build/reports/tests/**
-            **/build/test-results/**
+            fabric/build/reports/tests/**
+            fabric/build/test-results/**
           if-no-files-found: ignore
 
-      - name: Upload Fabric artifact
+      - name: Upload Fabric JAR
         if: success()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
-          name: jumpdelayfix-fabric
+          name: fabric-jar
           path: fabric/build/libs/*.jar
           if-no-files-found: error
 
-      - name: Upload NeoForge artifact
-        if: success()
-        uses: actions/upload-artifact@v6
+  # ──────────────────────────────────────────────────────────────────────────────
+  # JOB 3b – NeoForge build + game tests
+  # ──────────────────────────────────────────────────────────────────────────────
+  test-neoforge:
+    name: Build & Test (NeoForge)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    needs: lint
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
         with:
-          name: jumpdelayfix-neoforge
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Ensure Gradle executable bit
+        run: chmod +x ./gradlew
+
+      - name: Build and test NeoForge
+        run: ./gradlew --no-daemon :neoforge:build :neoforge:check
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-neoforge
+          path: |
+            neoforge/build/reports/tests/**
+            neoforge/build/test-results/**
+          if-no-files-found: ignore
+
+      - name: Upload NeoForge JAR
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: neoforge-jar
           path: neoforge/build/libs/*.jar
           if-no-files-found: error
+
+  # ──────────────────────────────────────────────────────────────────────────────
+  # JOB 4 – Final strict gate: metadata, dedicated-server safety, publish-ready
+  # ──────────────────────────────────────────────────────────────────────────────
+  verify:
+    name: Verify Release Readiness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: [ test-common, test-fabric, test-neoforge ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Ensure Gradle executable bit
+        run: chmod +x ./gradlew
+
+      - name: Full strict check
+        run: ./gradlew --no-daemon publishReadyCheck strictCheck

@@ -1,0 +1,55 @@
+name: Compatibility Report
+description: The mod does not work correctly with a specific Minecraft version, server, or other mod.
+title: "[Compat] "
+labels: ["compatibility", "triage"]
+body:
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Mod loader
+      options:
+        - Fabric
+        - NeoForge
+    validations:
+      required: true
+
+  - type: input
+    id: mc_version
+    attributes:
+      label: Minecraft version
+      placeholder: "e.g. 1.21.11"
+    validations:
+      required: true
+
+  - type: input
+    id: mod_version
+    attributes:
+      label: Jump Delay Fix version
+      placeholder: "e.g. 1.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: conflicting_mod
+    attributes:
+      label: Conflicting mod / environment
+      description: Name the mod, server software, or configuration that causes the issue.
+      placeholder: "e.g. Sodium 0.6.x, PaperMC 1.21.11, OptiFine"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What breaks and how?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / crash report
+      render: text
+    validations:
+      required: false

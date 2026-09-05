@@ -1,23 +1,18 @@
-name: Bug report
-description: Report a defect in Jump Delay Fix
-labels: [bug]
+name: Bug Report
+description: Something is broken or behaves unexpectedly.
+title: "[Bug] "
+labels: ["bug", "triage"]
 body:
   - type: markdown
     attributes:
-      value: "Please fill all required fields so the issue can be reproduced quickly."
-
-  - type: input
-    id: mc_version
-    attributes:
-      label: Minecraft version
-      placeholder: "e.g. 1.21.1"
-    validations:
-      required: true
+      value: |
+        Thanks for taking the time to report a bug.
+        Please fill in **all required fields** — reports missing environment details will be closed without investigation.
 
   - type: dropdown
     id: loader
     attributes:
-      label: Loader
+      label: Mod loader
       options:
         - Fabric
         - NeoForge
@@ -25,10 +20,27 @@ body:
       required: true
 
   - type: input
+    id: mc_version
+    attributes:
+      label: Minecraft version
+      placeholder: "e.g. 1.21.11"
+    validations:
+      required: true
+
+  - type: input
     id: mod_version
     attributes:
-      label: Mod version
+      label: Jump Delay Fix version
       placeholder: "e.g. 1.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: loader_version
+    attributes:
+      label: Loader version
+      description: Fabric Loader or NeoForge version.
+      placeholder: "e.g. 0.18.4 / 21.1.174"
     validations:
       required: true
 
@@ -44,7 +56,15 @@ body:
     id: description
     attributes:
       label: What happened?
-      description: Clear description of the observed behavior.
+      description: Describe the observed behavior clearly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened instead?
     validations:
       required: true
 
@@ -53,23 +73,30 @@ body:
     attributes:
       label: Steps to reproduce
       placeholder: |
-        1. ...
-        2. ...
+        1. Join server X / open singleplayer world
+        2. Press jump key
         3. ...
     validations:
       required: true
 
-  - type: textarea
-    id: expected
+  - type: dropdown
+    id: other_mods
     attributes:
-      label: Expected behavior
+      label: Does the bug occur with only Jump Delay Fix installed?
+      options:
+        - "Yes"
+        - "No — I have other mods installed"
+        - "Not tested"
     validations:
       required: true
 
   - type: textarea
     id: logs
     attributes:
-      label: Relevant logs or crash report
-      description: Paste a link (gist/pastebin) or the relevant stacktrace fragment.
+      label: Logs / crash report
+      description: |
+        Paste the relevant portion of `latest.log` or the crash report.
+        Use a gist or pastebin for long outputs.
+      render: text
     validations:
       required: false
