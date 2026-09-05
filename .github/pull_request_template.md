@@ -1,8 +1,6 @@
 ## Summary
 
-<!--
-What does this PR do? One or two sentences max.
--->
+
 
 ## Type of change
 
@@ -14,24 +12,13 @@ What does this PR do? One or two sentences max.
 
 ## Related issues
 
-<!--
-Closes #<issue_number>
--->
+Closes #
 
 ## What changed
 
-<!--
-Bullet list of concrete changes. Be specific — reviewers should not need to read every file.
-- Changed X to Y because Z
-- Added validation for ...
-- Removed unused class Foo
--->
+-
 
 ## Validation
-
-<!--
-Check every box that applies. Do not check something you haven't done.
--->
 
 - [ ] `./gradlew clean buildAll strictCheck` passes locally
 - [ ] Tested on Fabric (client or game test server)
