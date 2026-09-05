@@ -1,7 +1,7 @@
 package com.kizio.jumpdelayfix.fabric.client.input;
 
-import com.kizio.jumpdelayfix.common.JumpDelayFixConstants;
-import com.kizio.jumpdelayfix.common.api.IKeyBindingProvider;
+import com.kizio.jumpdelayfix.Constants;
+import com.kizio.jumpdelayfix.input.KeyBindingProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -11,14 +11,14 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public final class FabricKeyMappings implements IKeyBindingProvider {
+public final class FabricKeyMappings implements KeyBindingProvider {
 
     private static final FabricKeyMappings INSTANCE = new FabricKeyMappings();
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
     private static final KeyBinding.Category KEY_CATEGORY = KeyBinding.Category.create(
-            Identifier.of(JumpDelayFixConstants.MOD_ID, "jumpdelayfix")
+            Identifier.of(Constants.MOD_ID, "jumpdelayfix")
     );
     private static KeyBinding toggleKey;
     private static KeyBinding profileKey;

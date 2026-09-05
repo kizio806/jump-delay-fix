@@ -33,13 +33,12 @@ required_docs=(
     "CHANGELOG.md"
     "CONTRIBUTING.md"
     "SECURITY.md"
-    "docs/Architecture-Assessment.md"
-    "docs/Home.md"
-    "docs/Code-Style.md"
-    "docs/MODRINTH.md"
-    "docs/RELEASES.md"
-    "docs/wiki/Home.md"
-    "docs/wiki/README.md"
+    "docs/architecture.md"
+    "docs/development.md"
+    "docs/installation.md"
+    "docs/modrinth.md"
+    "docs/releases.md"
+    "docs/troubleshooting.md"
 )
 
 missing_docs=()
@@ -56,9 +55,8 @@ if (( ${#missing_docs[@]} > 0 )); then
 fi
 
 required_tests=(
-    "common/src/test/java/com/kizio/jumpdelayfix/common/bootstrap/CommonBootstrapTest.java"
-    "common/src/test/java/com/kizio/jumpdelayfix/common/config/JumpRuntimeConfigTest.java"
-    "common/src/test/java/com/kizio/jumpdelayfix/common/feature/JumpHandlerIntegrationTest.java"
+    "common/src/test/java/com/kizio/jumpdelayfix/config/RuntimeConfigTest.java"
+    "common/src/test/java/com/kizio/jumpdelayfix/jump/JumpHandlerIntegrationTest.java"
     "fabric/src/test/java/com/kizio/jumpdelayfix/fabric/FabricHeadlessGameTest.java"
     "fabric/src/test/java/com/kizio/jumpdelayfix/fabric/FabricMetadataContractTest.java"
     "neoforge/src/test/java/com/kizio/jumpdelayfix/neoforge/NeoForgeHeadlessGameTest.java"

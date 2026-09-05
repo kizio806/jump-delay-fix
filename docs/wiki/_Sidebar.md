@@ -1,5 +1,0 @@
-- [Home](Home.md)
-- [Installation and Compatibility](Installation-and-Compatibility.md)
-- [User Guide](User-Guide.md)
-- [Development and Release](Development-and-Release.md)
-- [Troubleshooting](Troubleshooting.md)
