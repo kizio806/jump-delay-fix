@@ -208,11 +208,13 @@ jobs:
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for Fabric ${{ steps.metadata.outputs.fabric_game_versions }}
+          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for Fabric
           version: ${{ steps.metadata.outputs.mod_version }}-fabric
           version-type: release
           game-versions: ${{ steps.fabric_versions.outputs.list }}
           loaders: fabric
+          java: 21
+          environment: client
           files: ${{ steps.artifacts.outputs.fabric_jar }}
           changelog-file: release-notes.md
 
@@ -222,10 +224,12 @@ jobs:
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for NeoForge ${{ steps.metadata.outputs.neoforge_game_versions }}
+          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for NeoForge
           version: ${{ steps.metadata.outputs.mod_version }}-neoforge
           version-type: release
           game-versions: ${{ steps.neoforge_versions.outputs.list }}
           loaders: neoforge
+          java: 21
+          environment: client
           files: ${{ steps.artifacts.outputs.neoforge_jar }}
           changelog-file: release-notes.md
