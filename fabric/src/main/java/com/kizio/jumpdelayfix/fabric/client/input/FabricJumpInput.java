@@ -1,6 +1,6 @@
 package com.kizio.jumpdelayfix.fabric.client.input;
 
-import com.kizio.jumpdelayfix.common.api.JumpInput;
+import com.kizio.jumpdelayfix.input.JumpInput;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

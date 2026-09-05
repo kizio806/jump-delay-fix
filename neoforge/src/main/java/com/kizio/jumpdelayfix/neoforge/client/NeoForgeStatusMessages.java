@@ -1,6 +1,6 @@
 package com.kizio.jumpdelayfix.neoforge.client;
 
-import com.kizio.jumpdelayfix.common.model.JumpProfile;
+import com.kizio.jumpdelayfix.model.JumpProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

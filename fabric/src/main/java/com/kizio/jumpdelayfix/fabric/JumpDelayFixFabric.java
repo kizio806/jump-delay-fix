@@ -1,6 +1,6 @@
 package com.kizio.jumpdelayfix.fabric;
 
-import com.kizio.jumpdelayfix.fabric.client.FabricClientBootstrap;
+import com.kizio.jumpdelayfix.fabric.client.FabricClient;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,6 +10,6 @@ public final class JumpDelayFixFabric implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        FabricClientBootstrap.initialize();
+        FabricClient.initialize();
     }
 }

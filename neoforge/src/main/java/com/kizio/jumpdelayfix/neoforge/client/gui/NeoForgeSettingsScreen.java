@@ -1,6 +1,6 @@
 package com.kizio.jumpdelayfix.neoforge.client.gui;
 
-import com.kizio.jumpdelayfix.common.JumpDelayFix;
+import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.neoforge.client.NeoForgeStatusMessages;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;

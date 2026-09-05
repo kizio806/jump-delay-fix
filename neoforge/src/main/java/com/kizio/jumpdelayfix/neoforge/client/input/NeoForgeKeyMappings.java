@@ -1,6 +1,6 @@
 package com.kizio.jumpdelayfix.neoforge.client.input;
 
-import com.kizio.jumpdelayfix.common.api.IKeyBindingProvider;
+import com.kizio.jumpdelayfix.input.KeyBindingProvider;
 import net.minecraft.client.KeyMapping;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -8,7 +8,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
-public final class NeoForgeKeyMappings implements IKeyBindingProvider {
+public final class NeoForgeKeyMappings implements KeyBindingProvider {
 
     private static final NeoForgeKeyMappings INSTANCE = new NeoForgeKeyMappings();
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;

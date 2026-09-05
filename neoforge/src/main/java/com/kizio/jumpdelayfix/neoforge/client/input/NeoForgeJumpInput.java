@@ -1,6 +1,6 @@
 package com.kizio.jumpdelayfix.neoforge.client.input;
 
-import com.kizio.jumpdelayfix.common.api.JumpInput;
+import com.kizio.jumpdelayfix.input.JumpInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;

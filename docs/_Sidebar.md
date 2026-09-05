@@ -1,6 +1,0 @@
-- [Docs Home](Home.md)
-- [Wiki Home](wiki/Home.md)
-- [Code Style](Code-Style.md)
-- [Architecture Assessment](Architecture-Assessment.md)
-- [Modrinth](MODRINTH.md)
-- [Releases](RELEASES.md)

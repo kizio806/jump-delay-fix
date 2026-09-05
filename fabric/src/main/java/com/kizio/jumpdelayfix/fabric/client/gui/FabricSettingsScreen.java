@@ -1,6 +1,6 @@
 package com.kizio.jumpdelayfix.fabric.client.gui;
 
-import com.kizio.jumpdelayfix.common.JumpDelayFix;
+import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.fabric.client.FabricStatusMessages;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
