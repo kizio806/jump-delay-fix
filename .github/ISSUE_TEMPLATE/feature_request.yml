@@ -1,12 +1,19 @@
-name: Feature request
-description: Suggest an improvement for Jump Delay Fix
-labels: [enhancement]
+name: Feature Request
+description: Suggest an improvement or new behavior for Jump Delay Fix.
+title: "[Feature] "
+labels: ["enhancement", "triage"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Before submitting, check whether this has already been requested in [open issues](../../issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement).
+
   - type: textarea
     id: problem
     attributes:
       label: Problem statement
-      description: What pain point are you trying to solve?
+      description: What limitation or pain point are you solving? Be specific.
+      placeholder: "When I play on server X with high latency, the jump still feels delayed even with COMPETITIVE profile because..."
     validations:
       required: true
 
@@ -14,15 +21,29 @@ body:
     id: proposal
     attributes:
       label: Proposed solution
-      description: Describe the expected behavior.
+      description: Describe what you want the mod to do and how it should behave.
     validations:
       required: true
 
-  - type: textarea
+  - type: checkboxes
+    id: loaders
+    attributes:
+      label: Affected loaders
+      options:
+        - label: Fabric
+        - label: NeoForge
+
+  - type: dropdown
     id: scope
     attributes:
-      label: Scope and impact
-      description: Describe who benefits and whether this affects Fabric, NeoForge, or both.
+      label: Scope
+      options:
+        - Client-side only
+        - Config / settings
+        - Jump profile logic
+        - GUI / UX
+        - Build / CI
+        - Documentation
     validations:
       required: true
 
@@ -30,6 +51,14 @@ body:
     id: alternatives
     attributes:
       label: Alternatives considered
-      description: Any alternatives you considered.
+      description: Any alternative approaches you thought of.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Anything else that might help understand the request (screenshots, server types, etc.)
     validations:
       required: false
