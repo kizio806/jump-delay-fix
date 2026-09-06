@@ -14,8 +14,7 @@ public final class NeoForgeKeyMappings implements KeyBindingProvider {
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
-    @SuppressWarnings("deprecation")
-    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(net.minecraft.resources.Identifier.parse("jumpdelayfix:jumpdelayfix"));
+    private static final String KEY_CATEGORY = "key.categories.jumpdelayfix";
 
     private static final KeyMapping TOGGLE_KEY = new KeyMapping(
             "key.jumpdelayfix.toggle",
