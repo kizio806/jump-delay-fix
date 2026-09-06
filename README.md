@@ -1,49 +1,68 @@
 # Jump Delay Fix
 
-**Jump Delay Fix** is a lightweight, client-side Minecraft mod designed to provide smoother and more responsive jumping mechanics. It effectively mitigates the frustrating jump delays often experienced on multiplayer servers by adaptively managing jump inputs locally.
+[![CI](https://github.com/kizio806/jump-delay-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/kizio806/jump-delay-fix/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/kizio806/jump-delay-fix?sort=semver)](https://github.com/kizio806/jump-delay-fix/releases)
+[![Modrinth](https://img.shields.io/badge/Modrinth-release%20ready-00AF5C?logo=modrinth)](docs/modrinth.md)
+[![License](https://img.shields.io/github/license/kizio806/jump-delay-fix)](LICENSE)
 
-## Features
+Jump Delay Fix is a lightweight, client-side Minecraft mod designed to provide smoother and more responsive jumping. By addressing the vanilla auto-jump delay mechanism, it offers a consistent jumping experience, especially useful for parkour and intense gameplay scenarios.
 
-- **Responsive Jumping:** Eliminates the arbitrary delay between jumps, making parkour and fast-paced movement feel significantly better.
-- **Adaptive Profiles:** 
-  - **Smart (Default):** Automatically balances responsiveness with server acceptance rates.
-  - **Competitive:** Maximum responsiveness, optimized for low-latency PVP scenarios.
-  - **Stable:** Safest option for high-latency servers or strict anti-cheats.
-- **Server Tracking:** Automatically remembers the optimal jump profile for each server you join.
-- **Seamless Integration:** Fully compatible with both **Fabric** and **NeoForge**. Works out of the box with zero configuration required.
+## Highlights
 
-## Compatibility
+- **Instant Responsiveness:** Removes the hardcoded vanilla jump delay for immediate action.
+- **Client-Side Only:** No server installation required. Works entirely on the client, making it multiplayer-friendly.
+- **Multi-Loader Support:** Compatible with both Fabric and NeoForge out of the box.
 
-- **Minecraft:** 1.21.1
-- **Loaders:** Fabric, NeoForge
+## Supported Platforms & Versions
 
-*This is a client-side only mod. It does not need to be installed on the server to function.*
+This branch (`main`) is currently targeting **Minecraft 26.2**.
+
+- **Fabric Loader:** 0.18.4+ (Fabric API 0.159.0+26.2)
+- **NeoForge:** 26.2.0.79+
+- **Minecraft:** 26.2
+
+*(See `gradle.properties` for the exact current version metadata.)*
 
 ## Installation
 
-1. Download the latest release from [Modrinth](https://modrinth.com/mod/jump-delay-fix) or the [GitHub Releases](https://github.com/kizio806/jump-delay-fix/releases) page.
-2. Ensure you have the corresponding mod loader installed (Fabric Loader or NeoForge).
+1. Download the latest release from the [Releases page](https://github.com/kizio806/jump-delay-fix/releases) or [Modrinth](https://modrinth.com/mod/jump-delay-fix).
+2. Ensure you have the correct mod loader installed (Fabric + Fabric API, or NeoForge) for Minecraft 26.2.
 3. Place the downloaded `.jar` file into your `.minecraft/mods` folder.
+4. Launch the game.
 
 ## Building from Source
 
-This project uses Gradle. To build the mod for all supported loaders, run the following command in the repository root:
+**Requirements:**
+- Java 25
+- Gradle wrapper (`./gradlew`)
 
+**Commands:**
 ```bash
-./gradlew clean buildAll
+# Clean, build, and run strict checks
+./gradlew --no-daemon clean buildAll strictCheck
+
+# Run release publication checks
+./gradlew --no-daemon publishReadyCheck
 ```
 
-Artifacts will be output to:
-- Fabric: `fabric/build/libs/`
-- NeoForge: `neoforge/build/libs/`
+## Architecture
 
-## Documentation
+The project uses a multi-project Gradle layout:
+- `common`: Contains shared rules and configuration logic.
+- `fabric`: Fabric bootstrap and client adapters.
+- `neoforge`: NeoForge bootstrap and client adapters.
 
-For developers and contributors, please refer to the following documentation in the `docs/` directory:
-- [Architecture & Design](docs/architecture.md)
-- [Development Guide](docs/development.md)
-- [Release Process](docs/releases.md)
+## Project Documentation
+
+- **Wiki:** [docs/wiki/Home.md](docs/wiki/Home.md)
+- **Development & Code Style:** [docs/development.md](docs/development.md)
+- **Architecture:** [docs/architecture.md](docs/architecture.md)
+- **Releases Guide:** [docs/releases.md](docs/releases.md)
+- **Modrinth Guide:** [docs/modrinth.md](docs/modrinth.md)
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
+- **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Security:** [SECURITY.md](SECURITY.md)
 
 ## License
 
-This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.

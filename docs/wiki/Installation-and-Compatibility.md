@@ -9,8 +9,8 @@
 
 | Loader    | Minecraft     |
 |-----------|---------------|
-| Fabric    | 1.21.11       |
-| NeoForge  | 1.21.9 – 1.21.11 |
+| Fabric    | 26.2          |
+| NeoForge  | 26.2          |
 
 ## Installation
 
