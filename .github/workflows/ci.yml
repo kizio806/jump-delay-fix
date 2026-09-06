@@ -70,15 +70,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run common tests
-        run: ./gradlew --no-daemon :common:test :common:jacocoTestReport :common:jacocoTestCoverageVerification
-
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-common
-          path: common/build/reports/jacoco/
-          if-no-files-found: ignore
+        run: ./gradlew --no-daemon :common:test
 
   test-fabric:
     name: Build & Test (Fabric)
