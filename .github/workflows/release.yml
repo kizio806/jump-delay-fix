@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 env:
-  JAVA_VERSION: '21'
+  JAVA_VERSION: '25'
 
 jobs:
   build-and-release:
@@ -213,7 +213,7 @@ jobs:
           version-type: release
           game-versions: ${{ steps.fabric_versions.outputs.list }}
           loaders: fabric
-          java: 21
+          java: 25
           environment: client
           files: ${{ steps.artifacts.outputs.fabric_jar }}
           changelog-file: release-notes.md
@@ -229,7 +229,7 @@ jobs:
           version-type: release
           game-versions: ${{ steps.neoforge_versions.outputs.list }}
           loaders: neoforge
-          java: 21
+          java: 25
           environment: client
           files: ${{ steps.artifacts.outputs.neoforge_jar }}
           changelog-file: release-notes.md

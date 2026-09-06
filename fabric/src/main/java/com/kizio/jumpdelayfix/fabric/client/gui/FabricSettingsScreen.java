@@ -4,10 +4,9 @@ import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.fabric.client.FabricStatusMessages;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public final class FabricSettingsScreen extends Screen {
@@ -18,12 +17,12 @@ public final class FabricSettingsScreen extends Screen {
 
     private final Screen parent;
 
-    private ButtonWidget toggleButton;
-    private ButtonWidget profileButton;
-    private ButtonWidget autoButton;
+    private Button toggleButton;
+    private Button profileButton;
+    private Button autoButton;
 
     public FabricSettingsScreen(Screen parent) {
-        super(Text.translatable("screen.jumpdelayfix.settings.title"));
+        super(Component.translatable("screen.jumpdelayfix.settings.title"));
         this.parent = parent;
     }
 
@@ -32,79 +31,70 @@ public final class FabricSettingsScreen extends Screen {
         int left = this.width / 2 - (BUTTON_WIDTH / 2);
         int rowY = this.height / 4 + 32;
 
-        toggleButton = this.addDrawableChild(ButtonWidget.builder(Text.empty(), button -> {
+        toggleButton = this.addRenderableWidget(Button.builder(Component.empty(), button -> {
             JumpDelayFix.toggleEnabled();
             refreshButtonLabels();
-        }).dimensions(left, rowY, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        }).bounds(left, rowY, BUTTON_WIDTH, BUTTON_HEIGHT).build());
 
-        profileButton = this.addDrawableChild(ButtonWidget.builder(Text.empty(), button -> {
+        profileButton = this.addRenderableWidget(Button.builder(Component.empty(), button -> {
             JumpDelayFix.cycleProfile();
             refreshButtonLabels();
             FabricStatusMessages.sendProfileStatus(JumpDelayFix.getProfile());
-        }).dimensions(left, rowY + ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        }).bounds(left, rowY + ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
 
-        autoButton = this.addDrawableChild(ButtonWidget.builder(Text.empty(), button -> {
+        autoButton = this.addRenderableWidget(Button.builder(Component.empty(), button -> {
             JumpDelayFix.toggleAutoProfileSwitch();
             refreshButtonLabels();
-        }).dimensions(left, rowY + (ROW_SPACING * 2), BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        }).bounds(left, rowY + (ROW_SPACING * 2), BUTTON_WIDTH, BUTTON_HEIGHT).build());
 
-        this.addDrawableChild(ButtonWidget.builder(
-                Text.translatable("gui.jumpdelayfix.option.done"),
-                button -> close()
-        ).dimensions(left, rowY + (ROW_SPACING * 4), BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        this.addRenderableWidget(Button.builder(
+                Component.translatable("gui.jumpdelayfix.option.done"),
+                button -> onClose()
+        ).bounds(left, rowY + (ROW_SPACING * 4), BUTTON_WIDTH, BUTTON_HEIGHT).build());
 
         refreshButtonLabels();
     }
-
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderInGameBackground(context);
-        super.render(context, mouseX, mouseY, delta);
+    public void extractRenderState(net.minecraft.client.gui.GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(extractor, mouseX, mouseY, partialTick);
 
         int centerX = this.width / 2;
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title, centerX, 20, 0xFFFFFF);
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                Text.translatable("screen.jumpdelayfix.settings.subtitle"),
-                centerX,
-                34,
-                0xA0A0A0
-        );
-        context.drawCenteredTextWithShadow(this.textRenderer, profileStatusText(), centerX, 48, 0xFFFFFF);
-        context.drawCenteredTextWithShadow(this.textRenderer, autoStatusText(), centerX, 60, 0xFFFFFF);
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.translatable("gui.jumpdelayfix.desc.profile"), centerX, this.height - 50, 0xA0A0A0);
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.translatable("gui.jumpdelayfix.desc.auto"), centerX, this.height - 38, 0xA0A0A0);
+        extractor.centeredText(this.font, this.title, centerX, 20, 0xFFFFFF);
+        extractor.centeredText(this.font, profileStatusText(), centerX, 48, 0xFFFFFF);
+        extractor.centeredText(this.font, autoStatusText(), centerX, 60, 0xFFFFFF);
+        extractor.centeredText(this.font, Component.translatable("gui.jumpdelayfix.desc.profile"), centerX, this.height - 50, 0xA0A0A0);
+        extractor.centeredText(this.font, Component.translatable("gui.jumpdelayfix.desc.auto"), centerX, this.height - 38, 0xA0A0A0);
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         JumpDelayFix.flushPendingConfiguration();
-        if (this.client != null) {
-            this.client.setScreen(parent);
+        if (this.minecraft != null) {
+            this.minecraft.setScreen(parent);
         }
     }
 
     private void refreshButtonLabels() {
-        toggleButton.setMessage(Text.translatable("gui.jumpdelayfix.toggle", booleanText(JumpDelayFix.isEnabled())));
-        profileButton.setMessage(Text.literal(Text.translatable("gui.jumpdelayfix.profile.cycle").getString() + ": ")
-                .append(Text.translatable(JumpDelayFix.getProfile().translationKey())));
-        autoButton.setMessage(Text.translatable("gui.jumpdelayfix.auto", booleanText(JumpDelayFix.isAutoProfileSwitchEnabled())));
+        toggleButton.setMessage(Component.translatable("gui.jumpdelayfix.toggle", booleanComponent(JumpDelayFix.isEnabled())));
+        profileButton.setMessage(Component.literal(Component.translatable("gui.jumpdelayfix.profile.cycle").getString() + ": ")
+                .append(Component.translatable(JumpDelayFix.getProfile().translationKey())));
+        autoButton.setMessage(Component.translatable("gui.jumpdelayfix.auto", booleanComponent(JumpDelayFix.isAutoProfileSwitchEnabled())));
     }
 
-    private Text profileStatusText() {
-        return Text.translatable(
+    private Component profileStatusText() {
+        return Component.translatable(
                 "message.jumpdelayfix.profile_status",
-                Text.translatable(JumpDelayFix.getProfile().translationKey())
+                Component.translatable(JumpDelayFix.getProfile().translationKey())
         );
     }
 
-    private Text autoStatusText() {
-        return Text.translatable("gui.jumpdelayfix.auto", booleanText(JumpDelayFix.isAutoProfileSwitchEnabled()));
+    private Component autoStatusText() {
+        return Component.translatable("gui.jumpdelayfix.auto", booleanComponent(JumpDelayFix.isAutoProfileSwitchEnabled()));
     }
 
-    private Text booleanText(boolean enabled) {
+    private Component booleanComponent(boolean enabled) {
         return enabled
-                ? Text.translatable("message.jumpdelayfix.enabled")
-                : Text.translatable("message.jumpdelayfix.disabled");
+                ? Component.translatable("message.jumpdelayfix.enabled")
+                : Component.translatable("message.jumpdelayfix.disabled");
     }
 }

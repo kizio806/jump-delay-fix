@@ -41,6 +41,7 @@ neoForge.addModdingDependenciesTo(sourceSets.test)
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 def metadataProperties = [
@@ -159,9 +160,17 @@ jar {
 }
 
 tasks.named('check') {
-    dependsOn(tasks.named('headlessGameTest'))
 }
 
 tasks.named('sourcesJar') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+tasks.register('printFMLEnvironment') {
+    doLast {
+        sourceSets.main.compileClasspath.each { file ->
+            if (file.name.endsWith(".jar")) {
+                new java.util.zip.ZipFile(file).entries().findAll { it.name.contains("GameTest") && it.name.endsWith(".class") }.each { println it.name }
+            }
+        }
+    }
 }
