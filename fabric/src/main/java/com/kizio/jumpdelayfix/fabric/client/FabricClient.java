@@ -56,7 +56,7 @@ public final class FabricClient {
             }
             if (keyBindings.consumeConfigScreenPress()) {
                 if (client != null) {
-                    client.setScreen(new FabricSettingsScreen(client.screen));
+                    client.setScreenAndShow(new FabricSettingsScreen(client.gui.screen()));
                 }
             }
         });
