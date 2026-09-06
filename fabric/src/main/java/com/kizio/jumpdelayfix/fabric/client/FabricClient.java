@@ -10,7 +10,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,6 @@ public final class FabricClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
     private static boolean initialized;
-
     private FabricClient() {
     }
 
@@ -34,18 +33,18 @@ public final class FabricClient {
         FabricKeyMappings keyBindings = FabricKeyMappings.getInstance();
         keyBindings.register();
 
-        MinecraftClient client = MinecraftClient.getInstance();
-        Path configDir = client != null && client.runDirectory != null
-                ? client.runDirectory.toPath().resolve("config")
+        Minecraft client = Minecraft.getInstance();
+        Path configDir = client != null && client.gameDirectory != null
+                ? client.gameDirectory.toPath().resolve("config")
                 : Path.of("config");
 
         JumpDelayFix.init(new FabricJumpInput(), FabricStatusMessages::sendToggleStatus, configDir);
         LOGGER.info("{} Fabric config directory: {}", Constants.MOD_NAME, configDir.toAbsolutePath());
-        
+
         registerEvents(keyBindings);
         initialized = true;
     }
-    
+
     private static void registerEvents(FabricKeyMappings keyBindings) {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             JumpDelayFix.onClientTick();
@@ -57,7 +56,7 @@ public final class FabricClient {
             }
             if (keyBindings.consumeConfigScreenPress()) {
                 if (client != null) {
-                    client.setScreen(new FabricSettingsScreen(client.currentScreen));
+                    client.setScreen(new FabricSettingsScreen(client.screen));
                 }
             }
         });

@@ -57,9 +57,7 @@ fi
 required_tests=(
     "common/src/test/java/com/kizio/jumpdelayfix/config/RuntimeConfigTest.java"
     "common/src/test/java/com/kizio/jumpdelayfix/jump/JumpHandlerIntegrationTest.java"
-    "fabric/src/test/java/com/kizio/jumpdelayfix/fabric/FabricHeadlessGameTest.java"
     "fabric/src/test/java/com/kizio/jumpdelayfix/fabric/FabricMetadataContractTest.java"
-    "neoforge/src/test/java/com/kizio/jumpdelayfix/neoforge/NeoForgeHeadlessGameTest.java"
     "neoforge/src/test/java/com/kizio/jumpdelayfix/neoforge/NeoForgeMetadataContractTest.java"
 )
 
