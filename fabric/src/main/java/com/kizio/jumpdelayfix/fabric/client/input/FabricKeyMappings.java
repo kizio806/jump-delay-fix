@@ -4,10 +4,10 @@ import com.kizio.jumpdelayfix.Constants;
 import com.kizio.jumpdelayfix.input.KeyBindingProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.KeyMapping;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -17,12 +17,15 @@ public final class FabricKeyMappings implements KeyBindingProvider {
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
-    private static final KeyBinding.Category KEY_CATEGORY = KeyBinding.Category.create(
-            Identifier.of(Constants.MOD_ID, "jumpdelayfix")
+    
+    @SuppressWarnings("deprecation")
+    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
+            Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix")
     );
-    private static KeyBinding toggleKey;
-    private static KeyBinding profileKey;
-    private static KeyBinding configKey;
+    
+    private static KeyMapping toggleKey;
+    private static KeyMapping profileKey;
+    private static KeyMapping configKey;
 
     private FabricKeyMappings() {
 
@@ -37,23 +40,23 @@ public final class FabricKeyMappings implements KeyBindingProvider {
             return;
         }
 
-        toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.jumpdelayfix.toggle",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 DEFAULT_TOGGLE_KEY,
                 KEY_CATEGORY
         ));
 
-        profileKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        profileKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.jumpdelayfix.profile",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 DEFAULT_PROFILE_KEY,
                 KEY_CATEGORY
         ));
 
-        configKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        configKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.jumpdelayfix.config",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 DEFAULT_CONFIG_KEY,
                 KEY_CATEGORY
         ));
@@ -66,7 +69,7 @@ public final class FabricKeyMappings implements KeyBindingProvider {
         }
 
         boolean pressed = false;
-        while (toggleKey.wasPressed()) {
+        while (toggleKey.consumeClick()) {
             pressed = true;
         }
         return pressed;
@@ -79,7 +82,7 @@ public final class FabricKeyMappings implements KeyBindingProvider {
         }
 
         boolean pressed = false;
-        while (profileKey.wasPressed()) {
+        while (profileKey.consumeClick()) {
             pressed = true;
         }
         return pressed;
@@ -92,7 +95,7 @@ public final class FabricKeyMappings implements KeyBindingProvider {
         }
 
         boolean pressed = false;
-        while (configKey.wasPressed()) {
+        while (configKey.consumeClick()) {
             pressed = true;
         }
         return pressed;

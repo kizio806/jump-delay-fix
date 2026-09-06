@@ -26,16 +26,16 @@ public final class NeoForgeStatusMessages {
                 : "message.jumpdelayfix.disabled")
                 .withStyle(enabled ? ChatFormatting.GREEN : ChatFormatting.RED);
 
-        client.player.displayClientMessage(Component.translatable("message.jumpdelayfix.status", state), true);
+        client.player.sendOverlayMessage(Component.translatable("message.jumpdelayfix.status", state));
     }
 
-    public static void sendProfileStatus(JumpProfile profile) {
+    public static void sendProfileStatus(com.kizio.jumpdelayfix.model.JumpProfile profile) {
         Minecraft client = Minecraft.getInstance();
         if (client == null || client.player == null) {
             return;
         }
 
         MutableComponent profileComponent = Component.translatable(profile.translationKey()).withStyle(ChatFormatting.AQUA);
-        client.player.displayClientMessage(Component.translatable("message.jumpdelayfix.profile_status", profileComponent), true);
+        client.player.sendOverlayMessage(Component.translatable("message.jumpdelayfix.profile_status", profileComponent));
     }
 }

@@ -3,7 +3,8 @@ package com.kizio.jumpdelayfix.fabric.client.input;
 import com.kizio.jumpdelayfix.input.JumpInput;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 
 import java.util.Locale;
 
@@ -24,46 +25,46 @@ public final class FabricJumpInput implements JumpInput {
 
     @Override
     public boolean isJumpPressed() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         return client != null
                 && client.options != null
-                && client.options.jumpKey != null
-                && client.options.jumpKey.isPressed();
+                && client.options.keyJump != null
+                && client.options.keyJump.isDown();
     }
 
     @Override
     public boolean isPlayerOnGround() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        return client != null
-                && client.player != null
-                && client.player.isOnGround();
+        Minecraft client = Minecraft.getInstance();
+        LocalPlayer player = client != null ? client.player : null;
+        return player != null && player.onGround();
     }
 
     @Override
     public void jump() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client != null && client.player != null) {
-            client.player.jump();
+        Minecraft client = Minecraft.getInstance();
+        LocalPlayer player = client != null ? client.player : null;
+        if (player != null) {
+            player.jumpFromGround();
         }
     }
-
     @Override
     public double getPlayerY() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.player == null) {
+        Minecraft client = Minecraft.getInstance();
+        LocalPlayer player = client != null ? client.player : null;
+        if (player == null) {
             return Double.NaN;
         }
-        return client.player.getY();
+        return player.getY();
     }
 
     @Override
     public int requiredGroundedTicksBeforeJump() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client == null) {
             return LOCAL_REQUIRED_GROUNDED_TICKS;
         }
 
-        if (client.isIntegratedServerRunning()) {
+        if (client.hasSingleplayerServer()) {
             return LOCAL_REQUIRED_GROUNDED_TICKS;
         }
 
@@ -72,8 +73,8 @@ public final class FabricJumpInput implements JumpInput {
 
     @Override
     public int getLatencyMs() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.isIntegratedServerRunning()) {
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.hasSingleplayerServer()) {
             return 0;
         }
 
@@ -82,32 +83,35 @@ public final class FabricJumpInput implements JumpInput {
 
     @Override
     public String getServerIdentifier() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client == null) {
             return "global";
         }
 
-        if (client.isIntegratedServerRunning()) {
+        if (client.hasSingleplayerServer()) {
             return "singleplayer";
         }
 
-        if (client.getCurrentServerEntry() != null && client.getCurrentServerEntry().address != null) {
-            return client.getCurrentServerEntry().address.toLowerCase(Locale.ROOT);
+        var serverData = client.getCurrentServer();
+        if (serverData != null && serverData.ip != null && !serverData.ip.isBlank()) {
+            return serverData.ip.toLowerCase(Locale.ROOT);
         }
 
         return "multiplayer-unknown";
     }
-    private int getEstimatedLatencyMs(MinecraftClient client) {
-        if (client.player == null || client.getNetworkHandler() == null) {
+    private int getEstimatedLatencyMs(Minecraft client) {
+        LocalPlayer player = client.player;
+        var connection = client.getConnection();
+        if (player == null || connection == null) {
             return UNKNOWN_LATENCY_MS;
         }
 
-        var entry = client.getNetworkHandler().getPlayerListEntry(client.player.getUuid());
-        if (entry == null) {
+        var playerInfo = connection.getPlayerInfo(player.getUUID());
+        if (playerInfo == null) {
             return UNKNOWN_LATENCY_MS;
         }
 
-        return Math.max(0, entry.getLatency());
+        return Math.max(0, playerInfo.getLatency());
     }
 
     private int mapLatencyToRequiredTicks(int latencyMs) {
