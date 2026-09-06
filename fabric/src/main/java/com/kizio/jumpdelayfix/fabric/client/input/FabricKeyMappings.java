@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -17,11 +16,7 @@ public final class FabricKeyMappings implements KeyBindingProvider {
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
-    
-    @SuppressWarnings("deprecation")
-    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
-            Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix")
-    );
+    private static final String KEY_CATEGORY = "key.categories." + Constants.MOD_ID;
     
     private static KeyMapping toggleKey;
     private static KeyMapping profileKey;
