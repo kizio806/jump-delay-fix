@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] 1.3.0
+## 1.3.0 - 2026-09-06
 
 ### Added
 - Updated mod support for Minecraft 26.2 for Fabric and NeoForge.
