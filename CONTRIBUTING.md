@@ -13,7 +13,7 @@
 ## Branching
 
 - `main`: stable development line
-- `release/*`: release stabilization branches (optional)
+- `support/*`: branch supporting specific older versions
 - `feature/*`: new features
 - `fix/*`: bug fixes
 - `chore/*`: build/docs/maintenance
@@ -37,7 +37,7 @@ Use clear conventional messages:
 
 ## Code Guidelines
 
-- Keep gameplay logic in `common` whenever possible.
+- Keep logic in `common` whenever possible.
 - Keep loader modules thin and adapter-oriented.
 - Avoid duplicated logic between Fabric and NeoForge.
 - Add tests for behavioral changes in `common/src/test`.
@@ -45,6 +45,6 @@ Use clear conventional messages:
 
 ## Repository Standards
 
-- keep GitHub-facing docs aligned with the shared project shape: `CHANGELOG.md`, `docs/Home.md`, `docs/Code-Style.md`, `docs/MODRINTH.md`, `docs/RELEASES.md`, and `docs/wiki/*`
+- keep GitHub-facing docs aligned with the shared project shape: `CHANGELOG.md`, `docs/architecture.md`, `docs/development.md`, `docs/modrinth.md`, `docs/releases.md`, and `docs/wiki/*`
 - package root is `com.kizio.<project>`, with `kizio` as the maintainer name in code metadata
-- naming and repo hygiene should follow [docs/Code-Style.md](docs/Code-Style.md)
+- naming and repo hygiene should follow [docs/development.md](docs/development.md)
