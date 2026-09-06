@@ -70,7 +70,7 @@ public final class FabricSettingsScreen extends Screen {
     public void onClose() {
         JumpDelayFix.flushPendingConfiguration();
         if (this.minecraft != null) {
-            this.minecraft.setScreen(parent);
+            this.minecraft.setScreenAndShow(parent);
         }
     }
 
