@@ -3,39 +3,38 @@ package com.kizio.jumpdelayfix.fabric.client;
 import com.kizio.jumpdelayfix.model.JumpProfile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.ChatFormatting;
 
 @Environment(EnvType.CLIENT)
 public final class FabricStatusMessages {
 
     private FabricStatusMessages() {
-
     }
 
     public static void sendToggleStatus(boolean enabled) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client == null || client.player == null) {
             return;
         }
 
-        MutableText stateText = Text.translatable(enabled
+        MutableComponent stateText = Component.translatable(enabled
                 ? "message.jumpdelayfix.enabled"
                 : "message.jumpdelayfix.disabled")
-                .formatted(enabled ? Formatting.GREEN : Formatting.RED);
+                .withStyle(enabled ? ChatFormatting.GREEN : ChatFormatting.RED);
 
-        client.player.sendMessage(Text.translatable("message.jumpdelayfix.status", stateText), true);
+        client.player.sendOverlayMessage(Component.translatable("message.jumpdelayfix.status", stateText));
     }
 
     public static void sendProfileStatus(JumpProfile profile) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client == null || client.player == null) {
             return;
         }
 
-        MutableText profileText = Text.translatable(profile.translationKey()).formatted(Formatting.AQUA);
-        client.player.sendMessage(Text.translatable("message.jumpdelayfix.profile_status", profileText), true);
+        MutableComponent profileText = Component.translatable(profile.translationKey()).withStyle(ChatFormatting.AQUA);
+        client.player.sendOverlayMessage(Component.translatable("message.jumpdelayfix.profile_status", profileText));
     }
 }

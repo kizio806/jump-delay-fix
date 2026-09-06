@@ -2,7 +2,6 @@ package com.kizio.jumpdelayfix.neoforge.client.gui;
 
 import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.neoforge.client.NeoForgeStatusMessages;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -57,17 +56,15 @@ public final class NeoForgeSettingsScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(net.minecraft.client.gui.GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(extractor, mouseX, mouseY, partialTick);
 
         int centerX = this.width / 2;
-        guiGraphics.drawCenteredString(this.font, this.title, centerX, 20, 0xFFFFFF);
-        guiGraphics.drawCenteredString(this.font, Component.translatable("screen.jumpdelayfix.settings.subtitle"), centerX, 34, 0xA0A0A0);
-        guiGraphics.drawCenteredString(this.font, profileStatusText(), centerX, 48, 0xFFFFFF);
-        guiGraphics.drawCenteredString(this.font, autoStatusText(), centerX, 60, 0xFFFFFF);
-        guiGraphics.drawCenteredString(this.font, Component.translatable("gui.jumpdelayfix.desc.profile"), centerX, this.height - 50, 0xA0A0A0);
-        guiGraphics.drawCenteredString(this.font, Component.translatable("gui.jumpdelayfix.desc.auto"), centerX, this.height - 38, 0xA0A0A0);
+        extractor.centeredText(this.font, this.title, centerX, 20, 0xFFFFFF);
+        extractor.centeredText(this.font, profileStatusText(), centerX, 48, 0xFFFFFF);
+        extractor.centeredText(this.font, autoStatusText(), centerX, 60, 0xFFFFFF);
+        extractor.centeredText(this.font, Component.translatable("gui.jumpdelayfix.desc.profile"), centerX, this.height - 50, 0xA0A0A0);
+        extractor.centeredText(this.font, Component.translatable("gui.jumpdelayfix.desc.auto"), centerX, this.height - 38, 0xA0A0A0);
     }
 
     @Override

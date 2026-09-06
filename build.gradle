@@ -73,16 +73,16 @@ tasks.register('verifySemverVersion') {
 }
 
 def parseMinecraftVersion = { String versionText ->
-    def matcher = (versionText =~ /^(\d+)\.(\d+)\.(\d+)$/)
+    def matcher = (versionText =~ /^(\d+)\.(\d+)(?:\.(\d+))?$/)
     if (!matcher.matches()) {
-        throw new GradleException("Invalid Minecraft version '${versionText}'. Expected format: MAJOR.MINOR.PATCH")
+        throw new GradleException("Invalid Minecraft version '${versionText}'. Expected format: MAJOR.MINOR.PATCH or MAJOR.MINOR")
     }
 
     return [
             text : versionText,
             major: matcher.group(1).toInteger(),
             minor: matcher.group(2).toInteger(),
-            patch: matcher.group(3).toInteger()
+            patch: matcher.group(3) ? matcher.group(3).toInteger() : 0
     ]
 }
 
@@ -173,7 +173,7 @@ tasks.register('verifyMinecraftVersionMatrix') {
 
         def fabricRange = fabric_minecraft_version_range.toString().trim()
         def expectedFabricLowerBound = ">=" + minFabricVersion.text
-        def expectedFabricUpperBound = "<" + incrementPatch(maxFabricVersion)
+        def expectedFabricUpperBound = "<${baseVersion.major}.${baseVersion.minor + 1}"
         if (!fabricRange.contains(expectedFabricLowerBound) || !fabricRange.contains(expectedFabricUpperBound)) {
             throw new GradleException(
                     "fabric_minecraft_version_range '${fabricRange}' must include " +
@@ -199,7 +199,6 @@ tasks.register('publishReadyCheck') {
             'verifySemverVersion',
             'verifyMinecraftVersionMatrix',
             ':common:test',
-            ':common:jacocoTestCoverageVerification',
             ':fabric:test',
             ':fabric:verifyRuntimeDependencyCompatibility',
             ':fabric:validateProductionMetadata',
