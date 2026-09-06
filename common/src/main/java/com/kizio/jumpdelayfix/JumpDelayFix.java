@@ -102,7 +102,7 @@ public final class JumpDelayFix {
         return RuntimeState.isEnabled();
     }
 
-    public static JumpProfile getProfile() {
+    public static synchronized JumpProfile getProfile() {
         return RuntimeState.getProfile();
     }
 
