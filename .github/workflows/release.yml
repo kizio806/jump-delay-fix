@@ -202,34 +202,22 @@ jobs:
             ${{ steps.artifacts.outputs.neoforge_jar }}
             neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
 
-      - name: Publish to Modrinth - Fabric
+      - name: Publish to Modrinth
         if: startsWith(github.ref, 'refs/tags/')
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for Fabric
-          version: ${{ steps.metadata.outputs.mod_version }}-fabric
+          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }}
+          version: ${{ steps.metadata.outputs.mod_version }}
           version-type: release
           game-versions: ${{ steps.fabric_versions.outputs.list }}
-          loaders: fabric
+          loaders: |
+            fabric
+            neoforge
           java: 25
           environment: client
-          files: ${{ steps.artifacts.outputs.fabric_jar }}
-          changelog-file: release-notes.md
-
-      - name: Publish to Modrinth - NeoForge
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for NeoForge
-          version: ${{ steps.metadata.outputs.mod_version }}-neoforge
-          version-type: release
-          game-versions: ${{ steps.neoforge_versions.outputs.list }}
-          loaders: neoforge
-          java: 25
-          environment: client
-          files: ${{ steps.artifacts.outputs.neoforge_jar }}
+          files: |
+            ${{ steps.artifacts.outputs.fabric_jar }}
+            ${{ steps.artifacts.outputs.neoforge_jar }}
           changelog-file: release-notes.md
