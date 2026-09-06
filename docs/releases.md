@@ -7,7 +7,7 @@ Run compatibility probe before changing published metadata to determine which ve
 Example:
 ```bash
 ./scripts/probe-minecraft-versions.sh \
-  --versions "1.21.9,1.21.10,1.21.11"
+  --versions "26.2"
 ```
 
 ## 2. Update Version Metadata
