@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- JDK 21
+- JDK 25
 - Git
 
 ## Building
