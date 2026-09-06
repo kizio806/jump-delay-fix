@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] 1.3.0
+
+### Added
+- Updated mod support for Minecraft 26.2 for Fabric and NeoForge.
+
+### Compatibility
+- Minecraft: 26.2
+- Fabric: Loader 0.18.4+ / Fabric API 0.159.0+26.2
+- NeoForge: 26.2.0+
+
 ## 1.2.0
 
 ### Added
