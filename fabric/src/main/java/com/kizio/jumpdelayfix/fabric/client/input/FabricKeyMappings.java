@@ -8,15 +8,15 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLKeycode;
 
 @Environment(EnvType.CLIENT)
 public final class FabricKeyMappings implements KeyBindingProvider {
 
     private static final FabricKeyMappings INSTANCE = new FabricKeyMappings();
-    private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
-    private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
-    private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
+    private static final int DEFAULT_TOGGLE_KEY = SDLKeycode.SDLK_J;
+    private static final int DEFAULT_PROFILE_KEY = SDLKeycode.SDLK_H;
+    private static final int DEFAULT_CONFIG_KEY = SDLKeycode.SDLK_O;
     
     @SuppressWarnings("deprecation")
     private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
@@ -42,21 +42,21 @@ public final class FabricKeyMappings implements KeyBindingProvider {
 
         toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.jumpdelayfix.toggle",
-                InputConstants.Type.KEYSYM,
+                InputConstants.Type.KEYBOARD,
                 DEFAULT_TOGGLE_KEY,
                 KEY_CATEGORY
         ));
 
         profileKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.jumpdelayfix.profile",
-                InputConstants.Type.KEYSYM,
+                InputConstants.Type.KEYBOARD,
                 DEFAULT_PROFILE_KEY,
                 KEY_CATEGORY
         ));
 
         configKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.jumpdelayfix.config",
-                InputConstants.Type.KEYSYM,
+                InputConstants.Type.KEYBOARD,
                 DEFAULT_CONFIG_KEY,
                 KEY_CATEGORY
         ));
