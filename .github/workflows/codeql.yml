@@ -41,7 +41,7 @@ jobs:
         queries: security-extended,security-and-quality
 
     - name: Build project for CodeQL
-      run: ./gradlew --no-daemon clean buildAll
+      run: ./gradlew --no-daemon --no-build-cache clean buildAll
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
