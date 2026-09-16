@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.4.0
+
+### Added
+- Updated mod support for Minecraft 26.3 for Fabric and NeoForge.
+
+### Changed
+- Migrated key bindings to the new SDL keycode system (`SDLKeycode`) following Minecraft 26.3 API changes.
+- Updated Fabric key mappings to use `InputConstants.Type.KEYBOARD`.
+
+### Compatibility
+- Minecraft: 26.3
+- Fabric: Loader 0.18.4+ / Fabric API 0.160.6+26.3
+- NeoForge: 26.3.0.1-beta+
+
 ## 1.3.0 - 2026-09-06
 
 ### Added
