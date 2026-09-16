@@ -1,0 +1,22 @@
+{
+  "category.jumpdelayfix": "Jump Delay Fix",
+  "key.category.jumpdelayfix.jumpdelayfix": "Jump Delay Fix",
+  "key.jumpdelayfix.toggle": "Jump Delay Fix を切り替え",
+  "key.jumpdelayfix.profile": "ジャンププロファイルを切り替え",
+  "key.jumpdelayfix.config": "Jump Delay Fix の設定を開く",
+  "message.jumpdelayfix.status": "Jump Delay Fix: %s",
+  "message.jumpdelayfix.profile_status": "ジャンププロファイル: %s",
+  "message.jumpdelayfix.profile.competitive": "競技向け",
+  "message.jumpdelayfix.profile.smart": "スマート適応",
+  "message.jumpdelayfix.profile.stable": "安定 anti-rubberband",
+  "message.jumpdelayfix.enabled": "ON",
+  "message.jumpdelayfix.disabled": "OFF",
+  "screen.jumpdelayfix.settings.title": "Jump Delay Fix 設定",
+  "screen.jumpdelayfix.settings.subtitle": "Clean control over movement behavior.",
+  "gui.jumpdelayfix.toggle": "有効: %s",
+  "gui.jumpdelayfix.auto": "自動プロファイル: %s",
+  "gui.jumpdelayfix.profile.cycle": "プロファイルを切り替え",
+  "gui.jumpdelayfix.option.done": "Done",
+  "gui.jumpdelayfix.desc.profile": "Cycle the manual profile used for jump timing. Picking a profile manually also turns off auto profile switching until you enable it again.",
+  "gui.jumpdelayfix.desc.auto": "Lets the mod watch rollback history and swap between profiles automatically for the current server."
+}
