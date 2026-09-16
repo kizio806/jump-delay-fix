@@ -1,0 +1,22 @@
+{
+  "category.jumpdelayfix": "Jump Delay Fix",
+  "key.category.jumpdelayfix.jumpdelayfix": "Jump Delay Fix",
+  "key.jumpdelayfix.toggle": "Вкл/выкл Jump Delay Fix",
+  "key.jumpdelayfix.profile": "Сменить профиль прыжка",
+  "key.jumpdelayfix.config": "Открыть настройки Jump Delay Fix",
+  "message.jumpdelayfix.status": "Jump Delay Fix: %s",
+  "message.jumpdelayfix.profile_status": "Профиль прыжка: %s",
+  "message.jumpdelayfix.profile.competitive": "Соревновательный",
+  "message.jumpdelayfix.profile.smart": "Умный адаптивный",
+  "message.jumpdelayfix.profile.stable": "Стабильный anti-rubberband",
+  "message.jumpdelayfix.enabled": "ВКЛ",
+  "message.jumpdelayfix.disabled": "ВЫКЛ",
+  "screen.jumpdelayfix.settings.title": "Настройки Jump Delay Fix",
+  "screen.jumpdelayfix.settings.subtitle": "Clean control over movement behavior.",
+  "gui.jumpdelayfix.toggle": "Включено: %s",
+  "gui.jumpdelayfix.auto": "Авто-профиль: %s",
+  "gui.jumpdelayfix.profile.cycle": "Сменить профиль",
+  "gui.jumpdelayfix.option.done": "Done",
+  "gui.jumpdelayfix.desc.profile": "Cycle the manual profile used for jump timing. Picking a profile manually also turns off auto profile switching until you enable it again.",
+  "gui.jumpdelayfix.desc.auto": "Lets the mod watch rollback history and swap between profiles automatically for the current server."
+}

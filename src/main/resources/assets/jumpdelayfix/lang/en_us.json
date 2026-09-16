@@ -1,0 +1,22 @@
+{
+  "category.jumpdelayfix": "Jump Delay Fix",
+  "key.category.jumpdelayfix.jumpdelayfix": "Jump Delay Fix",
+  "key.jumpdelayfix.toggle": "Toggle Jump Delay Fix",
+  "key.jumpdelayfix.profile": "Cycle Jump Profile",
+  "key.jumpdelayfix.config": "Open Jump Delay Fix Settings",
+  "message.jumpdelayfix.status": "Jump Delay Fix: %s",
+  "message.jumpdelayfix.profile_status": "Jump Profile: %s",
+  "message.jumpdelayfix.profile.competitive": "Competitive",
+  "message.jumpdelayfix.profile.smart": "Smart Adaptive",
+  "message.jumpdelayfix.profile.stable": "Stable Anti-Rubberband",
+  "message.jumpdelayfix.enabled": "ON",
+  "message.jumpdelayfix.disabled": "OFF",
+  "screen.jumpdelayfix.settings.title": "Jump Delay Fix Settings",
+  "screen.jumpdelayfix.settings.subtitle": "Simple settings for smoother jumps.",
+  "gui.jumpdelayfix.toggle": "Enabled: %s",
+  "gui.jumpdelayfix.auto": "Auto Profile: %s",
+  "gui.jumpdelayfix.profile.cycle": "Cycle Profile",
+  "gui.jumpdelayfix.option.done": "Done",
+  "gui.jumpdelayfix.desc.profile": "Cycle the manual profile used for jump timing. Picking a profile manually also turns off auto profile switching until you enable it again.",
+  "gui.jumpdelayfix.desc.auto": "Lets the mod watch rollback history and swap between profiles automatically for the current server."
+}

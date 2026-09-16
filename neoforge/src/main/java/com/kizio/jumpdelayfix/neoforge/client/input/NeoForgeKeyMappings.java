@@ -5,15 +5,15 @@ import net.minecraft.client.KeyMapping;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLKeycode;
 
 @OnlyIn(Dist.CLIENT)
 public final class NeoForgeKeyMappings implements KeyBindingProvider {
 
     private static final NeoForgeKeyMappings INSTANCE = new NeoForgeKeyMappings();
-    private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
-    private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
-    private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
+    private static final int DEFAULT_TOGGLE_KEY = SDLKeycode.SDLK_J;
+    private static final int DEFAULT_PROFILE_KEY = SDLKeycode.SDLK_H;
+    private static final int DEFAULT_CONFIG_KEY = SDLKeycode.SDLK_O;
     @SuppressWarnings("deprecation")
     private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(net.minecraft.resources.Identifier.parse("jumpdelayfix:jumpdelayfix"));
 

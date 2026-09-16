@@ -1,0 +1,22 @@
+{
+  "category.jumpdelayfix": "Jump Delay Fix",
+  "key.category.jumpdelayfix.jumpdelayfix": "Jump Delay Fix",
+  "key.jumpdelayfix.toggle": "Przelacz Jump Delay Fix",
+  "key.jumpdelayfix.profile": "Zmien profil skoku",
+  "key.jumpdelayfix.config": "Otworz ustawienia Jump Delay Fix",
+  "message.jumpdelayfix.status": "Jump Delay Fix: %s",
+  "message.jumpdelayfix.profile_status": "Profil skoku: %s",
+  "message.jumpdelayfix.profile.competitive": "Rywalizacyjny",
+  "message.jumpdelayfix.profile.smart": "Inteligentny adaptacyjny",
+  "message.jumpdelayfix.profile.stable": "Stabilny anti-rubberband",
+  "message.jumpdelayfix.enabled": "WL.",
+  "message.jumpdelayfix.disabled": "WYL.",
+  "screen.jumpdelayfix.settings.title": "Ustawienia Jump Delay Fix",
+  "screen.jumpdelayfix.settings.subtitle": "Proste ustawienia dla plynniejszych skokow.",
+  "gui.jumpdelayfix.toggle": "Wlaczony: %s",
+  "gui.jumpdelayfix.auto": "Auto-profil: %s",
+  "gui.jumpdelayfix.profile.cycle": "Zmien profil",
+  "gui.jumpdelayfix.option.done": "Gotowe",
+  "gui.jumpdelayfix.desc.profile": "Przelacza reczny profil uzywany do timingu skoku. Reczny wybor profilu wylacza tez auto-przelaczanie, dopoki nie wlaczysz go ponownie.",
+  "gui.jumpdelayfix.desc.auto": "Pozwala modowi sledzic historie cofniec i automatycznie zmieniac profile dla aktualnego serwera."
+}
