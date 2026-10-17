@@ -95,6 +95,13 @@ if git remote get-url origin >/dev/null 2>&1; then
     fi
 fi
 
+if [[ "$MODE" == "publish" ]]; then
+    if [[ -n "$(git status --porcelain)" ]]; then
+        echo "Error: Working directory has uncommitted changes. Commit or stash all changes before running --publish."
+        exit 1
+    fi
+fi
+
 echo "--- 1. Validating repository structure and source hygiene ---"
 ./scripts/validate-structure.sh
 ./scripts/validate-source-hygiene.sh
