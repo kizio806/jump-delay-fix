@@ -2,9 +2,9 @@ name: "CodeQL Analysis"
 
 on:
   push:
-    branches: [ "main", "support/*" ]
+    branches: [ "main", "support/**" ]
   pull_request:
-    branches: [ "main", "support/*" ]
+    branches: [ "main", "support/**" ]
   schedule:
     - cron: '30 2 * * 1'
 
@@ -41,7 +41,7 @@ jobs:
         queries: security-extended,security-and-quality
 
     - name: Build project for CodeQL
-      run: ./gradlew --no-daemon clean buildAll
+      run: ./gradlew --no-daemon --no-build-cache clean buildAll
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3

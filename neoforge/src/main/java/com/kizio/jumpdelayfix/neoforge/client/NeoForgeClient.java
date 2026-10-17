@@ -36,6 +36,8 @@ public final class NeoForgeClient {
         modEventBus.addListener(NeoForgeKeyMappings::onRegisterKeyMappings);
         modEventBus.addListener(NeoForgeClient::onClientSetup);
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientTick);
+        NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientLogin);
+        NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientRespawn);
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientLogout);
         initialized = true;
     }
@@ -67,6 +69,14 @@ public final class NeoForgeClient {
                 client.setScreen(new NeoForgeSettingsScreen(client.screen));
             }
         }
+    }
+
+    private static void onClientLogin(ClientPlayerNetworkEvent.LoggingIn event) {
+        JumpDelayFix.resetTransientState();
+    }
+
+    private static void onClientRespawn(ClientPlayerNetworkEvent.Clone event) {
+        JumpDelayFix.resetTransientState();
     }
 
     private static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {

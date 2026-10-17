@@ -9,9 +9,14 @@ Jump Delay Fix is a lightweight, client-side Minecraft mod designed to provide s
 
 ## Highlights
 
-- **Instant Responsiveness:** Removes the hardcoded vanilla jump delay for immediate action.
-- **Client-Side Only:** No server installation required. Works entirely on the client, making it multiplayer-friendly.
+- **Instant Responsiveness:** Eliminates the hardcoded vanilla jump delay when holding down jump for smooth, fluid motion.
+- **Client-Side Only:** No server installation required. Completely multiplayer and fair-play friendly.
 - **Multi-Loader Support:** Compatible with both Fabric and NeoForge out of the box.
+- **Adaptive Jump Profiles:** Smart Adaptive, Stable Anti-Rubberband, and Competitive profiles.
+- **In-Game Controls:**
+  - `H` — Toggle mod ON / OFF
+  - `J` — Cycle Jump Profile
+  - `K` — Open Settings GUI (with "Reset to Defaults" option)
 
 ## Supported Platforms & Versions
 
