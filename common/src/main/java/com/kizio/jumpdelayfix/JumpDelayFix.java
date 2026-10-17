@@ -98,11 +98,11 @@ public final class JumpDelayFix {
         return enabled;
     }
 
-    public static boolean isEnabled() {
+    public static synchronized boolean isEnabled() {
         return RuntimeState.isEnabled();
     }
 
-    public static JumpProfile getProfile() {
+    public static synchronized JumpProfile getProfile() {
         return RuntimeState.getProfile();
     }
 
@@ -136,6 +136,36 @@ public final class JumpDelayFix {
 
     public static synchronized void flushPendingConfiguration() {
         configManager.flushNow();
+    }
+
+    public static synchronized void resetToDefaults() {
+        configManager.resetToDefaults();
+        serverStats.clear();
+        activeServerId = DEFAULT_SERVER_ID;
+        RuntimeState.setEnabled(true);
+        RuntimeState.setProfile(resolveProfileForServer(activeServerId));
+        lastConfirmedJumps = jumpHandler.getConfirmedJumpCount();
+        lastRejectedJumps = jumpHandler.getRejectedJumpCount();
+        profileSwitchCooldownTicks = 0;
+        jumpHandler.resetTransientState();
+        LOGGER.info("{} reset to default configuration", Constants.MOD_NAME);
+    }
+
+    public static synchronized void resetTransientState() {
+        jumpHandler.resetTransientState();
+        profileSwitchCooldownTicks = 0;
+    }
+
+    public static synchronized String getActiveServerId() {
+        return activeServerId;
+    }
+
+    public static synchronized int getConfirmedJumpCount() {
+        return jumpHandler.getConfirmedJumpCount();
+    }
+
+    public static synchronized int getRejectedJumpCount() {
+        return jumpHandler.getRejectedJumpCount();
     }
 
     public static synchronized void onClientDisconnect() {
