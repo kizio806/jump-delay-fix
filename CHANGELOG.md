@@ -68,6 +68,7 @@ All notable changes to this project will be documented in this file.
 - Optimized event handling by consolidating the listener structure into unified entry points for Fabric and NeoForge.
 
 ### Compatibility
-- Minecraft: 1.21.1
-- Fabric: Loader 0.18.4+
+- Minecraft: Fabric: 1.21.11; NeoForge: 1.21.9, 1.21.10, 1.21.11
+- Fabric: Loader 0.18.4+ / Fabric API 0.141.6+1.21.11
 - NeoForge: 21.1.174+
+- Java: 21
