@@ -55,6 +55,8 @@ The project uses a multi-project Gradle layout:
 ## Project Documentation
 
 - **Wiki:** [docs/wiki/Home.md](docs/wiki/Home.md)
+- **Installation Guide:** [docs/installation.md](docs/installation.md)
+- **Troubleshooting:** [docs/troubleshooting.md](docs/troubleshooting.md)
 - **Development & Code Style:** [docs/development.md](docs/development.md)
 - **Architecture:** [docs/architecture.md](docs/architecture.md)
 - **Releases Guide:** [docs/releases.md](docs/releases.md)
@@ -62,6 +64,10 @@ The project uses a multi-project Gradle layout:
 - **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 - **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Security:** [SECURITY.md](SECURITY.md)
+
+## Server Notice & Disclaimer
+
+Jump Delay Fix is a client-side utility mod. It removes the vanilla jump delay mechanism to improve responsiveness and smooth out parkour. It does not manipulate entity speed, vertical velocity values, or bypass server anti-cheat plugins. Always ensure client movement utilities comply with the rules of the servers you play on.
 
 ## License
 

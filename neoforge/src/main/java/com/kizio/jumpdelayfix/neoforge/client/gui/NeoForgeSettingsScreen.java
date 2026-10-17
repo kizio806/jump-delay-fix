@@ -49,6 +49,14 @@ public final class NeoForgeSettingsScreen extends Screen {
         }).bounds(left, rowY + (ROW_SPACING * 2), BUTTON_WIDTH, BUTTON_HEIGHT).build());
 
         this.addRenderableWidget(Button.builder(
+                Component.translatable("gui.jumpdelayfix.reset_defaults"),
+                button -> {
+                    JumpDelayFix.resetToDefaults();
+                    refreshButtonLabels();
+                }
+        ).bounds(left, rowY + (ROW_SPACING * 3), BUTTON_WIDTH, BUTTON_HEIGHT).build());
+
+        this.addRenderableWidget(Button.builder(
                 Component.translatable("gui.jumpdelayfix.option.done"),
                 button -> onClose()
         ).bounds(left, rowY + (ROW_SPACING * 4), BUTTON_WIDTH, BUTTON_HEIGHT).build());

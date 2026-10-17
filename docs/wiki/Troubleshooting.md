@@ -7,21 +7,20 @@
 
 ## Jump feels the same as vanilla
 
-- Open the in-game settings screen and verify the mod is **enabled**.
-- Make sure the active profile is not set to **VANILLA**.
+- Open the in-game settings screen (press **O**) and verify the mod is **enabled**.
+- Verify that Jump Delay Fix has not been toggled OFF (press **J**).
 
 ## Settings screen not showing (Fabric)
 
-- Install [ModMenu](https://modrinth.com/mod/modmenu) to enable the settings screen on Fabric.
+- Press **O** in-game to open the settings screen directly, or install [ModMenu](https://modrinth.com/mod/modmenu) to access settings from the mods menu.
 
 ## Config file location
 
 ```
-.minecraft/config/jumpdelayfix/config.json
-.minecraft/config/jumpdelayfix/servers.json
+.minecraft/config/jumpdelayfix.properties
 ```
 
-Delete these files to reset to defaults.
+Use the in-game **Reset to Defaults** button in the settings screen (**O**), or delete this file to reset to defaults.
 
 ## Build fails locally
 

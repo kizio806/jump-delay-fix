@@ -37,6 +37,7 @@ public final class NeoForgeClient {
         modEventBus.addListener(NeoForgeClient::onClientSetup);
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientLogout);
+        NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientPlayerClone);
         initialized = true;
     }
 
@@ -71,5 +72,9 @@ public final class NeoForgeClient {
 
     private static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         JumpDelayFix.onClientDisconnect();
+    }
+
+    private static void onClientPlayerClone(ClientPlayerNetworkEvent.Clone event) {
+        JumpDelayFix.resetTransientState();
     }
 }

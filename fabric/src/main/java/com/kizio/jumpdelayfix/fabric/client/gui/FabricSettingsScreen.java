@@ -49,6 +49,14 @@ public final class FabricSettingsScreen extends Screen {
         }).dimensions(left, rowY + (ROW_SPACING * 2), BUTTON_WIDTH, BUTTON_HEIGHT).build());
 
         this.addDrawableChild(ButtonWidget.builder(
+                Text.translatable("gui.jumpdelayfix.reset_defaults"),
+                button -> {
+                    JumpDelayFix.resetToDefaults();
+                    refreshButtonLabels();
+                }
+        ).dimensions(left, rowY + (ROW_SPACING * 3), BUTTON_WIDTH, BUTTON_HEIGHT).build());
+
+        this.addDrawableChild(ButtonWidget.builder(
                 Text.translatable("gui.jumpdelayfix.option.done"),
                 button -> close()
         ).dimensions(left, rowY + (ROW_SPACING * 4), BUTTON_WIDTH, BUTTON_HEIGHT).build());

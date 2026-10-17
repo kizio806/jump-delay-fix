@@ -157,6 +157,41 @@ class JumpDelayFixTest {
         assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
     }
 
+    @Test
+    void shouldResetSettingsToDefaults() {
+        MutableServerJumpInput input = new MutableServerJumpInput();
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        input.serverId = "custom-server";
+        JumpDelayFix.onClientTick();
+        JumpDelayFix.setProfile(JumpProfile.COMPETITIVE);
+
+        assertFalse(JumpDelayFix.isAutoProfileSwitchEnabled());
+        assertEquals(JumpProfile.COMPETITIVE, JumpDelayFix.getProfile());
+
+        JumpDelayFix.resetToDefaults();
+
+        assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
+        assertTrue(JumpDelayFix.isEnabled());
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
+        assertEquals("global", JumpDelayFix.getActiveServerId());
+    }
+
+    @Test
+    void shouldExposeDiagnosticStatistics() {
+        AdaptiveJumpInput input = new AdaptiveJumpInput("stats-server", 50);
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        runTicks(input, 10);
+
+        assertEquals("stats-server", JumpDelayFix.getActiveServerId());
+        assertTrue(JumpDelayFix.getConfirmedJumpCount() >= 0);
+        assertTrue(JumpDelayFix.getRejectedJumpCount() >= 0);
+
+        JumpDelayFix.resetTransientState();
+        assertEquals("stats-server", JumpDelayFix.getActiveServerId());
+    }
+
     private static void runTicks(AdaptiveJumpInput input, int count) {
         for (int index = 0; index < count; index++) {
             input.advanceTick();

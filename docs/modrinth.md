@@ -9,6 +9,7 @@ Jump Delay Fix is a lightweight client-side mod focused on smoother, more respon
 - Improved jump responsiveness for everyday play
 - In-game ON/OFF toggle and clean settings GUI
 - Manual profile cycling for quick per-server tuning
+- In-game Reset to Defaults option
 - Optional auto profile switching based on rollback history and latency
 - Client-side only, with no server installation required
 

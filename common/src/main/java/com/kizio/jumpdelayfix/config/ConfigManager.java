@@ -93,6 +93,14 @@ final class ConfigManager {
         saveCooldownTicks = 0;
     }
 
+    void resetToDefaults() {
+        awaitPendingSaves();
+        runtimeConfig = RuntimeConfig.defaults();
+        serverProfiles.clear();
+        markDirty();
+        flushNow();
+    }
+
     void resetForTests() {
         awaitPendingSaves();
         runtimeConfig = RuntimeConfig.defaults();

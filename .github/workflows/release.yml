@@ -192,7 +192,7 @@ jobs:
 
       - name: Create GitHub release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Jump Delay Fix v${{ steps.metadata.outputs.mod_version }} (Fabric MC ${{ steps.fabric_range.outputs.label }}, NeoForge MC ${{ steps.neoforge_range.outputs.label }})
           body_path: release-notes.md
@@ -202,12 +202,15 @@ jobs:
             ${{ steps.artifacts.outputs.neoforge_jar }}
             neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
 
-      - name: Publish to Modrinth - Fabric
+      - name: Publish to Modrinth & CurseForge - Fabric
         if: startsWith(github.ref, 'refs/tags/')
+        continue-on-error: true
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for Fabric
           version: ${{ steps.metadata.outputs.mod_version }}-fabric
           version-type: release
@@ -218,12 +221,15 @@ jobs:
           files: ${{ steps.artifacts.outputs.fabric_jar }}
           changelog-file: release-notes.md
 
-      - name: Publish to Modrinth - NeoForge
+      - name: Publish to Modrinth & CurseForge - NeoForge
         if: startsWith(github.ref, 'refs/tags/')
+        continue-on-error: true
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for NeoForge
           version: ${{ steps.metadata.outputs.mod_version }}-neoforge
           version-type: release

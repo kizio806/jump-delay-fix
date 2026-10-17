@@ -31,18 +31,32 @@ public final class FabricJumpInput implements JumpInput {
                 && client.options.jumpKey.isPressed();
     }
 
+    private int lastPlayerId = -1;
+
     @Override
     public boolean isPlayerOnGround() {
         MinecraftClient client = MinecraftClient.getInstance();
-        return client != null
-                && client.player != null
+        if (client == null || client.player == null) {
+            lastPlayerId = -1;
+            return false;
+        }
+
+        int currentId = client.player.getId();
+        if (lastPlayerId != -1 && currentId != lastPlayerId) {
+            lastPlayerId = currentId;
+            return false;
+        }
+        lastPlayerId = currentId;
+
+        return client.player.isAlive()
+                && !client.player.isSleeping()
                 && client.player.isOnGround();
     }
 
     @Override
     public void jump() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client != null && client.player != null) {
+        if (client != null && client.player != null && client.player.isAlive() && !client.player.isSleeping()) {
             client.player.jump();
         }
     }

@@ -32,18 +32,34 @@ public final class NeoForgeJumpInput implements JumpInput {
                 && client.options.keyJump.isDown();
     }
 
+    private int lastPlayerId = -1;
+
     @Override
     public boolean isPlayerOnGround() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client != null ? client.player : null;
-        return player != null && player.onGround();
+        if (player == null) {
+            lastPlayerId = -1;
+            return false;
+        }
+
+        int currentId = player.getId();
+        if (lastPlayerId != -1 && currentId != lastPlayerId) {
+            lastPlayerId = currentId;
+            return false;
+        }
+        lastPlayerId = currentId;
+
+        return player.isAlive()
+                && !player.isSleeping()
+                && player.onGround();
     }
 
     @Override
     public void jump() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client != null ? client.player : null;
-        if (player != null) {
+        if (player != null && player.isAlive() && !player.isSleeping()) {
             player.jumpFromGround();
         }
     }

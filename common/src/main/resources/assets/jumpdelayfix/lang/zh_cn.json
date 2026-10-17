@@ -16,6 +16,7 @@
   "gui.jumpdelayfix.toggle": "启用: %s",
   "gui.jumpdelayfix.auto": "自动配置: %s",
   "gui.jumpdelayfix.profile.cycle": "切换配置",
+  "gui.jumpdelayfix.reset_defaults": "恢复默认设置",
   "gui.jumpdelayfix.option.done": "Done",
   "gui.jumpdelayfix.desc.profile": "Cycle the manual profile used for jump timing. Picking a profile manually also turns off auto profile switching until you enable it again.",
   "gui.jumpdelayfix.desc.auto": "Lets the mod watch rollback history and swap between profiles automatically for the current server."

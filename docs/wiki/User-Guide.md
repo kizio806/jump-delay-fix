@@ -5,34 +5,36 @@
 | Action | Default Key |
 |--------|-------------|
 | Toggle mod on/off | `J` |
-| Cycle jump profile | `K` |
+| Cycle jump profile | `H` |
+| Open settings screen | `O` |
 
-> Keys can be rebound in Minecraft's **Options → Controls** screen.
+> Keys can be rebound in Minecraft's **Options → Controls → Key Binds** screen.
 
 ## Jump Profiles
 
 | Profile | Description |
 |---------|-------------|
-| `SMART` | Adaptive mode. Automatically selects the best behavior based on detected server rollback history. Recommended for most players. |
-| `COMPETITIVE` | Stricter rollback checks. Best for competitive PvP servers with noticeable latency. |
-| `VANILLA` | Disables all mod logic. Behaves identically to unmodded Minecraft. |
+| `SMART` | Adaptive mode. Automatically balances timing and responsiveness based on server latency. Recommended for most players. |
+| `COMPETITIVE` | Fast response mode for low-latency (< 95ms) environments and competitive parkour. |
+| `STABLE` | Conservative timing mode with extra grounding safety to eliminate rubberbanding on laggy servers. |
 
 ## Settings Screen
 
-On Fabric with ModMenu installed, access settings via **Mods → Jump Delay Fix → Configure**.
-
-On NeoForge, open **Options → Mod Options → Jump Delay Fix**.
+Access the settings screen via:
+- In-game keybind: **O** (default)
+- On Fabric: **Mods → Jump Delay Fix → Configure** (requires ModMenu)
+- On NeoForge: **Mods → Jump Delay Fix → Config**
 
 The settings screen allows you to:
-
-- Enable or disable the mod.
-- Select your preferred jump profile.
-- View current server adaptive stats.
+- Toggle the mod ON / OFF.
+- Cycle through jump profiles.
+- Toggle automatic profile switching.
+- Reset all settings to defaults.
 
 ## Server Profiles
 
-The mod remembers the optimal profile for each server you connect to. Profiles are stored in:
+The mod automatically remembers the profile selected for each server you connect to. Profiles are stored in:
 
 ```
-.minecraft/config/jumpdelayfix/servers.json
+.minecraft/config/jumpdelayfix.properties
 ```
