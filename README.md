@@ -15,18 +15,18 @@ Jump Delay Fix is a lightweight, client-side Minecraft mod designed to provide s
 
 ## Supported Platforms & Versions
 
-This branch (`main`) is currently targeting **Minecraft 26.2**.
+This branch (`main`) is currently targeting **Minecraft 26.3**.
 
-- **Fabric Loader:** 0.18.4+ (Fabric API 0.159.0+26.2)
-- **NeoForge:** 26.2.0.79+
-- **Minecraft:** 26.2
+- **Fabric Loader:** 0.18.4+ (Fabric API 0.160.6+26.3)
+- **NeoForge:** 26.3.0.1-beta+
+- **Minecraft:** 26.3
 
 *(See `gradle.properties` for the exact current version metadata.)*
 
 ## Installation
 
 1. Download the latest release from the [Releases page](https://github.com/kizio806/jump-delay-fix/releases) or [Modrinth](https://modrinth.com/mod/jump-delay-fix).
-2. Ensure you have the correct mod loader installed (Fabric + Fabric API, or NeoForge) for Minecraft 26.2.
+2. Ensure you have the correct mod loader installed (Fabric + Fabric API, or NeoForge) for Minecraft 26.3.
 3. Place the downloaded `.jar` file into your `.minecraft/mods` folder.
 4. Launch the game.
 

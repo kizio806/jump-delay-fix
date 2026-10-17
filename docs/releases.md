@@ -36,9 +36,19 @@ Ensure the project builds correctly with the new metadata.
 Update `CHANGELOG.md` for user-visible changes for the new `<mod_version>`.
 That section becomes the release body for both GitHub Releases and Modrinth.
 
-## 5. Tag and Push
+## 5. One-Command Automated Release
 
-Commit the changes, then create and push a single tag matching the `mod_version` to trigger the release workflow.
+You can use the unified release script to run all checks, build artifacts, verify integrity, create the release commit, and push tags:
+
+```bash
+# Verify readiness without publishing:
+./scripts/release.sh --dry-run
+
+# Publish the release:
+./scripts/release.sh --publish
+```
+
+Alternatively, you can manually commit, tag, and push:
 
 ```bash
 git add -A

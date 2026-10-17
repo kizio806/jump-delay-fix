@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.4.1
+
+### Added
+- In-game "Reset to Defaults" button in the settings screen for both Fabric and NeoForge, allowing quick restoration of default configuration.
+- Enhanced player lifecycle validity checks (sleeping state, alive check, entity instance validation across respawns and dimension changes) to immediately reset transient jump delay tracking.
+- Client connection and respawn event listeners on both loaders to cleanly reset transient jump states upon joining worlds or respawning.
+- Localized reset button strings (`gui.jumpdelayfix.reset_defaults`) across all 10 supported languages (`en_us`, `pl_pl`, `de_de`, `es_es`, `fr_fr`, `it_it`, `ja_jp`, `pt_br`, `ru_ru`, `zh_cn`).
+- Dedicated `docs/installation.md` and `docs/troubleshooting.md` guides along with updated documentation and wiki instructions.
+- Unified release script (`scripts/release.sh`) with multi-branch awareness, `--dry-run` and `--publish` modes, and verification gates.
+
+### Changed
+- Strengthened concurrency thread safety in `JumpDelayFix` by ensuring synchronized access across runtime state queries (`isEnabled()`, `getProfile()`).
+- Corrected Polish localization diacritics in `pl_pl.json`.
+- Updated GitHub Actions CI and CodeQL workflows for broader support branch coverage and reliable build performance.
+
+### Compatibility
+- Minecraft: 26.3
+- Fabric: Loader 0.18.4+ / Fabric API 0.160.6+26.3
+- NeoForge: 26.3.0.1-beta+
+- Java: 25
+
 ## 1.4.0
 
 ### Added
