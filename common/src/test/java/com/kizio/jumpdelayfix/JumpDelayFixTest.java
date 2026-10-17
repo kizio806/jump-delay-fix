@@ -157,6 +157,29 @@ class JumpDelayFixTest {
         assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
     }
 
+    @Test
+    void shouldResetToDefaultSettings() {
+        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
+        JumpDelayFix.setProfile(JumpProfile.STABLE);
+        JumpDelayFix.flushPendingConfiguration();
+
+        JumpDelayFix.resetToDefaults();
+
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
+        assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
+        assertTrue(JumpDelayFix.isEnabled());
+    }
+
+    @Test
+    void shouldResetTransientStateWithoutClearingConfiguration() {
+        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
+        JumpDelayFix.setProfile(JumpProfile.COMPETITIVE);
+
+        JumpDelayFix.resetTransientState();
+
+        assertEquals(JumpProfile.COMPETITIVE, JumpDelayFix.getProfile());
+    }
+
     private static void runTicks(AdaptiveJumpInput input, int count) {
         for (int index = 0; index < count; index++) {
             input.advanceTick();

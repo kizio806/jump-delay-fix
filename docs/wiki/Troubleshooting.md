@@ -2,26 +2,29 @@
 
 ## Mod is not loading
 
+- Verify that you are running **Java 25**.
 - Check that you have the correct Fabric API or NeoForge version installed.
-- Verify the JAR filename matches your Minecraft version.
+- Verify the JAR filename matches your Minecraft version line (26.2).
 
 ## Jump feels the same as vanilla
 
-- Open the in-game settings screen and verify the mod is **enabled**.
-- Make sure the active profile is not set to **VANILLA**.
+- Press `H` to ensure Jump Delay Fix is toggled **ON**.
+- Check settings via `K` to ensure the mod is active.
 
-## Settings screen not showing (Fabric)
+## Rubberbanding or movement lag on multiplayer servers
 
-- Install [ModMenu](https://modrinth.com/mod/modmenu) to enable the settings screen on Fabric.
+- Switch profile to **Stable Anti-Rubberband** using `J` or via the settings screen (`K`).
+- Ensure Auto Profile Switching is turned ON so the mod automatically adjusts to packet latency.
 
-## Config file location
+## Config file location and resetting
 
 ```
-.minecraft/config/jumpdelayfix/config.json
-.minecraft/config/jumpdelayfix/servers.json
+.minecraft/config/jumpdelayfix.properties
 ```
 
-Delete these files to reset to defaults.
+To reset settings:
+- Use the **Reset to Defaults** button in the settings screen (`K`), or
+- Delete `.minecraft/config/jumpdelayfix.properties` while the game is closed.
 
 ## Build fails locally
 
@@ -31,12 +34,10 @@ Run:
 ./gradlew clean buildAll strictCheck --stacktrace
 ```
 
-Check the output for specific error messages. Most issues are caused by mismatched Fabric API or NeoForge versions.
-
 ## Reporting Issues
 
 Open an issue at [github.com/kizio806/jump-delay-fix/issues](https://github.com/kizio806/jump-delay-fix/issues) with:
 
-- Minecraft version
+- Minecraft version (26.2)
 - Loader (Fabric / NeoForge) and version
-- Full crash log or error message
+- Full crash log or latest.log

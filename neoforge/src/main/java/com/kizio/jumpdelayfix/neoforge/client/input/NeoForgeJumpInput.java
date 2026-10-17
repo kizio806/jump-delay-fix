@@ -1,5 +1,6 @@
 package com.kizio.jumpdelayfix.neoforge.client.input;
 
+import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.input.JumpInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -23,6 +24,8 @@ public final class NeoForgeJumpInput implements JumpInput {
     private static final int UNKNOWN_LATENCY_MS = -1;
     private static final int UNKNOWN_LATENCY_FALLBACK_TICKS = REMOTE_TICKS_MEDIUM_LATENCY;
 
+    private int lastPlayerId = -1;
+
     @Override
     public boolean isJumpPressed() {
         Minecraft client = Minecraft.getInstance();
@@ -36,14 +39,14 @@ public final class NeoForgeJumpInput implements JumpInput {
     public boolean isPlayerOnGround() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client != null ? client.player : null;
-        return player != null && player.onGround();
+        return isPlayerValid(player) && player.onGround();
     }
 
     @Override
     public void jump() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client != null ? client.player : null;
-        if (player != null) {
+        if (isPlayerValid(player)) {
             player.jumpFromGround();
         }
     }
@@ -52,10 +55,22 @@ public final class NeoForgeJumpInput implements JumpInput {
     public double getPlayerY() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client != null ? client.player : null;
-        if (player == null) {
+        if (!isPlayerValid(player)) {
             return Double.NaN;
         }
         return player.getY();
+    }
+
+    private boolean isPlayerValid(LocalPlayer player) {
+        if (player == null || !player.isAlive() || player.isSleeping()) {
+            return false;
+        }
+        int currentId = player.getId();
+        if (lastPlayerId != -1 && lastPlayerId != currentId) {
+            JumpDelayFix.resetTransientState();
+        }
+        lastPlayerId = currentId;
+        return true;
     }
 
     @Override

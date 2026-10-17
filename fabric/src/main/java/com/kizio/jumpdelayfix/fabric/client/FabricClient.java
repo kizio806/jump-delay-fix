@@ -61,6 +61,7 @@ public final class FabricClient {
             }
         });
 
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> JumpDelayFix.resetTransientState());
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> JumpDelayFix.onClientDisconnect());
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> JumpDelayFix.flushPendingConfiguration());
     }
