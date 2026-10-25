@@ -1,3 +1,9 @@
+plugins {
+    id 'com.diffplug.spotless' version '7.0.2'
+    id 'org.sonarqube' version '7.5.0.8588'
+    id 'jacoco'
+}
+
 allprojects {
     group = mod_group
     version = mod_version
@@ -17,6 +23,24 @@ allprojects {
     }
 }
 
+spotless {
+    java {
+        target 'common/src/*/java/**/*.java', 'fabric/src/*/java/**/*.java', 'neoforge/src/*/java/**/*.java'
+        trimTrailingWhitespace()
+        endWithNewline()
+        leadingTabsToSpaces(4)
+    }
+}
+
+sonar {
+    properties {
+        property 'sonar.projectKey', 'kizio806_jump-delay-fix'
+        property 'sonar.organization', 'kizio806'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/common/build/reports/jacoco/test/jacocoTestReport.xml,${projectDir}/fabric/build/reports/jacoco/test/jacocoTestReport.xml,${projectDir}/neoforge/build/reports/jacoco/test/jacocoTestReport.xml"
+    }
+}
+
 ext.sharedVersions = [
         minecraft: providers.gradleProperty('minecraft_version').get(),
         mappings : providers.gradleProperty('yarn_mappings').get(),
@@ -26,6 +50,7 @@ ext.sharedVersions = [
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'jacoco'
 
     java {
         toolchain.languageVersion = JavaLanguageVersion.of(java_version.toInteger())
@@ -40,6 +65,14 @@ subprojects {
 
     tasks.withType(Test).configureEach {
         useJUnitPlatform()
+        finalizedBy('jacocoTestReport')
+    }
+
+    tasks.withType(JacocoReport).configureEach {
+        reports {
+            xml.required = true
+            html.required = true
+        }
     }
 
     tasks.withType(AbstractArchiveTask).configureEach {
@@ -224,5 +257,5 @@ tasks.register('validateSourceHygiene', Exec) {
 tasks.register('strictCheck') {
     group = 'verification'
     description = 'Runs full hard quality gate checks.'
-    dependsOn('publishReadyCheck', 'validateSourceHygiene')
+    dependsOn('publishReadyCheck', 'validateSourceHygiene', 'spotlessCheck')
 }

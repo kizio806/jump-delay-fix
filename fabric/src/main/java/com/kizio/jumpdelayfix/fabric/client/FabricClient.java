@@ -41,11 +41,11 @@ public final class FabricClient {
 
         JumpDelayFix.init(new FabricJumpInput(), FabricStatusMessages::sendToggleStatus, configDir);
         LOGGER.info("{} Fabric config directory: {}", Constants.MOD_NAME, configDir.toAbsolutePath());
-        
+
         registerEvents(keyBindings);
         initialized = true;
     }
-    
+
     private static void registerEvents(FabricKeyMappings keyBindings) {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             JumpDelayFix.onClientTick();

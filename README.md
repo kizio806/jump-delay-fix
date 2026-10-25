@@ -1,6 +1,8 @@
 # Jump Delay Fix
 
 [![CI](https://github.com/kizio806/jump-delay-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/kizio806/jump-delay-fix/actions/workflows/ci.yml)
+[![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=kizio806_jump-delay-fix&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=kizio806_jump-delay-fix)
+[![Codecov Coverage](https://codecov.io/gh/kizio806/jump-delay-fix/graph/badge.svg?token=)](https://codecov.io/gh/kizio806/jump-delay-fix)
 [![Release](https://img.shields.io/github/v/release/kizio806/jump-delay-fix?sort=semver)](https://github.com/kizio806/jump-delay-fix/releases)
 [![Modrinth](https://img.shields.io/badge/Modrinth-release%20ready-00AF5C?logo=modrinth)](docs/modrinth.md)
 [![License](https://img.shields.io/github/license/kizio806/jump-delay-fix)](LICENSE)

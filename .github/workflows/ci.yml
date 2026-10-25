@@ -44,8 +44,8 @@ jobs:
       - name: Ensure Gradle executable bit
         run: chmod +x ./gradlew
 
-      - name: Structure, hygiene and semver validation
-        run: ./gradlew --no-daemon validateStructure validateSourceHygiene verifySemverVersion verifyMinecraftVersionMatrix
+      - name: Structure, hygiene, semver and format validation
+        run: ./gradlew --no-daemon validateStructure validateSourceHygiene verifySemverVersion verifyMinecraftVersionMatrix spotlessCheck
 
   test-common:
     name: Unit Tests (Common)
@@ -71,6 +71,15 @@ jobs:
 
       - name: Run common tests
         run: ./gradlew --no-daemon :common:test :common:jacocoTestReport :common:jacocoTestCoverageVerification
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: common/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: common
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ github.repository }}
 
       - name: Upload coverage report
         if: always()
@@ -115,6 +124,15 @@ jobs:
             fabric/build/test-results/**
           if-no-files-found: ignore
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: fabric/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: fabric
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ github.repository }}
+
       - name: Upload Fabric JAR
         if: success()
         uses: actions/upload-artifact@v4
@@ -157,6 +175,15 @@ jobs:
             neoforge/build/reports/tests/**
             neoforge/build/test-results/**
           if-no-files-found: ignore
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: neoforge/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: neoforge
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ github.repository }}
 
       - name: Upload NeoForge JAR
         if: success()
