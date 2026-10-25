@@ -15,13 +15,15 @@ All notable changes to this project will be documented in this file.
 - Corrected Polish localization diacritics in `pl_pl.json`.
 
 ### Technical
+- Updated NeoForge toolchain to `21.11.48` targeting Minecraft `1.21.11` (replacing legacy `21.1.174` baseline).
+- Resolved Minecraft 1.21.11 NeoForge API changes (`KeyMapping.Category`, `Identifier`, `FMLEnvironment.getDist()`).
 - Updated GitHub Actions CI/CD workflows to include `support/**` branch coverage and disable build cache in CodeQL analysis.
 - Cleaned and extended unit and integration test coverage.
 
 ### Compatibility
-- Minecraft: Fabric: 1.21.11; NeoForge: 1.21.9, 1.21.10, 1.21.11
+- Minecraft: 1.21.11 (Fabric and NeoForge)
 - Fabric: Loader 0.18.4+ / Fabric API 0.141.6+1.21.11
-- NeoForge: 21.1.174+
+- NeoForge: 21.11.48+
 - Java: 21
 
 ## 1.1.0

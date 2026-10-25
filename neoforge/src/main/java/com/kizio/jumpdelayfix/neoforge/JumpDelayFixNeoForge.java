@@ -17,7 +17,7 @@ public final class JumpDelayFixNeoForge {
         IEventBus bus = Objects.requireNonNull(modEventBus, "modEventBus");
         Objects.requireNonNull(modContainer, "modContainer");
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             NeoForgeClient.init(bus);
         }
     }

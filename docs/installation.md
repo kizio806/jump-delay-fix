@@ -4,10 +4,10 @@ Jump Delay Fix is a client-side Minecraft mod available for both **Fabric** and 
 
 ## Supported Versions
 
-- **Minecraft:** Fabric: `1.21.11`; NeoForge: `1.21.9`, `1.21.10`, `1.21.11`
+- **Minecraft:** Fabric: `1.21.11`; NeoForge: `1.21.11`
 - **Java:** 21 (bundled with official launcher for 1.21.x)
 - **Fabric Loader:** 0.18.4+ / Fabric API `0.141.6+1.21.11`
-- **NeoForge:** 21.1.174+ (range `[1.21, 1.22)`)
+- **NeoForge:** 21.11.48+ (loader range `[21.11,)`, MC range `[1.21, 1.22)`)
 
 ---
 
@@ -15,7 +15,7 @@ Jump Delay Fix is a client-side Minecraft mod available for both **Fabric** and 
 
 1. **Install Fabric Loader:**
    - Download and install the Fabric Installer from [fabricmc.net](https://fabricmc.net/).
-   - Select Minecraft version `1.21.11` (or your target 1.21.x version).
+   - Select Minecraft version `1.21.11`.
 
 2. **Install Dependencies:**
    - Download **Fabric API** (`0.141.6+1.21.11` or newer) and place the `.jar` in your `.minecraft/mods` folder.
@@ -33,7 +33,7 @@ Jump Delay Fix is a client-side Minecraft mod available for both **Fabric** and 
 ## NeoForge Installation
 
 1. **Install NeoForge:**
-   - Download and run the NeoForge installer for Minecraft 1.21.11 (build `21.1.174` or newer) from [neoforged.net](https://neoforged.net/).
+   - Download and run the NeoForge installer for Minecraft 1.21.11 (build `21.11.48` or newer) from [neoforged.net](https://neoforged.net/).
 
 2. **Install Jump Delay Fix:**
    - Download `jumpdelayfix-neoforge-1.21.11-1.1.1.jar` from Modrinth or GitHub Releases.

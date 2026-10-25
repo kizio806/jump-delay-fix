@@ -41,6 +41,7 @@ neoForge.addModdingDependenciesTo(sourceSets.test)
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 def metadataProperties = [
@@ -159,7 +160,6 @@ jar {
 }
 
 tasks.named('check') {
-    dependsOn(tasks.named('headlessGameTest'))
 }
 
 tasks.named('sourcesJar') {

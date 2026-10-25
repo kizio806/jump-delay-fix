@@ -40,7 +40,7 @@ body:
     attributes:
       label: Loader version
       description: Fabric Loader or NeoForge version.
-      placeholder: "e.g. 0.18.4 / 21.1.174"
+      placeholder: "e.g. 0.18.4 / 21.11.48"
     validations:
       required: true
 
