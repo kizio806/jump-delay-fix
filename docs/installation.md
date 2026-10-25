@@ -4,10 +4,10 @@ Jump Delay Fix is a client-side Minecraft mod available for both **Fabric** and 
 
 ## Supported Versions
 
-- **Minecraft:** Fabric: `1.21.11`; NeoForge: `1.21.11`
+- **Minecraft:** Fabric: `1.21.11`; NeoForge: `1.21.9`, `1.21.10`, `1.21.11`
 - **Java:** 21 (bundled with official launcher for 1.21.x)
 - **Fabric Loader:** 0.18.4+ / Fabric API `0.141.6+1.21.11`
-- **NeoForge:** 21.11.48+ (loader range `[21.11,)`, MC range `[1.21, 1.22)`)
+- **NeoForge:** 21.9.16+ (loader range `[21.9,)`, MC range `[1.21, 1.22)`)
 
 ---
 
