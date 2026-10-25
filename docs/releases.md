@@ -7,7 +7,7 @@ Run compatibility probe before changing published metadata to determine which ve
 Example:
 ```bash
 ./scripts/probe-minecraft-versions.sh \
-  --versions "26.2"
+  --versions "1.21.9,1.21.10,1.21.11"
 ```
 
 ## 2. Update Version Metadata
@@ -36,32 +36,33 @@ Ensure the project builds correctly with the new metadata.
 Update `CHANGELOG.md` for user-visible changes for the new `<mod_version>`.
 That section becomes the release body for both GitHub Releases and Modrinth.
 
-## 5. One-Command Automated Release
+## 5. One-Command Release Procedure
 
-You can use the unified release script to run all checks, build artifacts, verify integrity, create the release commit, and push tags:
+To perform the release safely, use the included release script:
 
 ```bash
-# Verify readiness without publishing:
+# 1. First run dry-run verification
 ./scripts/release.sh --dry-run
 
-# Publish the release:
+# 2. When ready, publish the release with one command:
 ./scripts/release.sh --publish
 ```
 
-Alternatively, you can manually commit, tag, and push:
-
-```bash
-git add -A
-git commit -m "chore(release): v<mod_version>"
-git tag v<mod_version>
-git push origin main --tags
-```
+The script automatically:
+1. Validates source hygiene, structure, and semver compliance.
+2. Executes strict compilation and pre-publish verification gates.
+3. Builds release artifacts for all supported loaders.
+4. Verifies artifact existence and file sizes.
+5. Creates the release commit (`chore(release): v<mod_version>`) and annotated tag (`v<mod_version>`).
+6. Pushes the branch and tag to GitHub.
 
 ## 6. Automated Delivery
 
-The tag triggers `.github/workflows/release.yml` and handles the entire release process automatically:
+Pushing the release tag triggers `.github/workflows/release.yml`, which handles the entire deployment process automatically:
 
-- Build and verification
-- Release notes generation
-- GitHub Release publishing
-- Modrinth upload (if configured)
+- Clean environment build and verification
+- Release notes generation from `CHANGELOG.md`
+- SHA-256 checksum generation
+- GitHub Release publishing with Fabric and NeoForge JARs
+- Modrinth publishing for Fabric and NeoForge (using configured secrets)
+- CurseForge publishing (if configured)
