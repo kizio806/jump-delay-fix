@@ -108,6 +108,28 @@ class JumpHandlerTest {
         assertEquals(1, input.jumpCalls);
     }
 
+    @Test
+    void shouldRejectJumpWhenAirborneTimeoutExpires() {
+        input.jumpPressed = true;
+        input.onGround = true;
+        input.playerY = 64.0D;
+        handler.tick();
+
+        input.onGround = false;
+        input.playerY = 65.0D;
+        for (int i = 0; i < 45; i++) {
+            handler.tick();
+        }
+
+        assertEquals(1, handler.getRejectedJumpCount());
+    }
+
+    @Test
+    void shouldDelegateServerIdentifierAndLatency() {
+        assertEquals("global", handler.getServerIdentifier());
+        assertEquals(-1, handler.getLatencyMs());
+    }
+
     private static final class FakeJumpInput implements JumpInput {
 
         private boolean jumpPressed;
