@@ -38,8 +38,9 @@ sonar {
         property 'sonar.organization', 'kizio806'
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/common/build/reports/jacoco/test/jacocoTestReport.xml"
-        property 'sonar.coverage.exclusions', '**/fabric/**,**/fabric/**/*,**/neoforge/**,**/neoforge/**/*,fabric/**,fabric/**/*,neoforge/**,neoforge/**/*,**/client/**,**/client/**/*'
-        property 'sonar.cpd.exclusions', '**/fabric/**,**/fabric/**/*,**/neoforge/**,**/neoforge/**/*,fabric/**,fabric/**/*,neoforge/**,neoforge/**/*,**/client/**,**/client/**/*'
+        property 'sonar.exclusions', 'fabric/**,neoforge/**,**/fabric/**,**/neoforge/**,**/client/**'
+        property 'sonar.coverage.exclusions', 'fabric/**,neoforge/**,**/fabric/**,**/neoforge/**,**/client/**'
+        property 'sonar.cpd.exclusions', 'fabric/**,neoforge/**,**/fabric/**,**/neoforge/**,**/client/**'
     }
 }
 
@@ -57,6 +58,13 @@ subprojects {
     sonar {
         if (project.name != 'common') {
             skipProject = true
+            properties {
+                property 'sonar.sources', ''
+                property 'sonar.tests', ''
+                property 'sonar.exclusions', '**/*'
+                property 'sonar.coverage.exclusions', '**/*'
+                property 'sonar.cpd.exclusions', '**/*'
+            }
         } else {
             properties {
                 property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
