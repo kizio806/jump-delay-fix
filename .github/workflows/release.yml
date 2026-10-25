@@ -32,7 +32,7 @@ jobs:
           echo "version=${JVM_VER:-25}" >> "$GITHUB_OUTPUT"
 
       - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@v6
+        uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.0.0
 
       - name: Setup JDK
         uses: actions/setup-java@v6
@@ -41,7 +41,7 @@ jobs:
           java-version: ${{ steps.jvm.outputs.version }}
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.0.0
 
       - name: Ensure Gradle executable bit
         run: chmod +x ./gradlew
@@ -198,7 +198,7 @@ jobs:
 
       - name: Create GitHub release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
           name: Jump Delay Fix v${{ steps.metadata.outputs.mod_version }} (Fabric MC ${{ steps.fabric_range.outputs.label }}, NeoForge MC ${{ steps.neoforge_range.outputs.label }})
           body_path: release-notes.md
@@ -210,13 +210,16 @@ jobs:
 
       - name: Check publishing credentials
         if: startsWith(github.ref, 'refs/tags/')
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
         run: |
-          [ -n "${{ secrets.MODRINTH_TOKEN }}" ] && echo "Modrinth token is configured." || echo "Modrinth token is not configured (will be skipped)."
-          [ -n "${{ secrets.CURSEFORGE_TOKEN }}" ] && echo "CurseForge token is configured." || echo "CurseForge token is not configured (will be skipped)."
+          [ -n "${MODRINTH_TOKEN:-}" ] && echo "Modrinth token is configured." || echo "Modrinth token is not configured (will be skipped)."
+          [ -n "${CURSEFORGE_TOKEN:-}" ] && echo "CurseForge token is configured." || echo "CurseForge token is not configured (will be skipped)."
 
       - name: Publish to Modrinth & CurseForge - Fabric
         if: startsWith(github.ref, 'refs/tags/')
-        uses: Kir-Antipov/mc-publish@v3.3
+        uses: Kir-Antipov/mc-publish@c23376546a97f5ba7984e94445da359459b14419 # v3.3
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
@@ -234,7 +237,7 @@ jobs:
 
       - name: Publish to Modrinth & CurseForge - NeoForge
         if: startsWith(github.ref, 'refs/tags/')
-        uses: Kir-Antipov/mc-publish@v3.3
+        uses: Kir-Antipov/mc-publish@c23376546a97f5ba7984e94445da359459b14419 # v3.3
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
