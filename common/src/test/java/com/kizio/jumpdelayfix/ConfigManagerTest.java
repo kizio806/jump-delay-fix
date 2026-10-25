@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,5 +57,17 @@ class ConfigManagerTest {
 
         assertTrue(manager.autoProfileSwitch());
         assertEquals(JumpProfile.SMART, manager.resolveProfile("server-y"));
+    }
+
+    @Test
+    void shouldHandleFailedPendingSaveGracefully() {
+        ConfigManager manager = new ConfigManager();
+        manager.load(tempDir);
+
+        CompletableFuture<Void> failed = new CompletableFuture<>();
+        failed.completeExceptionally(new RuntimeException("disk error"));
+        manager.setPendingSaveForTests(failed);
+
+        assertDoesNotThrow(manager::flushNow);
     }
 }
