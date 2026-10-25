@@ -17,12 +17,12 @@ public final class FabricKeyMappings implements KeyBindingProvider {
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
-    
+
     @SuppressWarnings("deprecation")
     private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix")
     );
-    
+
     private static KeyMapping toggleKey;
     private static KeyMapping profileKey;
     private static KeyMapping configKey;
