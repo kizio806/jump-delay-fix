@@ -16,6 +16,11 @@ public final class NeoForgeJumpInput implements JumpInput {
 
     @Override
     public boolean isJumpPressed() {
+        Minecraft client = Minecraft.getInstance();
+        return client.options != null
+                && client.options.keyJump != null
+                && client.options.keyJump.isDown();
+    }
 
     @Override
     public boolean isPlayerOnGround() {
