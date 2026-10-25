@@ -25,8 +25,7 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public boolean isJumpPressed() {
         MinecraftClient client = MinecraftClient.getInstance();
-        return client != null
-                && client.options != null
+        return client.options != null
                 && client.options.jumpKey != null
                 && client.options.jumpKey.isPressed();
     }
@@ -36,7 +35,7 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public boolean isPlayerOnGround() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.player == null) {
+        if (client.player == null) {
             lastPlayerId = -1;
             return false;
         }
@@ -56,7 +55,7 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public void jump() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client != null && client.player != null && client.player.isAlive() && !client.player.isSleeping()) {
+        if (client.player != null && client.player.isAlive() && !client.player.isSleeping()) {
             client.player.jump();
         }
     }
@@ -64,7 +63,7 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public double getPlayerY() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.player == null) {
+        if (client.player == null) {
             return Double.NaN;
         }
         return client.player.getY();
@@ -73,10 +72,6 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public int requiredGroundedTicksBeforeJump() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) {
-            return LOCAL_REQUIRED_GROUNDED_TICKS;
-        }
-
         if (client.isIntegratedServerRunning()) {
             return LOCAL_REQUIRED_GROUNDED_TICKS;
         }
@@ -87,7 +82,7 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public int getLatencyMs() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.isIntegratedServerRunning()) {
+        if (client.isIntegratedServerRunning()) {
             return 0;
         }
 
@@ -97,10 +92,6 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public String getServerIdentifier() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) {
-            return "global";
-        }
-
         if (client.isIntegratedServerRunning()) {
             return "singleplayer";
         }
