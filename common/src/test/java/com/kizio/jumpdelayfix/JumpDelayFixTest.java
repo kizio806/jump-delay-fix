@@ -229,6 +229,13 @@ class JumpDelayFixTest {
     }
 
     @Test
+    void shouldHandleExceptionDuringShutdownHookRegistration() {
+        assertDoesNotThrow(() -> JumpDelayFix.registerShutdownHook(hook -> {
+            throw new IllegalStateException("JVM shutting down");
+        }));
+    }
+
+    @Test
     void shouldAutoSwitchToSmartOnMediumLatencyServer() {
         AdaptiveJumpInput input = new AdaptiveJumpInput("medium-ping", 110);
         JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
