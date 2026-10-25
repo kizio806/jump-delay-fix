@@ -40,6 +40,11 @@ class JumpDelayFixTest {
 
         assertEquals(1, feedbackCalls.get());
         assertFalse(enabledAfterToggle);
+
+        boolean enabledAfterSecondToggle = JumpDelayFix.toggleEnabled();
+
+        assertEquals(2, feedbackCalls.get());
+        assertTrue(enabledAfterSecondToggle);
     }
 
     @Test
@@ -67,6 +72,8 @@ class JumpDelayFixTest {
     void shouldPersistAutoSwitchSettingAcrossReloads() {
         JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
 
+        assertFalse(JumpDelayFix.toggleAutoProfileSwitch());
+        assertTrue(JumpDelayFix.toggleAutoProfileSwitch());
         assertFalse(JumpDelayFix.toggleAutoProfileSwitch());
         JumpDelayFix.flushPendingConfiguration();
 
