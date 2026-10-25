@@ -8,7 +8,10 @@ import com.kizio.jumpdelayfix.state.RuntimeState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JumpHandlerTest {
 
@@ -128,6 +131,77 @@ class JumpHandlerTest {
     void shouldDelegateServerIdentifierAndLatency() {
         assertEquals("global", handler.getServerIdentifier());
         assertEquals(-1, handler.getLatencyMs());
+    }
+
+    @Test
+    void shouldRejectJumpWhenLandingPrematurely() {
+        input.jumpPressed = true;
+        input.onGround = true;
+        input.playerY = 64.0D;
+        handler.tick();
+
+        input.jumpPressed = false;
+        input.onGround = false;
+        input.playerY = 64.5D;
+        handler.tick();
+
+        input.onGround = true;
+        input.playerY = 64.0D;
+        handler.tick();
+
+        assertEquals(1, handler.getRejectedJumpCount());
+        assertEquals(1, handler.getAdaptivePenaltyTicks());
+    }
+
+    @Test
+    void shouldReduceAdaptivePenaltyOnSuccessfulJumpStreak() {
+        input.jumpPressed = true;
+        input.onGround = true;
+        input.playerY = 64.0D;
+        handler.tick();
+
+        input.jumpPressed = false;
+        input.onGround = false;
+        input.playerY = 64.5D;
+        handler.tick();
+
+        input.onGround = true;
+        input.playerY = 64.0D;
+        handler.tick();
+
+        assertEquals(1, handler.getAdaptivePenaltyTicks());
+
+        for (int i = 0; i < 3; i++) {
+            input.jumpPressed = true;
+            input.onGround = true;
+            input.playerY = 64.0D;
+            handler.tick();
+            handler.tick();
+
+            input.jumpPressed = false;
+            input.onGround = false;
+            input.playerY = 64.5D;
+            handler.tick();
+
+            input.playerY = 65.0D;
+            handler.tick();
+
+            input.onGround = true;
+            input.playerY = 64.0D;
+            handler.tick();
+        }
+
+        assertEquals(3, handler.getConfirmedJumpCount());
+        assertEquals(0, handler.getAdaptivePenaltyTicks());
+    }
+
+    @Test
+    void shouldHandleNoOpJumpHandlerGracefully() {
+        JumpHandler noOpHandler = JumpHandler.noOp();
+        assertDoesNotThrow(noOpHandler::tick);
+        assertEquals("global", noOpHandler.getServerIdentifier());
+        assertEquals(-1, noOpHandler.getLatencyMs());
+        assertThrows(NullPointerException.class, () -> new JumpHandler(null));
     }
 
     private static final class FakeJumpInput implements JumpInput {
