@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -217,6 +218,14 @@ class JumpDelayFixTest {
     void shouldInitializeWithDefaultConfigDirectory() {
         assertDoesNotThrow(() -> JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP));
         assertTrue(JumpDelayFix.isEnabled());
+    }
+
+    @Test
+    void shouldExecuteShutdownHookRunnableSuccessfully() {
+        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
+        Runnable hook = JumpDelayFix.createShutdownHookRunnable();
+        assertDoesNotThrow(hook::run);
+        JumpDelayFix.setPendingSaveForTests(CompletableFuture.completedFuture(null));
     }
 
     @Test
