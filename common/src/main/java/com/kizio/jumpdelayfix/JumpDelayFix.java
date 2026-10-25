@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public final class JumpDelayFix {
 
@@ -280,6 +281,10 @@ public final class JumpDelayFix {
     }
 
     private static void registerShutdownHookIfNeeded() {
+        registerShutdownHook(hook -> Runtime.getRuntime().addShutdownHook(hook));
+    }
+
+    static void registerShutdownHook(Consumer<Thread> registrar) {
         if (shutdownHookRegistered) {
             return;
         }
@@ -287,7 +292,7 @@ public final class JumpDelayFix {
         Thread hook = new Thread(createShutdownHookRunnable(), Constants.MOD_ID + "-config-flush");
 
         try {
-            Runtime.getRuntime().addShutdownHook(hook);
+            registrar.accept(hook);
             shutdownHookRegistered = true;
         } catch (IllegalStateException | SecurityException exception) {
             LOGGER.debug("Unable to register configuration flush shutdown hook", exception);
@@ -316,6 +321,7 @@ public final class JumpDelayFix {
         RuntimeState.setEnabled(true);
         RuntimeState.setProfile(JumpProfile.SMART);
         initialized = false;
+        shutdownHookRegistered = false;
     }
 
     static synchronized void setPendingSaveForTests(CompletableFuture<Void> future) {
