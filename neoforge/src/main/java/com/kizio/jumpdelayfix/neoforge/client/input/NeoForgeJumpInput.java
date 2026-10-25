@@ -29,8 +29,7 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public boolean isJumpPressed() {
         Minecraft client = Minecraft.getInstance();
-        return client != null
-                && client.options != null
+        return client.options != null
                 && client.options.keyJump != null
                 && client.options.keyJump.isDown();
     }
@@ -38,14 +37,14 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public boolean isPlayerOnGround() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client != null ? client.player : null;
+        LocalPlayer player = client.player;
         return isPlayerValid(player) && player.onGround();
     }
 
     @Override
     public void jump() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client != null ? client.player : null;
+        LocalPlayer player = client.player;
         if (isPlayerValid(player)) {
             player.jumpFromGround();
         }
@@ -54,7 +53,7 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public double getPlayerY() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client != null ? client.player : null;
+        LocalPlayer player = client.player;
         if (!isPlayerValid(player)) {
             return Double.NaN;
         }
@@ -76,10 +75,6 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public int requiredGroundedTicksBeforeJump() {
         Minecraft client = Minecraft.getInstance();
-        if (client == null) {
-            return LOCAL_REQUIRED_GROUNDED_TICKS;
-        }
-
         if (client.hasSingleplayerServer()) {
             return LOCAL_REQUIRED_GROUNDED_TICKS;
         }
@@ -90,7 +85,7 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public int getLatencyMs() {
         Minecraft client = Minecraft.getInstance();
-        if (client == null || client.hasSingleplayerServer()) {
+        if (client.hasSingleplayerServer()) {
             return 0;
         }
 
@@ -100,10 +95,6 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public String getServerIdentifier() {
         Minecraft client = Minecraft.getInstance();
-        if (client == null) {
-            return "global";
-        }
-
         if (client.hasSingleplayerServer()) {
             return "singleplayer";
         }
