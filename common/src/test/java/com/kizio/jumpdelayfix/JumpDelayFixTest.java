@@ -176,6 +176,30 @@ class JumpDelayFixTest {
         assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
         assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
         assertTrue(JumpDelayFix.isEnabled());
+        assertEquals("global", JumpDelayFix.getActiveServerId());
+    }
+
+    @Test
+    void shouldExposeDiagnosticStatistics() {
+        AdaptiveJumpInput input = new AdaptiveJumpInput("stats-server", 50);
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        runTicks(input, 10);
+
+        assertEquals("stats-server", JumpDelayFix.getActiveServerId());
+        assertTrue(JumpDelayFix.getConfirmedJumpCount() >= 0);
+        assertTrue(JumpDelayFix.getRejectedJumpCount() >= 0);
+
+        JumpDelayFix.resetTransientState();
+        assertEquals("stats-server", JumpDelayFix.getActiveServerId());
+    }
+
+    @Test
+    void shouldReturnEarlyWhenServerHasNoStats() {
+        MutableServerJumpInput input = new MutableServerJumpInput();
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+        input.serverId = "unseen-server";
+        assertDoesNotThrow(JumpDelayFix::onClientTick);
     }
 
     @Test
