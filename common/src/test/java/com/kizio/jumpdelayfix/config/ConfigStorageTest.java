@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConfigStorageTest {
@@ -65,5 +67,39 @@ class ConfigStorageTest {
         assertFalse(loadedConfig.config().autoProfileSwitch());
         assertEquals(1, loadedConfig.serverProfiles().size());
         assertEquals(JumpProfile.COMPETITIVE, loadedConfig.serverProfiles().get("server-a"));
+    }
+
+    @Test
+    void shouldValidateArgumentsOnSave() {
+        Path validPath = tempDir.resolve("config.properties");
+        RuntimeConfig validConfig = RuntimeConfig.defaults();
+        Map<String, JumpProfile> validProfiles = Map.of();
+
+        assertThrows(NullPointerException.class, () -> ConfigStorage.save(null, validConfig, validProfiles));
+        assertThrows(NullPointerException.class, () -> ConfigStorage.save(validPath, null, validProfiles));
+        assertThrows(NullPointerException.class, () -> ConfigStorage.save(validPath, validConfig, null));
+    }
+
+    @Test
+    void shouldIgnoreNullOrBlankServerIdsWhenSaving() {
+        Path configFile = tempDir.resolve("profiles.properties");
+        RuntimeConfig config = RuntimeConfig.defaults();
+        Map<String, JumpProfile> profiles = new HashMap<>();
+        profiles.put("valid-server", JumpProfile.SMART);
+        profiles.put("", JumpProfile.COMPETITIVE);
+        profiles.put("   ", JumpProfile.STABLE);
+
+        ConfigStorage.save(configFile, config, profiles);
+        ConfigStorage.LoadedConfig loaded = ConfigStorage.load(configFile);
+
+        assertEquals(1, loaded.serverProfiles().size());
+        assertEquals(JumpProfile.SMART, loaded.serverProfiles().get("valid-server"));
+    }
+
+    @Test
+    void shouldFallbackToDefaultsWhenLoadFailsWithIoException() {
+        ConfigStorage.LoadedConfig loaded = ConfigStorage.load(tempDir);
+        assertTrue(loaded.config().autoProfileSwitch());
+        assertTrue(loaded.serverProfiles().isEmpty());
     }
 }
