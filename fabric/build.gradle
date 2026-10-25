@@ -170,8 +170,23 @@ def supportsMinecraftRequirement = { String versionText, String requirementText 
         if (clause.startsWith("=")) {
             return compareMinecraftVersions(versionText, clause.substring(1)) == 0
         }
-        if (!(clause ==~ /^\d+\.\d+\.\d+$/)) {
-            throw new GradleException("Unsupported Fabric Minecraft requirement syntax '${requirementText}' in dependency metadata.")
+        if (clause.startsWith("~")) {
+            def base = clause.substring(1).replaceAll(/[-+].*$/, '')
+            def parsedBase = parseMinecraftVersion(base)
+            def isLowerSatisfied = compareMinecraftVersions(versionText, base) >= 0
+            def isUpperSatisfied = compareMinecraftVersions(versionText, "${parsedBase.major}.${parsedBase.minor + 1}.0") < 0
+            return isLowerSatisfied && isUpperSatisfied
+        }
+        if (clause.startsWith("^")) {
+            def base = clause.substring(1).replaceAll(/[-+].*$/, '')
+            def parsedBase = parseMinecraftVersion(base)
+            def isLowerSatisfied = compareMinecraftVersions(versionText, base) >= 0
+            def isUpperSatisfied = compareMinecraftVersions(versionText, "${parsedBase.major + 1}.0.0") < 0
+            return isLowerSatisfied && isUpperSatisfied
+        }
+        if (!(clause ==~ /^\d+(\.\d+)*$/)) {
+            println "Warning: Unsupported Fabric Minecraft requirement syntax '${clause}' in '${requirementText}'."
+            return true
         }
         return compareMinecraftVersions(versionText, clause) == 0
     }

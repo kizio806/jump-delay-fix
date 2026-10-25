@@ -1,6 +1,7 @@
 package com.kizio.jumpdelayfix.neoforge.client.input;
 
 import com.kizio.jumpdelayfix.input.JumpInput;
+import com.kizio.jumpdelayfix.input.LatencyCompensation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
@@ -11,27 +12,10 @@ import java.util.Locale;
 @OnlyIn(Dist.CLIENT)
 public final class NeoForgeJumpInput implements JumpInput {
 
-    private static final int LOCAL_REQUIRED_GROUNDED_TICKS = 1;
-    private static final int REMOTE_TICKS_LOW_LATENCY = 2;
-    private static final int REMOTE_TICKS_MEDIUM_LATENCY = 3;
-    private static final int REMOTE_TICKS_HIGH_LATENCY = 4;
-    private static final int REMOTE_TICKS_VERY_HIGH_LATENCY = 5;
-
-    private static final int LOW_LATENCY_MAX_MS = 80;
-    private static final int MEDIUM_LATENCY_MAX_MS = 150;
-    private static final int HIGH_LATENCY_MAX_MS = 250;
-    private static final int UNKNOWN_LATENCY_MS = -1;
-    private static final int UNKNOWN_LATENCY_FALLBACK_TICKS = REMOTE_TICKS_MEDIUM_LATENCY;
+    private int lastPlayerId = -1;
 
     @Override
     public boolean isJumpPressed() {
-        Minecraft client = Minecraft.getInstance();
-        return client.options != null
-                && client.options.keyJump != null
-                && client.options.keyJump.isDown();
-    }
-
-    private int lastPlayerId = -1;
 
     @Override
     public boolean isPlayerOnGround() {
@@ -77,10 +61,10 @@ public final class NeoForgeJumpInput implements JumpInput {
     public int requiredGroundedTicksBeforeJump() {
         Minecraft client = Minecraft.getInstance();
         if (client.hasSingleplayerServer()) {
-            return LOCAL_REQUIRED_GROUNDED_TICKS;
+            return LatencyCompensation.LOCAL_REQUIRED_GROUNDED_TICKS;
         }
 
-        return mapLatencyToRequiredTicks(getEstimatedLatencyMs(client));
+        return LatencyCompensation.mapLatencyToRequiredTicks(getEstimatedLatencyMs(client));
     }
 
     @Override
@@ -107,36 +91,19 @@ public final class NeoForgeJumpInput implements JumpInput {
 
         return "multiplayer-unknown";
     }
+
     private int getEstimatedLatencyMs(Minecraft client) {
         LocalPlayer player = client.player;
         var connection = client.getConnection();
         if (player == null || connection == null) {
-            return UNKNOWN_LATENCY_MS;
+            return LatencyCompensation.UNKNOWN_LATENCY_MS;
         }
 
         var playerInfo = connection.getPlayerInfo(player.getUUID());
         if (playerInfo == null) {
-            return UNKNOWN_LATENCY_MS;
+            return LatencyCompensation.UNKNOWN_LATENCY_MS;
         }
 
         return Math.max(0, playerInfo.getLatency());
-    }
-
-    private int mapLatencyToRequiredTicks(int latencyMs) {
-        if (latencyMs == UNKNOWN_LATENCY_MS) {
-            return UNKNOWN_LATENCY_FALLBACK_TICKS;
-        }
-
-        if (latencyMs <= LOW_LATENCY_MAX_MS) {
-            return REMOTE_TICKS_LOW_LATENCY;
-        }
-        if (latencyMs <= MEDIUM_LATENCY_MAX_MS) {
-            return REMOTE_TICKS_MEDIUM_LATENCY;
-        }
-        if (latencyMs <= HIGH_LATENCY_MAX_MS) {
-            return REMOTE_TICKS_HIGH_LATENCY;
-        }
-
-        return REMOTE_TICKS_VERY_HIGH_LATENCY;
     }
 }
