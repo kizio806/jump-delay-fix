@@ -37,7 +37,6 @@ sonar {
         property 'sonar.projectKey', 'kizio806_jump-delay-fix'
         property 'sonar.organization', 'kizio806'
         property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/common/build/reports/jacoco/test/jacocoTestReport.xml"
         property 'sonar.coverage.exclusions', '**/fabric/**,**/fabric/**/*,**/neoforge/**,**/neoforge/**/*,fabric/**,fabric/**/*,neoforge/**,neoforge/**/*,**/client/**,**/client/**/*'
         property 'sonar.cpd.exclusions', '**/fabric/**,**/fabric/**/*,**/neoforge/**,**/neoforge/**/*,fabric/**,fabric/**/*,neoforge/**,neoforge/**/*,**/client/**,**/client/**/*'
     }
@@ -52,14 +51,15 @@ ext.sharedVersions = [
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'jacoco'
+    if (project.name == 'common') {
+        apply plugin: 'jacoco'
+    }
 
     sonar {
         properties {
             if (project.name == 'common') {
                 property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
             } else {
-                property 'sonar.coverage.jacoco.xmlReportPaths', ''
                 property 'sonar.coverage.exclusions', '**/*,**/*.*,**'
                 property 'sonar.cpd.exclusions', '**/*,**/*.*,**'
             }
@@ -79,7 +79,9 @@ subprojects {
 
     tasks.withType(Test).configureEach {
         useJUnitPlatform()
-        finalizedBy('jacocoTestReport')
+        if (project.name == 'common') {
+            finalizedBy('jacocoTestReport')
+        }
     }
 
     tasks.withType(JacocoReport).configureEach {
