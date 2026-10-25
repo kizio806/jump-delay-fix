@@ -1,0 +1,30 @@
+fabric:
+  - changed-files:
+      - any-glob-to-any-file: 'fabric/**'
+
+neoforge:
+  - changed-files:
+      - any-glob-to-any-file: 'neoforge/**'
+
+common:
+  - changed-files:
+      - any-glob-to-any-file: 'common/**'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - '*.md'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'gradle/**'
+          - 'build.gradle'
+          - 'settings.gradle'
+          - 'gradle.properties'
