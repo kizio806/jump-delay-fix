@@ -36,22 +36,33 @@ Ensure the project builds correctly with the new metadata.
 Update `CHANGELOG.md` for user-visible changes for the new `<mod_version>`.
 That section becomes the release body for both GitHub Releases and Modrinth.
 
-## 5. Tag and Push
+## 5. One-Command Release Procedure
 
-Commit the changes, then create and push a single tag matching the `mod_version` to trigger the release workflow.
+To perform the release safely, use the included release script:
 
 ```bash
-git add -A
-git commit -m "chore(release): v<mod_version>"
-git tag v<mod_version>
-git push origin main --tags
+# 1. First run dry-run verification
+./scripts/release.sh --dry-run
+
+# 2. When ready, publish the release with one command:
+./scripts/release.sh --publish
 ```
+
+The script automatically:
+1. Validates source hygiene, structure, and semver compliance.
+2. Executes strict compilation and pre-publish verification gates.
+3. Builds release artifacts for all supported loaders.
+4. Verifies artifact existence and file sizes.
+5. Creates the release commit (`chore(release): v<mod_version>`) and annotated tag (`v<mod_version>`).
+6. Pushes the branch and tag to GitHub.
 
 ## 6. Automated Delivery
 
-The tag triggers `.github/workflows/release.yml` and handles the entire release process automatically:
+Pushing the release tag triggers `.github/workflows/release.yml`, which handles the entire deployment process automatically:
 
-- Build and verification
-- Release notes generation
-- GitHub Release publishing
-- Modrinth upload (if configured)
+- Clean environment build and verification
+- Release notes generation from `CHANGELOG.md`
+- SHA-256 checksum generation
+- GitHub Release publishing with Fabric and NeoForge JARs
+- Modrinth publishing for Fabric and NeoForge (using configured secrets)
+- CurseForge publishing (if configured)
