@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -190,6 +191,42 @@ class JumpDelayFixTest {
 
         JumpDelayFix.resetTransientState();
         assertEquals("stats-server", JumpDelayFix.getActiveServerId());
+    }
+
+    @Test
+    void shouldSafelyIgnoreTickWhenNotInitialized() {
+        assertDoesNotThrow(JumpDelayFix::onClientTick);
+    }
+
+    @Test
+    void shouldInitializeWithDefaultConfigDirectory() {
+        assertDoesNotThrow(() -> JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP));
+        assertTrue(JumpDelayFix.isEnabled());
+    }
+
+    @Test
+    void shouldAutoSwitchToSmartOnMediumLatencyServer() {
+        AdaptiveJumpInput input = new AdaptiveJumpInput("medium-ping", 110);
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        runTicks(input, 48);
+
+        assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
+    }
+
+    @Test
+    void shouldFallbackToDefaultServerWhenServerIdIsBlankOrNull() {
+        MutableServerJumpInput input = new MutableServerJumpInput();
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        input.serverId = "   ";
+        JumpDelayFix.onClientTick();
+        JumpDelayFix.setProfile(JumpProfile.COMPETITIVE);
+
+        input.serverId = null;
+        JumpDelayFix.onClientTick();
+        assertEquals(JumpProfile.COMPETITIVE, JumpDelayFix.getProfile());
     }
 
     private static void runTicks(AdaptiveJumpInput input, int count) {
