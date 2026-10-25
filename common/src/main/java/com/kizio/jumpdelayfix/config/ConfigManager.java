@@ -111,6 +111,10 @@ final class ConfigManager {
         dirty = false;
     }
 
+    void setPendingSaveForTests(CompletableFuture<Void> pendingSave) {
+        this.pendingSave = pendingSave;
+    }
+
     private void markDirty() {
         dirty = true;
         saveCooldownTicks = CONFIG_SAVE_DEBOUNCE_TICKS;
