@@ -60,7 +60,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           if [ -n "${SONAR_TOKEN:-}" ]; then
-            ./gradlew --info --no-daemon clean :common:test :common:jacocoTestReport sonar \
+            ./gradlew --no-daemon clean :common:test :common:jacocoTestReport sonar \
               -Dsonar.exclusions="fabric/**,neoforge/**,**/fabric/**,**/neoforge/**,**/client/**" \
               -Dsonar.coverage.exclusions="fabric/**,neoforge/**,**/fabric/**,**/neoforge/**,**/client/**"
           else
