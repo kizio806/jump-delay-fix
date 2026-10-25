@@ -219,8 +219,8 @@ public final class JumpDelayFix {
             return;
         }
 
-        ServerAdaptiveStats stats = serverStats.get(activeServerId);
-        int attempts = stats != null ? stats.confirmedJumps() + stats.rejectedJumps() : 0;
+        ServerAdaptiveStats stats = serverStats.computeIfAbsent(activeServerId, ignored -> new ServerAdaptiveStats());
+        int attempts = stats.confirmedJumps() + stats.rejectedJumps();
         if (attempts < AUTO_SWITCH_MIN_ATTEMPTS) {
             return;
         }
