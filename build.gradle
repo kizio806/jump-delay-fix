@@ -38,6 +38,8 @@ sonar {
         property 'sonar.organization', 'kizio806'
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/common/build/reports/jacoco/test/jacocoTestReport.xml,${projectDir}/fabric/build/reports/jacoco/test/jacocoTestReport.xml,${projectDir}/neoforge/build/reports/jacoco/test/jacocoTestReport.xml"
+        property 'sonar.coverage.exclusions', 'fabric/**,neoforge/**'
+        property 'sonar.cpd.exclusions', 'fabric/**,neoforge/**'
     }
 }
 
