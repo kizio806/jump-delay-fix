@@ -37,9 +37,9 @@ sonar {
         property 'sonar.projectKey', 'kizio806_jump-delay-fix'
         property 'sonar.organization', 'kizio806'
         property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/common/build/reports/jacoco/test/jacocoTestReport.xml,${projectDir}/fabric/build/reports/jacoco/test/jacocoTestReport.xml,${projectDir}/neoforge/build/reports/jacoco/test/jacocoTestReport.xml"
-        property 'sonar.coverage.exclusions', '**/fabric/**,**/neoforge/**,fabric/**,neoforge/**'
-        property 'sonar.cpd.exclusions', '**/fabric/**,**/neoforge/**,fabric/**,neoforge/**'
+        property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/common/build/reports/jacoco/test/jacocoTestReport.xml"
+        property 'sonar.coverage.exclusions', '**/fabric/**,**/fabric/**/*,**/neoforge/**,**/neoforge/**/*,fabric/**,fabric/**/*,neoforge/**,neoforge/**/*,**/client/**,**/client/**/*'
+        property 'sonar.cpd.exclusions', '**/fabric/**,**/fabric/**/*,**/neoforge/**,**/neoforge/**/*,fabric/**,fabric/**/*,neoforge/**,neoforge/**/*,**/client/**,**/client/**/*'
     }
 }
 
@@ -60,8 +60,8 @@ subprojects {
                 property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
             } else {
                 property 'sonar.coverage.jacoco.xmlReportPaths', ''
-                property 'sonar.coverage.exclusions', '**'
-                property 'sonar.cpd.exclusions', '**'
+                property 'sonar.coverage.exclusions', '**/*,**/*.*,**'
+                property 'sonar.cpd.exclusions', '**/*,**/*.*,**'
             }
         }
     }
