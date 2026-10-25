@@ -38,6 +38,7 @@ Practical rule:
 ## Hard Quality Gates
 
 - `strictCheck` is mandatory for CI and release workflows
+- Spotless formatting is enforced via `spotlessCheck` (and auto-formatted via `spotlessApply`)
 - Java sources in `src/main/java` and `src/test/java` must not contain `//` or `/* */` comments
 - Java sources must not contain `TODO`, `FIXME`, or `XXX` markers
 - wildcard imports are forbidden
