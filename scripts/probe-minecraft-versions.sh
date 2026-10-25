@@ -33,8 +33,8 @@ trim() {
 
 validate_mc_version() {
   local version="$1"
-  if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "Invalid Minecraft version '$version'. Expected MAJOR.MINOR.PATCH"
+  if [[ ! "$version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+    echo "Invalid Minecraft version '$version'. Expected MAJOR.MINOR or MAJOR.MINOR.PATCH"
     exit 1
   fi
 }
