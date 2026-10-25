@@ -2,8 +2,10 @@ package com.kizio.jumpdelayfix.state;
 
 import com.kizio.jumpdelayfix.model.JumpProfile;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
 public final class RuntimeState {
 
     private static final AtomicBoolean ENABLED = new AtomicBoolean(true);
@@ -36,16 +38,15 @@ public final class RuntimeState {
     }
 
     public static JumpProfile cycleProfile() {
-        while (true) {
-            JumpProfile current = PROFILE.get();
-            JumpProfile next = current.next();
-            if (PROFILE.compareAndSet(current, next)) {
-                return next;
-            }
-        }
+        return PROFILE.updateAndGet(JumpProfile::next);
     }
 
     public static void setProfile(JumpProfile profile) {
-        PROFILE.set(profile);
+        PROFILE.set(Objects.requireNonNull(profile, "profile"));
+    }
+
+    public static void reset() {
+        ENABLED.set(true);
+        PROFILE.set(JumpProfile.SMART);
     }
 }
