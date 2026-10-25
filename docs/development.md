@@ -39,8 +39,9 @@ Practical rule:
 
 - `strictCheck` is mandatory for CI and release workflows
 - Spotless formatting is enforced via `spotlessCheck` (and auto-formatted via `spotlessApply`)
-- Java sources in `src/main/java` and `src/test/java` must not contain `//` or `/* */` comments
+- Java sources in `common/src`, `fabric/src`, and `neoforge/src` must not contain `//` or `/* */` comments
 - Java sources must not contain `TODO`, `FIXME`, or `XXX` markers
+- root `src/` directory is prohibited; all sources must reside in `common/`, `fabric/`, or `neoforge/` (enforced by `validateStructure`)
 - wildcard imports are forbidden
 - compilation is enforced with `-Xlint:all -Werror`
 
