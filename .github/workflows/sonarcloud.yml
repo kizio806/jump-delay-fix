@@ -60,8 +60,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           if [ -n "${SONAR_TOKEN:-}" ]; then
-            ./gradlew --no-daemon clean test jacocoTestReport sonar
+            ./gradlew --no-daemon clean :common:test :common:jacocoTestReport sonar \
+              -Dsonar.exclusions="fabric/**,neoforge/**,**/fabric/**,**/neoforge/**,**/client/**" \
+              -Dsonar.coverage.exclusions="fabric/**,neoforge/**,**/fabric/**,**/neoforge/**,**/client/**"
           else
             echo "SONAR_TOKEN is not configured. Running tests and JaCoCo coverage reports without SonarCloud upload."
-            ./gradlew --no-daemon clean test jacocoTestReport
+            ./gradlew --no-daemon clean :common:test :common:jacocoTestReport
           fi
