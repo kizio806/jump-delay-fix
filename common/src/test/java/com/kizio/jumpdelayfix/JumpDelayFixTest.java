@@ -201,6 +201,14 @@ class JumpDelayFixTest {
     }
 
     @Test
+    void shouldReturnEarlyWhenServerHasNoStats() {
+        MutableServerJumpInput input = new MutableServerJumpInput();
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+        input.serverId = "unseen-server";
+        assertDoesNotThrow(JumpDelayFix::onClientTick);
+    }
+
+    @Test
     void shouldSafelyIgnoreTickWhenNotInitialized() {
         assertDoesNotThrow(JumpDelayFix::onClientTick);
     }
