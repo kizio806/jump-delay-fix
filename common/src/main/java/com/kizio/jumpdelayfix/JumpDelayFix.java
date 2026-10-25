@@ -318,8 +318,7 @@ public final class JumpDelayFix {
         lastRejectedJumps = 0;
         profileSwitchCooldownTicks = 0;
 
-        RuntimeState.setEnabled(true);
-        RuntimeState.setProfile(JumpProfile.SMART);
+        RuntimeState.reset();
         initialized = false;
         shutdownHookRegistered = false;
     }
