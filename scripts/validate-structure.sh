@@ -5,6 +5,11 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+if [[ -d "src" ]]; then
+    echo "Disallowed orphaned root src/ directory detected. All code must reside in common/, fabric/, or neoforge/."
+    exit 1
+fi
+
 EMPTY_DIRS=$(find common/src/main fabric/src/main neoforge/src/main -type d -empty | sort || true)
 
 if [[ -n "$EMPTY_DIRS" ]]; then
@@ -74,5 +79,7 @@ if (( ${#missing_tests[@]} > 0 )); then
     printf '%s\n' "${missing_tests[@]}"
     exit 1
 fi
+
+"$ROOT_DIR/scripts/test-version-scripts.sh"
 
 echo "Structure validation passed."

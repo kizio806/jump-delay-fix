@@ -5,7 +5,7 @@ usage() {
   cat <<'USAGE'
 Usage:
   ./scripts/set-minecraft-version.sh \
-    --base-minecraft <x.y.z> \
+    --base-minecraft <x.y[.z]> \
     [--supported-versions <csv>] \
     [--fabric-supported-versions <csv>] \
     [--neoforge-supported-versions <csv>] \
@@ -14,7 +14,7 @@ Usage:
     [--fabric-api <value>] \
     [--neoforge <value>] \
     [--resource-pack-format <number>] \
-    [--fabric-range ">=x.y.z <x.y.z"] \
+    [--fabric-range ">=x.y[.z] <x.y"] \
     [--minecraft-range "[x.y,x.y)"]
 
 Compatibility mode:
@@ -50,8 +50,8 @@ trim() {
 
 validate_mc_version() {
   local version="$1"
-  if [[ ! "$version" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-    echo "Invalid Minecraft version '$version'. Expected MAJOR.MINOR.PATCH"
+  if [[ ! "$version" =~ ^([0-9]+)\.([0-9]+)(\.([0-9]+))?$ ]]; then
+    echo "Invalid Minecraft version '$version'. Expected MAJOR.MINOR or MAJOR.MINOR.PATCH"
     exit 1
   fi
 }
@@ -60,6 +60,7 @@ version_sort_key() {
   local version="$1"
   local major minor patch
   IFS='.' read -r major minor patch <<< "$version"
+  patch="${patch:-0}"
   printf '%08d.%08d.%08d %s\n' "$major" "$minor" "$patch" "$version"
 }
 
@@ -67,6 +68,7 @@ next_patch_version() {
   local version="$1"
   local major minor patch
   IFS='.' read -r major minor patch <<< "$version"
+  patch="${patch:-0}"
   echo "${major}.${minor}.$((patch + 1))"
 }
 
@@ -162,10 +164,10 @@ set_prop() {
 }
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PROPS_FILE="$PROJECT_ROOT/gradle.properties"
+PROPS_FILE="${PROPS_FILE:-$PROJECT_ROOT/gradle.properties}"
 
 if [ ! -f "$PROPS_FILE" ]; then
-  echo "Cannot find gradle.properties at $PROPS_FILE"
+  echo "Cannot find properties file at $PROPS_FILE"
   exit 1
 fi
 
@@ -316,7 +318,7 @@ if [ "${#MODRINTH_SUPPORTED_VERSIONS[@]}" -eq 0 ]; then
 fi
 
 if [ -z "$FABRIC_RANGE" ]; then
-  FABRIC_RANGE=">=${FABRIC_MIN} <$(next_patch_version "$FABRIC_MAX")"
+  FABRIC_RANGE=">=${FABRIC_MIN} <${base_major}.$((base_minor + 1))"
 fi
 
 if [ -z "$MINECRAFT_RANGE" ]; then
