@@ -48,3 +48,7 @@ run/
 
 # OS files
 .DS_Store
+
+# Prevent legacy/orphaned root src directory
+/src/
+
