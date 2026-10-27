@@ -61,6 +61,7 @@ The project uses a multi-project Gradle layout:
 
 ## Project Documentation
 
+- **Compatibility Matrix:** [docs/compatibility-matrix.md](docs/compatibility-matrix.md)
 - **Wiki:** [docs/wiki/Home.md](docs/wiki/Home.md)
 - **Development & Code Style:** [docs/development.md](docs/development.md)
 - **Architecture:** [docs/architecture.md](docs/architecture.md)
