@@ -30,8 +30,8 @@ Practical rule:
 
 ## File And Repo Naming
 
-- repository docs should expose the same top-level files across projects:
-  `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/Home.md`, `docs/Code-Style.md`, `docs/MODRINTH.md`, `docs/RELEASES.md`, `docs/wiki/*`
+- repository docs should expose consistent documentation across projects:
+  `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/architecture.md`, `docs/development.md`, `docs/installation.md`, `docs/modrinth.md`, `docs/releases.md`, `docs/troubleshooting.md`, `docs/wiki/*`
 - docs should describe what the repository actually targets
 - release automation should publish the same verified artifacts described by the README and docs
 
@@ -39,11 +39,103 @@ Practical rule:
 
 - `strictCheck` is mandatory for CI and release workflows
 - Spotless formatting is enforced via `spotlessCheck` (and auto-formatted via `spotlessApply`)
-- Java sources in `common/src`, `fabric/src`, and `neoforge/src` must not contain `//` or `/* */` comments
-- Java sources must not contain `TODO`, `FIXME`, or `XXX` markers
+- Java sources in `common/src`, `fabric/src`, and `neoforge/src` allow meaningful explanatory comments, while trivial or redundant comments are forbidden
+- Java sources must not contain `TODO`, `FIXME`, or `XXX` markers (enforced by `validateSourceHygiene`)
 - root `src/` directory is prohibited; all sources must reside in `common/`, `fabric/`, or `neoforge/` (enforced by `validateStructure`)
-- wildcard imports are forbidden
+- wildcard imports are forbidden (enforced by `validateSourceHygiene`)
 - compilation is enforced with `-Xlint:all -Werror`
+
+## Procedure for Adding or Porting to a New Minecraft Version
+
+When adding support for a new Minecraft version (minor update or new major line), follow this 9-step procedure:
+
+### 1. Select Compile Target and Support Range
+- Identify the base Minecraft version (e.g. `1.21.11` or `1.21.10`).
+- Decide whether the new version can share an existing minor line or requires dedicated versioned artifacts. On the 1.21.x line, Fabric API requires dedicated versioned artifacts for each patch.
+
+### 2. Determine Loader & Dependency Versions
+- Consult Fabric Maven and NeoForge Maven for matching runtime artifacts:
+  - Fabric Loader (e.g. `>=0.18.4`)
+  - Fabric API (e.g. `0.134.1+1.21.9`, `0.138.4+1.21.10`, `0.141.6+1.21.11`)
+  - NeoForge (e.g. `21.9.16-beta`, `21.10.64`, `21.11.48`)
+  - ModMenu (e.g. `16.0.1` or `17.0.0-beta.2`)
+- Determine the NeoForge loader range (e.g. `[21.9,21.10)` or `[21.9,21.12)`). Ensure the range is bounded on both sides.
+
+### 3. Check Mappings & Player Input APIs
+- For modern lines (Minecraft >= 26.x), official Mojang mappings are standard across both Fabric and NeoForge.
+- For 1.21.x legacy lines, Fabric uses Yarn (`net.fabricmc.yarn`).
+- Inspect client player classes for changes to:
+  - Jump execution: `LocalPlayer.jumpFromGround()` (Mojang) vs `ClientPlayerEntity.jump()` (Yarn)
+  - Water/swimming: `isInWater()`, `isSwimming()` vs `isTouchingWater()`, `isSwimming()`
+  - Crawling: `isVisuallyCrawling()` vs `isCrawling()`
+  - Gliding / Fall flying: `isFallFlying()` vs `isGliding()`
+  - Vehicles / Passengers: `isPassenger()` vs `hasVehicle()`
+
+### 4. Update Version Properties
+Use the automated updater script rather than manual editing:
+```bash
+./scripts/set-minecraft-version.sh \
+  --base-minecraft <mc_version> \
+  --supported-versions "<supported_versions>" \
+  --fabric-api "<fabric_api_version>" \
+  --neoforge "<neoforge_version>" \
+  --mod-version <mod_version>
+```
+Verify `gradle.properties` matches the matrix intersection rule (`modrinth_game_versions = fabric_game_versions ∩ neoforge_game_versions`).
+
+### 5. Probe Candidate Versions
+Run the isolated candidate probe to verify compilation and dependency resolution before committing changes:
+```bash
+./scripts/probe-minecraft-versions.sh \
+  --versions "<comma_separated_versions>" \
+  --tasks "test publishReadyCheck"
+```
+
+### 6. Build Release Artifacts
+- For single-line branches:
+  ```bash
+  ./gradlew clean buildAll
+  ```
+- For multi-artifact lines (e.g. 1.21.9–1.21.11):
+  ```bash
+  ./scripts/build-all-versions.sh
+  ```
+
+### 7. Inspect Built JARs and Checksums
+Directly inspect the ZIP archive contents to guarantee clean production packaging:
+```bash
+# Check fabric.mod.json depends and absence of test structures
+unzip -p fabric/build/libs/*.jar fabric.mod.json | grep -A 5 '"depends"'
+unzip -l fabric/build/libs/*.jar | grep -E "test|Test|\.nbt|\.snbt"
+
+# Check neoforge.mods.toml dependencies
+unzip -p neoforge/build/libs/*.jar META-INF/neoforge.mods.toml | grep -A 10 '\[\[dependencies'
+
+# Compute SHA-256 checksums
+sha256sum fabric/build/libs/*.jar neoforge/build/libs/*.jar
+```
+
+### 8. Execute Quality & Release Readiness Gates
+Run the entire validation gauntlet:
+```bash
+# Code formatting
+./gradlew spotlessApply
+
+# Structural layout and source hygiene
+./gradlew validateStructure validateSourceHygiene
+
+# Unit and integration test suite
+./gradlew test --rerun
+
+# Matrix consistency, SemVer, and dedicated server safety
+./gradlew strictCheck publishReadyCheck buildAll
+```
+
+### 9. Update Compatibility Matrix and Release Documentation
+- Update `docs/compatibility-matrix.md` with the newly verified versions, artifact names, and SHA-256 hashes.
+- Update `README.md` and `docs/wiki/Installation-and-Compatibility.md`.
+- Update `.github/workflows/release.yml` if new versioned publication steps are needed.
+- Document any user-visible changes in `CHANGELOG.md`.
 
 ## Documentation Style
 

@@ -6,8 +6,8 @@ Jump Delay Fix is a lightweight client-side mod for Minecraft that removes the a
 
 ## Pages
 
-- [Home](Home) — This page
-- [Installation and Compatibility](Installation-and-Compatibility) — How to install and which versions are supported
-- [User Guide](User-Guide) — How to use the mod in-game
-- [Development](Development-and-Release) — How to build and contribute
-- [Troubleshooting](Troubleshooting) — Common issues and fixes
+- [Home](Home.md) — This page
+- [Installation and Compatibility](Installation-and-Compatibility.md) — How to install and which versions are supported
+- [User Guide](User-Guide.md) — How to use the mod in-game
+- [Development](Development-and-Release.md) — How to build and contribute
+- [Troubleshooting](Troubleshooting.md) — Common issues and fixes
