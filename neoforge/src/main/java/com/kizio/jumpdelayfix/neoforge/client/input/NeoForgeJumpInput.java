@@ -1,5 +1,6 @@
 package com.kizio.jumpdelayfix.neoforge.client.input;
 
+import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.input.JumpInput;
 import com.kizio.jumpdelayfix.input.LatencyCompensation;
 import net.minecraft.client.Minecraft;
@@ -13,6 +14,7 @@ import java.util.Locale;
 public final class NeoForgeJumpInput implements JumpInput {
 
     private int lastPlayerId = -1;
+    private boolean wasValid = false;
 
     @Override
     public boolean isJumpPressed() {
@@ -26,28 +28,14 @@ public final class NeoForgeJumpInput implements JumpInput {
     public boolean isPlayerOnGround() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client.player;
-        if (player == null) {
-            lastPlayerId = -1;
-            return false;
-        }
-
-        int currentId = player.getId();
-        if (lastPlayerId != -1 && currentId != lastPlayerId) {
-            lastPlayerId = currentId;
-            return false;
-        }
-        lastPlayerId = currentId;
-
-        return player.isAlive()
-                && !player.isSleeping()
-                && player.onGround();
+        return isPlayerValid(player) && player.onGround();
     }
 
     @Override
     public void jump() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client.player;
-        if (player != null && player.isAlive() && !player.isSleeping()) {
+        if (isPlayerValid(player)) {
             player.jumpFromGround();
         }
     }
@@ -56,10 +44,30 @@ public final class NeoForgeJumpInput implements JumpInput {
     public double getPlayerY() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client.player;
-        if (player == null) {
+        if (!isPlayerValid(player)) {
             return Double.NaN;
         }
         return player.getY();
+    }
+
+    private boolean isPlayerValid(LocalPlayer player) {
+        if (player == null || !player.isAlive() || player.isSleeping()
+                || player.isPassenger() || player.isFallFlying()
+                || player.getAbilities().flying || player.isInWater() || player.isSwimming()
+                || player.isVisuallyCrawling()) {
+            if (wasValid) {
+                JumpDelayFix.resetTransientState();
+                wasValid = false;
+            }
+            return false;
+        }
+        wasValid = true;
+        int currentId = player.getId();
+        if (lastPlayerId != -1 && lastPlayerId != currentId) {
+            JumpDelayFix.resetTransientState();
+        }
+        lastPlayerId = currentId;
+        return true;
     }
 
     @Override

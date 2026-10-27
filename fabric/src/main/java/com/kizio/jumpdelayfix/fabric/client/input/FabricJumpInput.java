@@ -1,10 +1,12 @@
 package com.kizio.jumpdelayfix.fabric.client.input;
 
+import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.input.JumpInput;
 import com.kizio.jumpdelayfix.input.LatencyCompensation;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 
 import java.util.Locale;
 
@@ -12,6 +14,7 @@ import java.util.Locale;
 public final class FabricJumpInput implements JumpInput {
 
     private int lastPlayerId = -1;
+    private boolean wasValid = false;
 
     @Override
     public boolean isJumpPressed() {
@@ -24,38 +27,47 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public boolean isPlayerOnGround() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player == null) {
-            lastPlayerId = -1;
-            return false;
-        }
-
-        int currentId = client.player.getId();
-        if (lastPlayerId != -1 && currentId != lastPlayerId) {
-            lastPlayerId = currentId;
-            return false;
-        }
-        lastPlayerId = currentId;
-
-        return client.player.isAlive()
-                && !client.player.isSleeping()
-                && client.player.isOnGround();
+        ClientPlayerEntity player = client.player;
+        return isPlayerValid(player) && player.isOnGround();
     }
 
     @Override
     public void jump() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player != null && client.player.isAlive() && !client.player.isSleeping()) {
-            client.player.jump();
+        ClientPlayerEntity player = client.player;
+        if (isPlayerValid(player)) {
+            player.jump();
         }
     }
 
     @Override
     public double getPlayerY() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player == null) {
+        ClientPlayerEntity player = client.player;
+        if (!isPlayerValid(player)) {
             return Double.NaN;
         }
-        return client.player.getY();
+        return player.getY();
+    }
+
+    private boolean isPlayerValid(ClientPlayerEntity player) {
+        if (player == null || !player.isAlive() || player.isSleeping()
+                || player.hasVehicle() || player.isGliding()
+                || player.getAbilities().flying || player.isTouchingWater() || player.isSwimming()
+                || player.isCrawling()) {
+            if (wasValid) {
+                JumpDelayFix.resetTransientState();
+                wasValid = false;
+            }
+            return false;
+        }
+        wasValid = true;
+        int currentId = player.getId();
+        if (lastPlayerId != -1 && lastPlayerId != currentId) {
+            JumpDelayFix.resetTransientState();
+        }
+        lastPlayerId = currentId;
+        return true;
     }
 
     @Override

@@ -136,8 +136,14 @@ jobs:
             exit 1
           fi
 
-      - name: Build all loaders
-        run: ./gradlew --no-daemon --stacktrace clean buildAll strictCheck
+      - name: Build all loaders and versions
+        run: |
+          if [ -f "./scripts/build-all-versions.sh" ]; then
+            chmod +x ./scripts/build-all-versions.sh
+            ./scripts/build-all-versions.sh
+          else
+            ./gradlew --no-daemon --stacktrace clean buildAll strictCheck
+          fi
 
       - name: Generate release notes
         if: startsWith(github.ref, 'refs/tags/')
@@ -173,40 +179,42 @@ jobs:
             echo "## Jump Delay Fix ${CURRENT}"
             echo
             echo "- Mod version: ${{ steps.metadata.outputs.mod_version }}"
-            echo "- Minecraft version: ${{ steps.metadata.outputs.minecraft_version }}"
-            echo "- Fabric versions: ${{ steps.metadata.outputs.fabric_game_versions }}"
-            echo "- NeoForge versions: ${{ steps.metadata.outputs.neoforge_game_versions }}"
+            echo "- Minecraft versions: 1.21.9, 1.21.10, 1.21.11"
+            echo "- Fabric versions: 1.21.9, 1.21.10, 1.21.11"
+            echo "- NeoForge versions: 1.21.9, 1.21.10, 1.21.11"
             echo
             cat "$NOTES_SOURCE"
           } > release-notes.md
 
       - name: Generate checksums
         run: |
-          sha256sum "${{ steps.artifacts.outputs.fabric_jar }}" > fabric/build/libs/FABRIC-SHA256SUMS.txt
-          sha256sum "${{ steps.artifacts.outputs.neoforge_jar }}" > neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
+          if [ -d "release-artifacts" ]; then
+            echo "Checksums already generated in release-artifacts/SHA256SUMS.txt"
+          else
+            sha256sum "${{ steps.artifacts.outputs.fabric_jar }}" > fabric/build/libs/FABRIC-SHA256SUMS.txt
+            sha256sum "${{ steps.artifacts.outputs.neoforge_jar }}" > neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
+          fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         with:
           name: jumpdelayfix-release-artifacts
           path: |
+            release-artifacts/*.jar
+            release-artifacts/SHA256SUMS.txt
             ${{ steps.artifacts.outputs.fabric_jar }}
-            fabric/build/libs/FABRIC-SHA256SUMS.txt
             ${{ steps.artifacts.outputs.neoforge_jar }}
-            neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Create GitHub release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
-          name: Jump Delay Fix v${{ steps.metadata.outputs.mod_version }} (Fabric MC ${{ steps.fabric_range.outputs.label }}, NeoForge MC ${{ steps.neoforge_range.outputs.label }})
+          name: Jump Delay Fix v${{ steps.metadata.outputs.mod_version }} (Minecraft 1.21.9 - 1.21.11)
           body_path: release-notes.md
           files: |
-            ${{ steps.artifacts.outputs.fabric_jar }}
-            fabric/build/libs/FABRIC-SHA256SUMS.txt
-            ${{ steps.artifacts.outputs.neoforge_jar }}
-            neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
+            release-artifacts/*.jar
+            release-artifacts/SHA256SUMS.txt
 
       - name: Check publishing credentials
         if: startsWith(github.ref, 'refs/tags/')
@@ -217,7 +225,7 @@ jobs:
           [ -n "${MODRINTH_TOKEN:-}" ] && echo "Modrinth token is configured." || echo "Modrinth token is not configured (will be skipped)."
           [ -n "${CURSEFORGE_TOKEN:-}" ] && echo "CurseForge token is configured." || echo "CurseForge token is not configured (will be skipped)."
 
-      - name: Publish to Modrinth & CurseForge - Fabric
+      - name: Publish to Modrinth & CurseForge - Minecraft 1.21.9
         if: startsWith(github.ref, 'refs/tags/')
         uses: Kir-Antipov/mc-publish@c23376546a97f5ba7984e94445da359459b14419 # v3.3
         with:
@@ -225,17 +233,21 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for Fabric
-          version: ${{ steps.metadata.outputs.mod_version }}-fabric
+          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} (Minecraft 1.21.9)
+          version: ${{ steps.metadata.outputs.mod_version }}-1.21.9
           version-type: release
-          game-versions: ${{ steps.fabric_versions.outputs.list }}
-          loaders: fabric
+          game-versions: 1.21.9
+          loaders: |
+            fabric
+            neoforge
           java: ${{ steps.metadata.outputs.java_version }}
           environment: client
-          files: ${{ steps.artifacts.outputs.fabric_jar }}
+          files: |
+            release-artifacts/jumpdelayfix-fabric-1.21.9-${{ steps.metadata.outputs.mod_version }}.jar
+            release-artifacts/jumpdelayfix-neoforge-1.21.9-${{ steps.metadata.outputs.mod_version }}.jar
           changelog-file: release-notes.md
 
-      - name: Publish to Modrinth & CurseForge - NeoForge
+      - name: Publish to Modrinth & CurseForge - Minecraft 1.21.10
         if: startsWith(github.ref, 'refs/tags/')
         uses: Kir-Antipov/mc-publish@c23376546a97f5ba7984e94445da359459b14419 # v3.3
         with:
@@ -243,12 +255,38 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} for NeoForge
-          version: ${{ steps.metadata.outputs.mod_version }}-neoforge
+          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} (Minecraft 1.21.10)
+          version: ${{ steps.metadata.outputs.mod_version }}-1.21.10
           version-type: release
-          game-versions: ${{ steps.neoforge_versions.outputs.list }}
-          loaders: neoforge
+          game-versions: 1.21.10
+          loaders: |
+            fabric
+            neoforge
           java: ${{ steps.metadata.outputs.java_version }}
           environment: client
-          files: ${{ steps.artifacts.outputs.neoforge_jar }}
+          files: |
+            release-artifacts/jumpdelayfix-fabric-1.21.10-${{ steps.metadata.outputs.mod_version }}.jar
+            release-artifacts/jumpdelayfix-neoforge-1.21.10-${{ steps.metadata.outputs.mod_version }}.jar
+          changelog-file: release-notes.md
+
+      - name: Publish to Modrinth & CurseForge - Minecraft 1.21.11
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: Kir-Antipov/mc-publish@c23376546a97f5ba7984e94445da359459b14419 # v3.3
+        with:
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          name: Jump Delay Fix ${{ steps.metadata.outputs.mod_version }} (Minecraft 1.21.11)
+          version: ${{ steps.metadata.outputs.mod_version }}-1.21.11
+          version-type: release
+          game-versions: 1.21.11
+          loaders: |
+            fabric
+            neoforge
+          java: ${{ steps.metadata.outputs.java_version }}
+          environment: client
+          files: |
+            release-artifacts/jumpdelayfix-fabric-1.21.11-${{ steps.metadata.outputs.mod_version }}.jar
+            release-artifacts/jumpdelayfix-neoforge-1.21.11-${{ steps.metadata.outputs.mod_version }}.jar
           changelog-file: release-notes.md

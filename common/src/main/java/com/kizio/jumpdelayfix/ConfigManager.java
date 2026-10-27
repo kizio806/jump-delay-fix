@@ -97,7 +97,8 @@ final class ConfigManager {
         awaitPendingSaves();
         runtimeConfig = RuntimeConfig.defaults();
         serverProfiles.clear();
-        markDirty();
+        dirty = true;
+        saveCooldownTicks = 0;
         flushNow();
     }
 
@@ -108,10 +109,6 @@ final class ConfigManager {
         configFilePath = Path.of("config", "jumpdelayfix.properties");
         saveCooldownTicks = 0;
         dirty = false;
-    }
-
-    void setPendingSaveForTests(CompletableFuture<Void> pendingSave) {
-        this.pendingSave = pendingSave;
     }
 
     private void markDirty() {
@@ -136,6 +133,10 @@ final class ConfigManager {
         } finally {
             pendingSave = CompletableFuture.completedFuture(null);
         }
+    }
+
+    void setPendingSaveForTests(CompletableFuture<Void> pendingSave) {
+        this.pendingSave = pendingSave;
     }
 
     private static <V> Map<String, V> createServerScopedLruMap() {

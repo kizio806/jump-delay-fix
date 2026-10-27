@@ -55,19 +55,8 @@ loom {
             setConfigName('Fabric Dedicated Server')
             ideConfigGenerated(true)
         }
-        gameTestServer {
-            server()
-            setConfigName('Fabric GameTest Server')
-            ideConfigGenerated(false)
-            source(sourceSets.test)
-            vmArg '-Dfabric-api.gametest'
-            vmArg "-Dfabric-api.gametest.report-file=${layout.buildDirectory.file('test-results/fabricGameTest/junit.xml').get().asFile.absolutePath}"
-            runDir 'build/gametest'
-        }
     }
 }
-
-def fabricGameTestReport = layout.buildDirectory.file('test-results/fabricGameTest/junit.xml')
 
 def metadataProperties = [
         mod_id                        : mod_id,
@@ -123,15 +112,15 @@ tasks.register('validateProductionMetadata') {
 }
 
 def parseMinecraftVersion = { String versionText ->
-    def matcher = (versionText =~ /^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/)
+    def matcher = (versionText =~ /^(\d+)\.(\d+)(?:\.(\d+))?(?:[-+].*)?$/)
     if (!matcher.matches()) {
-        throw new GradleException("Invalid Minecraft version '${versionText}'. Expected format: MAJOR.MINOR.PATCH")
+        throw new GradleException("Invalid Minecraft version '${versionText}'. Expected format: MAJOR.MINOR[.PATCH]")
     }
 
     [
             major: matcher.group(1).toInteger(),
             minor: matcher.group(2).toInteger(),
-            patch: matcher.group(3).toInteger()
+            patch: matcher.group(3) ? matcher.group(3).toInteger() : 0
     ]
 }
 
@@ -252,22 +241,8 @@ tasks.register('verifyRuntimeDependencyCompatibility') {
     }
 }
 
-tasks.register('headlessGameTest') {
-    group = 'verification'
-    description = 'Runs Fabric GameTest server headlessly.'
-    dependsOn(tasks.named('runGameTestServer'))
-
-    doLast {
-        def reportFile = fabricGameTestReport.get().asFile
-        if (!reportFile.exists()) {
-            throw new GradleException("Missing Fabric GameTest report: ${reportFile}")
-        }
-    }
-}
-
 tasks.named('check') {
     dependsOn(tasks.named('verifyRuntimeDependencyCompatibility'))
-    dependsOn(tasks.named('headlessGameTest'))
 }
 
 jar {

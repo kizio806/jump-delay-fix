@@ -21,9 +21,24 @@ class NeoForgeMetadataContractTest {
         assertTrue(metadata.contains("modId=\"jumpdelayfix\""));
         assertTrue(metadata.contains("displayTest=\"IGNORE_SERVER_VERSION\""));
         assertTrue(metadata.contains("[[dependencies.jumpdelayfix]]"));
+        assertTrue(metadata.contains("modId=\"neoforge\""));
         assertTrue(metadata.contains("modId=\"minecraft\""));
-        assertTrue(metadata.contains("modId=\"jei\""));
-        assertTrue(metadata.contains("side=\"CLIENT\""));
+        assertTrue(metadata.matches("(?s).*modId=\"neoforge\"\\s+mandatory=true\\s+versionRange=\"\\[[0-9]+.*,[0-9]+.*\\)\".*"),
+                "neoforge dependency must have explicitly bounded versionRange");
+        assertTrue(metadata.matches("(?s).*modId=\"minecraft\"\\s+mandatory=true\\s+versionRange=\"\\[[0-9]+.*,[0-9]+.*\\)\".*"),
+                "minecraft dependency must have explicitly bounded versionRange");
+        assertFalse(metadata.contains("modId=\"jei\""));
+        assertFalse(metadata.contains("modId=\"emi\""));
+    }
+
+    @Test
+    void shouldEnforcePlayerStateChecksInBytecodeContract() throws IOException {
+        String bytecode = readResource("/com/kizio/jumpdelayfix/neoforge/client/input/NeoForgeJumpInput.class");
+        assertTrue(bytecode.contains("isInWater"));
+        assertTrue(bytecode.contains("isSwimming"));
+        assertTrue(bytecode.contains("isVisuallyCrawling"));
+        assertTrue(bytecode.contains("isPassenger"));
+        assertTrue(bytecode.contains("isFallFlying"));
     }
 
     private static String readResource(String resourcePath) throws IOException {

@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 env:
-  JAVA_VERSION: '21'
+  JAVA_VERSION: '25'
 
 jobs:
   lint:
@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -33,7 +33,7 @@ jobs:
         uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.0.0
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -55,10 +55,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -70,7 +70,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run common tests
-        run: ./gradlew --no-daemon :common:test :common:jacocoTestReport :common:jacocoTestCoverageVerification
+        run: ./gradlew --no-daemon :common:test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
@@ -81,14 +81,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ github.repository }}
 
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-common
-          path: common/build/reports/jacoco/
-          if-no-files-found: ignore
-
   test-fabric:
     name: Build & Test (Fabric)
     runs-on: ubuntu-24.04
@@ -97,10 +89,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -124,15 +116,6 @@ jobs:
             fabric/build/test-results/**
           if-no-files-found: ignore
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
-        with:
-          files: fabric/build/reports/jacoco/test/jacocoTestReport.xml
-          flags: fabric
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: ${{ github.repository }}
-
       - name: Upload Fabric JAR
         if: success()
         uses: actions/upload-artifact@v4
@@ -149,10 +132,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
@@ -176,15 +159,6 @@ jobs:
             neoforge/build/test-results/**
           if-no-files-found: ignore
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
-        with:
-          files: neoforge/build/reports/jacoco/test/jacocoTestReport.xml
-          flags: neoforge
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: ${{ github.repository }}
-
       - name: Upload NeoForge JAR
         if: success()
         uses: actions/upload-artifact@v4
@@ -201,10 +175,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}

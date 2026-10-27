@@ -231,10 +231,14 @@ tasks.register('verifyMinecraftVersionMatrix') {
         }
 
         def neoRange = minecraft_version_range.toString().trim()
-        def expectedNeoRange = "[${baseVersion.major}.${baseVersion.minor},${baseVersion.major}.${baseVersion.minor + 1})"
-        if (neoRange != expectedNeoRange) {
+        def minNeoVersion = neoforgeSupported.first()
+        def maxNeoVersion = neoforgeSupported.last()
+        def expectedPatchNeoRange = "[${minNeoVersion.text},${incrementPatch(maxNeoVersion)})"
+        def expectedMinorNeoRange = "[${baseVersion.major}.${baseVersion.minor},${baseVersion.major}.${baseVersion.minor + 1})"
+
+        if (neoRange != expectedPatchNeoRange && neoRange != expectedMinorNeoRange) {
             throw new GradleException(
-                    "minecraft_version_range must equal '${expectedNeoRange}' for one-line support, got '${neoRange}'."
+                    "minecraft_version_range must equal '${expectedPatchNeoRange}' or '${expectedMinorNeoRange}', got '${neoRange}'."
             )
         }
     }

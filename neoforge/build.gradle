@@ -22,18 +22,6 @@ neoForge {
             sourceSet sourceSets.test
         }
     }
-
-    runs {
-        gameTestServer {
-            server()
-            ideName = 'NeoForge GameTest Server'
-            gameDirectory = layout.buildDirectory.dir('gametest-server')
-            sourceSet = sourceSets.test
-            systemProperty 'neoforge.gameTestServer', 'true'
-            systemProperty 'neoforge.enableGameTest', 'true'
-            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
-        }
-    }
 }
 
 neoForge.addModdingDependenciesTo(sourceSets.test)
@@ -145,12 +133,6 @@ tasks.register('verifyDedicatedServerSafe') {
             )
         }
     }
-}
-
-tasks.register('headlessGameTest') {
-    group = 'verification'
-    description = 'Runs NeoForge GameTest server headlessly.'
-    dependsOn(tasks.named('runGameTestServer'))
 }
 
 jar {

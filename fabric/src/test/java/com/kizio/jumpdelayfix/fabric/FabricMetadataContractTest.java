@@ -22,6 +22,21 @@ class FabricMetadataContractTest {
         assertTrue(metadata.contains("com.kizio.jumpdelayfix.fabric.JumpDelayFixFabric"));
         assertTrue(metadata.contains("\"minecraft\":"));
         assertTrue(metadata.contains("\"fabric-api\":"));
+        assertFalse(metadata.contains("\"rei\""));
+        assertFalse(metadata.contains("\"emi\""));
+    }
+
+    @Test
+    void shouldEnforcePlayerStateChecksInBytecodeContract() throws IOException {
+        try (var stream = getClass().getResourceAsStream("/com/kizio/jumpdelayfix/fabric/client/input/FabricJumpInput.class")) {
+            org.junit.jupiter.api.Assertions.assertNotNull(stream, "Missing FabricJumpInput class");
+            String bytecode = new String(stream.readAllBytes(), StandardCharsets.ISO_8859_1);
+            assertTrue(bytecode.contains("isTouchingWater"));
+            assertTrue(bytecode.contains("isSwimming"));
+            assertTrue(bytecode.contains("isCrawling"));
+            assertTrue(bytecode.contains("hasVehicle"));
+            assertTrue(bytecode.contains("isGliding"));
+        }
     }
 
 }

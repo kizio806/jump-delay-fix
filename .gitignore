@@ -51,4 +51,5 @@ run/
 
 # Prevent legacy/orphaned root src directory
 /src/
+release-artifacts/
 
