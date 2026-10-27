@@ -20,7 +20,7 @@ Future AI agents working in this repository must operate as **experienced senior
 - **Do NOT add unnecessary complexity:** Keep the mod lightweight; its primary value is zero-overhead responsive jumping.
 - **Do NOT create rules or assertions without evidence:** Every constraint must be grounded in Gradle tasks, bash validation scripts, or Minecraft runtime requirements.
 - **Do NOT assume existing code is correct:** Always run tests, inspect bytecode dependencies, and check git blame/history.
-- **Do NOT add Java comments (`//` or `/* */`):** The automated gate `scripts/validate-source-hygiene.sh` will instantly fail the build. Code must be completely self-documenting.
+- **Do NOT add trivial or redundant comments:** Meaningful explanatory comments are permitted when clarifying non-obvious algorithms or contracts, but redundant comments that merely restate the code, `TODO`/`FIXME`/`XXX` tags, and wildcard imports are prohibited.
 
 ---
 
@@ -41,7 +41,7 @@ Before touching any code, an AI agent must complete four distinct analysis steps
 
 ### Step 2: Inspect Existing Patterns & Caveats
 - **Static State vs. Instance Encapsulation:** `JumpDelayFix` manages static singleton state. Be aware of state reset methods (`resetTransientState()`, `resetForTests()`) required between test cases or player disconnects.
-- **Atomic Configuration Persistence:** Config is stored in `.properties` format under `config/jumpdelayfix.json` (actually properties syntax), written atomically via temporary files and `StandardCopyOption.ATOMIC_MOVE`. Server IDs are Base64-encoded to support arbitrary server IP/domain characters.
+- **Atomic Configuration Persistence:** Config is stored in `.properties` format under `config/jumpdelayfix.properties`, written atomically via temporary files and `StandardCopyOption.ATOMIC_MOVE`. Server IDs are Base64-encoded to support arbitrary server IP/domain characters.
 - **Localization Contracts:** All user-facing strings must exist in all 10 supported locale files (`en_us.json`, `pl_pl.json`, `de_de.json`, `es_es.json`, `fr_fr.json`, `it_it.json`, `ja_jp.json`, `pt_br.json`, `ru_ru.json`, `zh_cn.json`). `LocalizationCompletenessTest` validates key and placeholder parity across all locales.
 
 ### Step 3: Check Documentation & Repository Guidelines
@@ -59,7 +59,7 @@ Before touching any code, an AI agent must complete four distinct analysis steps
 ## 3. During Coding: Standards & Conventions
 
 ### 1. Source Hygiene (Hard Gate)
-- **Zero Comments:** Absolutely no `//` or `/* */` comments in `common`, `fabric`, or `neoforge` Java sources. `validateSourceHygiene` scans for comments and will abort the build.
+- **Comment Hygiene:** Meaningful, high-value comments explaining complex algorithms or non-obvious contracts are permitted. Redundant, trivial comments that merely narrate self-explanatory code are strictly discouraged.
 - **Zero Markers:** No `TODO`, `FIXME`, or `XXX` tags in Java files.
 - **Zero Wildcard Imports:** `import java.util.*;` is strictly prohibited. Use explicit single-class imports.
 
@@ -107,7 +107,7 @@ Before concluding any work, an AI agent must run the complete verification gaunt
 ### Self-Review Checklist
 - [ ] Run `git status` to ensure no untracked scratch files or unintended changes exist.
 - [ ] Run `git diff` to review every changed line against project standards.
-- [ ] Ensure `scripts/validate-source-hygiene.sh` passes cleanly (no comments, no TODOs, no wildcard imports).
+- [ ] Ensure `scripts/validate-source-hygiene.sh` passes cleanly (no TODOs, no wildcard imports).
 - [ ] If user-facing strings were changed, verify all 10 language JSON files match (`LocalizationCompletenessTest`).
 - [ ] If Minecraft version metadata was touched, ensure `gradle.properties` matches the single patch-line requirement (`verifyMinecraftVersionMatrix`).
 - [ ] Update `CHANGELOG.md` under the appropriate version heading if changes are user-visible.
