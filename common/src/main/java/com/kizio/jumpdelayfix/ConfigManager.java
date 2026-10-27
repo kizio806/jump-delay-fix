@@ -111,10 +111,6 @@ final class ConfigManager {
         dirty = false;
     }
 
-    void setPendingSaveForTests(CompletableFuture<Void> pendingSave) {
-        this.pendingSave = pendingSave;
-    }
-
     private void markDirty() {
         dirty = true;
         saveCooldownTicks = CONFIG_SAVE_DEBOUNCE_TICKS;
@@ -137,6 +133,10 @@ final class ConfigManager {
         } finally {
             pendingSave = CompletableFuture.completedFuture(null);
         }
+    }
+
+    void setPendingSaveForTests(CompletableFuture<Void> pendingSave) {
+        this.pendingSave = pendingSave;
     }
 
     private static <V> Map<String, V> createServerScopedLruMap() {

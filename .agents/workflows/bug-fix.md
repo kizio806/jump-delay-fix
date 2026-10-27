@@ -50,8 +50,8 @@ flowchart TD
   - Apply the cleanest, most maintainable fix directly at the root cause.
   - Avoid defensive workarounds or "band-aid" patches that mask the underlying failure.
 - **Maintain Source Hygiene:**
-  - **Zero comments:** Do not add `//` or `/* */` comments explaining the bug fix in Java sources.
-  - **Zero markers:** Do not leave `// FIXME` or `// BUG FIX` in code.
+  - **Comment hygiene:** Avoid trivial, redundant comments; meaningful explanatory comments are permitted when necessary.
+  - **Zero markers:** Do not leave `TODO`, `FIXME`, or `XXX` markers in code.
   - Make the code self-explanatory through clean naming.
 - **Multi-Loader Consistency:**
   - If the fix touches loader glue, apply matching changes to both `fabric/` and `neoforge/`.

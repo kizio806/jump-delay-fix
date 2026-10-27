@@ -32,13 +32,6 @@ if [[ -z "$SOURCE_FILES" ]]; then
     exit 1
 fi
 
-COMMENT_MATCHES=$(rg -n --glob '*.java' '(//|/\*)' "${EXISTING_SOURCE_DIRS[@]}" || true)
-if [[ -n "$COMMENT_MATCHES" ]]; then
-    echo "Java source hygiene violation: comments are not allowed in source files."
-    echo "$COMMENT_MATCHES"
-    exit 1
-fi
-
 MARKER_MATCHES=$(rg -n --glob '*.java' '\b(TODO|FIXME|XXX)\b' "${EXISTING_SOURCE_DIRS[@]}" || true)
 if [[ -n "$MARKER_MATCHES" ]]; then
     echo "Java source hygiene violation: TODO/FIXME/XXX markers are not allowed."
