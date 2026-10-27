@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.1.2
+
+### Added
+- Unified Minecraft 1.21.9, 1.21.10, and 1.21.11 support across both Fabric and NeoForge loaders.
+- Dedicated multi-version build script (`scripts/build-all-versions.sh`) generating 6 versioned production JARs with checksum verification.
+- Canonical compatibility matrix (`docs/compatibility-matrix.md`) detailing Minecraft 1.21.x versions, loader dependencies, and release targets.
+- Comprehensive 9-step procedure for porting and adding new Minecraft versions documented in `docs/development.md`.
+- Explicit player state predicates in Fabric (Yarn mappings: `isTouchingWater`, `isSwimming`, `isCrawling`, `hasVehicle`, `isGliding`) and NeoForge (`isInWater`, `isSwimming`, `isVisuallyCrawling`, `isPassenger`, `isFallFlying`) input adapters.
+- Inconclusive jump tracking diagnostics (`getInconclusiveJumpCount()`) and regression verification.
+
+### Changed
+- Refined jump confirmation heuristics in `JumpHandler`: airborne jumps exceeding the timeout window without detected rollback or lift confirmation are marked inconclusive rather than falsely credited as successful confirmations, preventing skewed server latency statistics and inappropriate adaptive penalties.
+- Reorganized `ConfigManager` package structure to `com.kizio.jumpdelayfix.ConfigManager` in pure Java `:common` with package structure validation.
+- Completely removed dead and unused GameTest structure files and duplicate resources.
+- Strengthened NeoForge loader version ranges to strictly bounded intervals (`[21.9,21.10)`, `[21.10,21.11)`, `[21.11,21.12)`).
+- Hardened CI/CD release workflow to ensure each artifact is published exclusively for its exact compatible Minecraft version without broad version leakage.
+
+### Compatibility
+- Minecraft: 1.21.9, 1.21.10, 1.21.11 (Both Fabric and NeoForge)
+- Fabric: Loader 0.18.4+ / Fabric API 0.134.1+ (1.21.9), 0.138.4+ (1.21.10), 0.141.6+ (1.21.11)
+- NeoForge: 21.9.16+ (1.21.9), 21.10.64+ (1.21.10), 21.11.48+ (1.21.11)
+- Java: 21
+
 ## 1.1.1
 
 ### Added

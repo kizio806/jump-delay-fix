@@ -17,11 +17,12 @@ Jump Delay Fix is a lightweight, client-side Minecraft mod designed to provide s
 
 ## Supported Platforms & Versions
 
-This branch (`support/1.21.9-1.21.11`) targets the **1.21.x** Minecraft patch line.
+This branch (`support/1.21.9-1.21.11`) targets the **1.21.9 – 1.21.11** Minecraft line.
 
-- **Fabric Loader:** 0.18.4+ (Fabric API 0.141.6+1.21.11)
-- **NeoForge:** 21.9.16+ (loader range `[21.9,)`)
-- **Minecraft:** Fabric: 1.21.11; NeoForge: 1.21.9, 1.21.10, 1.21.11
+- **Fabric:** 1.21.9 (Fabric API 0.134.1+), 1.21.10 (Fabric API 0.138.4+), 1.21.11 (Fabric API 0.141.6+)
+- **NeoForge:** 1.21.9 (NeoForge 21.9.16+), 1.21.10 (NeoForge 21.10.64+), 1.21.11 (NeoForge 21.11.48+)
+- **Artifact Strategy:** 6 dedicated versioned JARs built via `./scripts/build-all-versions.sh`.
+- **Compatibility Matrix:** See [docs/compatibility-matrix.md](docs/compatibility-matrix.md) for full artifact details and checksums.
 
 *(See `gradle.properties` for the exact current version metadata.)*
 
@@ -56,6 +57,7 @@ The project uses a multi-project Gradle layout:
 
 ## Project Documentation
 
+- **Compatibility Matrix:** [docs/compatibility-matrix.md](docs/compatibility-matrix.md)
 - **Wiki:** [docs/wiki/Home.md](docs/wiki/Home.md)
 - **Installation Guide:** [docs/installation.md](docs/installation.md)
 - **Troubleshooting:** [docs/troubleshooting.md](docs/troubleshooting.md)
