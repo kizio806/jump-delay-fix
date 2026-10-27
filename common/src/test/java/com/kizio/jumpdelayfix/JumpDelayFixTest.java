@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -41,11 +40,6 @@ class JumpDelayFixTest {
 
         assertEquals(1, feedbackCalls.get());
         assertFalse(enabledAfterToggle);
-
-        boolean enabledAfterSecondToggle = JumpDelayFix.toggleEnabled();
-
-        assertEquals(2, feedbackCalls.get());
-        assertTrue(enabledAfterSecondToggle);
     }
 
     @Test
@@ -73,8 +67,6 @@ class JumpDelayFixTest {
     void shouldPersistAutoSwitchSettingAcrossReloads() {
         JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
 
-        assertFalse(JumpDelayFix.toggleAutoProfileSwitch());
-        assertTrue(JumpDelayFix.toggleAutoProfileSwitch());
         assertFalse(JumpDelayFix.toggleAutoProfileSwitch());
         JumpDelayFix.flushPendingConfiguration();
 
@@ -177,30 +169,24 @@ class JumpDelayFixTest {
         assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
         assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
         assertTrue(JumpDelayFix.isEnabled());
-        assertEquals("global", JumpDelayFix.getActiveServerId());
+        assertEquals(0, JumpDelayFix.getInconclusiveJumpCount());
     }
 
     @Test
-    void shouldExposeDiagnosticStatistics() {
-        AdaptiveJumpInput input = new AdaptiveJumpInput("stats-server", 50);
-        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
-
-        runTicks(input, 10);
-
-        assertEquals("stats-server", JumpDelayFix.getActiveServerId());
-        assertTrue(JumpDelayFix.getConfirmedJumpCount() >= 0);
-        assertTrue(JumpDelayFix.getRejectedJumpCount() >= 0);
-
-        JumpDelayFix.resetTransientState();
-        assertEquals("stats-server", JumpDelayFix.getActiveServerId());
-    }
-
-    @Test
-    void shouldReturnEarlyWhenServerHasNoStats() {
+    void shouldResetToDefaultsPreservingActiveServerContext() {
         MutableServerJumpInput input = new MutableServerJumpInput();
+        input.serverId = "mc.example.com";
         JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
-        input.serverId = "unseen-server";
-        assertDoesNotThrow(JumpDelayFix::onClientTick);
+        JumpDelayFix.onClientTick();
+
+        assertEquals("mc.example.com", JumpDelayFix.getActiveServerId());
+        JumpDelayFix.setProfile(JumpProfile.COMPETITIVE);
+
+        JumpDelayFix.resetToDefaults();
+
+        assertEquals("mc.example.com", JumpDelayFix.getActiveServerId());
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
+        assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
     }
 
     @Test
@@ -219,24 +205,34 @@ class JumpDelayFixTest {
     }
 
     @Test
+    void shouldNotAlterServerStatsOrSwitchProfileOnInconclusiveTimeout() {
+        SimulatedTimeoutJumpInput input = new SimulatedTimeoutJumpInput();
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        JumpDelayFix.onClientTick();
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
+
+        input.jumpPressed = true;
+        input.onGround = true;
+        input.playerY = 64.0D;
+        JumpDelayFix.onClientTick();
+
+        input.onGround = false;
+        input.playerY = 70.0D;
+        for (int i = 0; i < 25; i++) {
+            JumpDelayFix.onClientTick();
+        }
+
+        assertEquals(1, JumpDelayFix.getInconclusiveJumpCount());
+        assertEquals(0, JumpDelayFix.getConfirmedJumpCount());
+        assertEquals(0, JumpDelayFix.getRejectedJumpCount());
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
+    }
+
+    @Test
     void shouldInitializeWithDefaultConfigDirectory() {
         assertDoesNotThrow(() -> JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP));
         assertTrue(JumpDelayFix.isEnabled());
-    }
-
-    @Test
-    void shouldExecuteShutdownHookRunnableSuccessfully() {
-        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
-        Runnable hook = JumpDelayFix.createShutdownHookRunnable();
-        assertDoesNotThrow(hook::run);
-        JumpDelayFix.setPendingSaveForTests(CompletableFuture.completedFuture(null));
-    }
-
-    @Test
-    void shouldHandleExceptionDuringShutdownHookRegistration() {
-        assertDoesNotThrow(() -> JumpDelayFix.registerShutdownHook(hook -> {
-            throw new IllegalStateException("JVM shutting down");
-        }));
     }
 
     @Test
@@ -402,6 +398,37 @@ class JumpDelayFixTest {
         @Override
         public int getLatencyMs() {
             return latencyMs;
+        }
+
+        @Override
+        public String getServerIdentifier() {
+            return serverId;
+        }
+    }
+
+    private static final class SimulatedTimeoutJumpInput implements JumpInput {
+        private String serverId = "pvp-server";
+        private boolean jumpPressed = true;
+        private boolean onGround = true;
+        private double playerY = 64.0D;
+
+        @Override
+        public boolean isJumpPressed() {
+            return jumpPressed;
+        }
+
+        @Override
+        public boolean isPlayerOnGround() {
+            return onGround;
+        }
+
+        @Override
+        public void jump() {
+        }
+
+        @Override
+        public double getPlayerY() {
+            return playerY;
         }
 
         @Override

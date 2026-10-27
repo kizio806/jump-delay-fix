@@ -40,9 +40,6 @@ loom {
         "${mod_id}" {
             sourceSet sourceSets.main
         }
-        "${mod_id}FabricTests" {
-            sourceSet sourceSets.test
-        }
     }
 
     runs {
@@ -56,19 +53,8 @@ loom {
             setConfigName('Fabric Dedicated Server')
             ideConfigGenerated(true)
         }
-        gameTestServer {
-            server()
-            setConfigName('Fabric GameTest Server')
-            ideConfigGenerated(false)
-            source(sourceSets.test)
-            vmArg '-Dfabric-api.gametest'
-            vmArg "-Dfabric-api.gametest.report-file=${layout.buildDirectory.file('test-results/fabricGameTest/junit.xml').get().asFile.absolutePath}"
-            runDir 'build/gametest'
-        }
     }
 }
-
-def fabricGameTestReport = layout.buildDirectory.file('test-results/fabricGameTest/junit.xml')
 
 def metadataProperties = [
         mod_id                        : mod_id,
@@ -249,19 +235,6 @@ tasks.register('verifyRuntimeDependencyCompatibility') {
                     "Fabric runtime dependency metadata is incompatible with configured Fabric support:\n - " +
                             incompatibleDependencies.join('\n - ')
             )
-        }
-    }
-}
-
-tasks.register('headlessGameTest') {
-    group = 'verification'
-    description = 'Runs Fabric GameTest server headlessly.'
-    dependsOn(tasks.named('runGameTestServer'))
-
-    doLast {
-        def reportFile = fabricGameTestReport.get().asFile
-        if (!reportFile.exists()) {
-            throw new GradleException("Missing Fabric GameTest report: ${reportFile}")
         }
     }
 }

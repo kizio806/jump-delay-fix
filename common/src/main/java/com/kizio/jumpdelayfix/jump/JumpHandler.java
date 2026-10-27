@@ -22,6 +22,7 @@ public final class JumpHandler {
     private int successfulJumpStreak;
     private int confirmedJumpCount;
     private int rejectedJumpCount;
+    private int inconclusiveJumpCount;
     private int lastRequiredGroundedTicks = 1;
 
     private boolean awaitingJumpResult;
@@ -45,7 +46,8 @@ public final class JumpHandler {
         }
 
         updateJumpBuffer();
-        if (updateAdaptivePenaltyFromJumpResult()) {
+        boolean jumpRejectedOnThisTick = updateAdaptivePenaltyFromJumpResult();
+        if (jumpRejectedOnThisTick) {
             return;
         }
 
@@ -122,15 +124,15 @@ public final class JumpHandler {
             if (jumpAirborneTicks >= MIN_AIRBORNE_TICKS_FOR_CONFIRMATION) {
                 onJumpConfirmed();
             } else {
-                onJumpRejected();
+                onJumpInconclusive();
             }
-            return true;
+            return false;
         }
 
         jumpLandingTicksLeft--;
         if (jumpLandingTicksLeft <= 0) {
-            onJumpRejected();
-            return true;
+            onJumpInconclusive();
+            return false;
         }
 
         return false;
@@ -166,6 +168,11 @@ public final class JumpHandler {
         adaptivePenaltyTicks = Math.min(profile.maxAdaptivePenaltyTicks(), adaptivePenaltyTicks + 1);
     }
 
+    private void onJumpInconclusive() {
+        clearPendingJumpResult();
+        inconclusiveJumpCount++;
+    }
+
     private void clearPendingJumpResult() {
         awaitingJumpResult = false;
         jumpLiftObserved = false;
@@ -197,6 +204,10 @@ public final class JumpHandler {
 
     public int getRejectedJumpCount() {
         return rejectedJumpCount;
+    }
+
+    public int getInconclusiveJumpCount() {
+        return inconclusiveJumpCount;
     }
 
     public int getLatencyMs() {

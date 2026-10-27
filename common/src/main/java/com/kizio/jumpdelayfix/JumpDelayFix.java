@@ -14,8 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public final class JumpDelayFix {
 
@@ -143,7 +141,7 @@ public final class JumpDelayFix {
     public static synchronized void resetToDefaults() {
         configManager.resetToDefaults();
         serverStats.clear();
-        activeServerId = DEFAULT_SERVER_ID;
+        activeServerId = normalizeServerId(jumpHandler.getServerIdentifier());
         RuntimeState.setEnabled(true);
         RuntimeState.setProfile(resolveProfileForServer(activeServerId));
         lastConfirmedJumps = jumpHandler.getConfirmedJumpCount();
@@ -168,6 +166,10 @@ public final class JumpDelayFix {
 
     public static synchronized int getRejectedJumpCount() {
         return jumpHandler.getRejectedJumpCount();
+    }
+
+    static synchronized int getInconclusiveJumpCount() {
+        return jumpHandler.getInconclusiveJumpCount();
     }
 
     public static synchronized void onClientDisconnect() {
@@ -222,7 +224,11 @@ public final class JumpDelayFix {
             return;
         }
 
-        ServerAdaptiveStats stats = serverStats.computeIfAbsent(activeServerId, ignored -> new ServerAdaptiveStats());
+        ServerAdaptiveStats stats = serverStats.get(activeServerId);
+        if (stats == null) {
+            return;
+        }
+
         int attempts = stats.confirmedJumps() + stats.rejectedJumps();
         if (attempts < AUTO_SWITCH_MIN_ATTEMPTS) {
             return;
@@ -276,26 +282,26 @@ public final class JumpDelayFix {
         configManager.rememberProfile(activeServerId, profile);
     }
 
-    static Runnable createShutdownHookRunnable() {
-        return JumpDelayFix::flushPendingConfiguration;
-    }
-
     private static void registerShutdownHookIfNeeded() {
-        registerShutdownHook(hook -> Runtime.getRuntime().addShutdownHook(hook));
-    }
-
-    static void registerShutdownHook(Consumer<Thread> registrar) {
         if (shutdownHookRegistered) {
             return;
         }
 
-        Thread hook = new Thread(createShutdownHookRunnable(), Constants.MOD_ID + "-config-flush");
+        Thread hook = new Thread(() -> {
+            try {
+                flushPendingConfiguration();
+            } catch (RuntimeException exception) {
+                LOGGER.debug("Failed to flush pending configuration during JVM shutdown", exception);
+            }
+        }, Constants.MOD_ID + "-config-flush");
 
         try {
-            registrar.accept(hook);
+            Runtime.getRuntime().addShutdownHook(hook);
             shutdownHookRegistered = true;
-        } catch (IllegalStateException | SecurityException exception) {
-            LOGGER.debug("Unable to register configuration flush shutdown hook", exception);
+        } catch (IllegalStateException exception) {
+            LOGGER.debug("Skipping shutdown hook registration because JVM is shutting down");
+        } catch (SecurityException exception) {
+            LOGGER.warn("Unable to register configuration flush shutdown hook", exception);
         }
     }
 
@@ -320,10 +326,5 @@ public final class JumpDelayFix {
 
         RuntimeState.reset();
         initialized = false;
-        shutdownHookRegistered = false;
-    }
-
-    static synchronized void setPendingSaveForTests(CompletableFuture<Void> future) {
-        configManager.setPendingSaveForTests(future);
     }
 }
