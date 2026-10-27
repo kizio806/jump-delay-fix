@@ -169,6 +169,24 @@ class JumpDelayFixTest {
         assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
         assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
         assertTrue(JumpDelayFix.isEnabled());
+        assertEquals(0, JumpDelayFix.getInconclusiveJumpCount());
+    }
+
+    @Test
+    void shouldResetToDefaultsPreservingActiveServerContext() {
+        MutableServerJumpInput input = new MutableServerJumpInput();
+        input.serverId = "mc.example.com";
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+        JumpDelayFix.onClientTick();
+
+        assertEquals("mc.example.com", JumpDelayFix.getActiveServerId());
+        JumpDelayFix.setProfile(JumpProfile.COMPETITIVE);
+
+        JumpDelayFix.resetToDefaults();
+
+        assertEquals("mc.example.com", JumpDelayFix.getActiveServerId());
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
+        assertTrue(JumpDelayFix.isAutoProfileSwitchEnabled());
     }
 
     @Test
@@ -184,6 +202,31 @@ class JumpDelayFixTest {
     @Test
     void shouldSafelyIgnoreTickWhenNotInitialized() {
         assertDoesNotThrow(JumpDelayFix::onClientTick);
+    }
+
+    @Test
+    void shouldNotAlterServerStatsOrSwitchProfileOnInconclusiveTimeout() {
+        SimulatedTimeoutJumpInput input = new SimulatedTimeoutJumpInput();
+        JumpDelayFix.init(input, ToggleFeedback.NO_OP, tempDir);
+
+        JumpDelayFix.onClientTick();
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
+
+        input.jumpPressed = true;
+        input.onGround = true;
+        input.playerY = 64.0D;
+        JumpDelayFix.onClientTick();
+
+        input.onGround = false;
+        input.playerY = 70.0D;
+        for (int i = 0; i < 25; i++) {
+            JumpDelayFix.onClientTick();
+        }
+
+        assertEquals(1, JumpDelayFix.getInconclusiveJumpCount());
+        assertEquals(0, JumpDelayFix.getConfirmedJumpCount());
+        assertEquals(0, JumpDelayFix.getRejectedJumpCount());
+        assertEquals(JumpProfile.SMART, JumpDelayFix.getProfile());
     }
 
     @Test
@@ -355,6 +398,37 @@ class JumpDelayFixTest {
         @Override
         public int getLatencyMs() {
             return latencyMs;
+        }
+
+        @Override
+        public String getServerIdentifier() {
+            return serverId;
+        }
+    }
+
+    private static final class SimulatedTimeoutJumpInput implements JumpInput {
+        private String serverId = "pvp-server";
+        private boolean jumpPressed = true;
+        private boolean onGround = true;
+        private double playerY = 64.0D;
+
+        @Override
+        public boolean isJumpPressed() {
+            return jumpPressed;
+        }
+
+        @Override
+        public boolean isPlayerOnGround() {
+            return onGround;
+        }
+
+        @Override
+        public void jump() {
+        }
+
+        @Override
+        public double getPlayerY() {
+            return playerY;
         }
 
         @Override

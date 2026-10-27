@@ -14,6 +14,7 @@ import java.util.Locale;
 public final class NeoForgeJumpInput implements JumpInput {
 
     private int lastPlayerId = -1;
+    private boolean wasValid = false;
 
     @Override
     public boolean isJumpPressed() {
@@ -50,9 +51,17 @@ public final class NeoForgeJumpInput implements JumpInput {
     }
 
     private boolean isPlayerValid(LocalPlayer player) {
-        if (player == null || !player.isAlive() || player.isSleeping()) {
+        if (player == null || !player.isAlive() || player.isSleeping()
+                || player.isPassenger() || player.isFallFlying()
+                || player.getAbilities().flying || player.isInWater() || player.isSwimming()
+                || player.isVisuallyCrawling()) {
+            if (wasValid) {
+                JumpDelayFix.resetTransientState();
+                wasValid = false;
+            }
             return false;
         }
+        wasValid = true;
         int currentId = player.getId();
         if (lastPlayerId != -1 && lastPlayerId != currentId) {
             JumpDelayFix.resetTransientState();
