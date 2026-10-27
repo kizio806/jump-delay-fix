@@ -32,8 +32,6 @@
     "modmenu": "*",
     "sodium": "*",
     "iris": "*",
-    "lithium": "*",
-    "rei": "*",
-    "emi": "*"
+    "lithium": "*"
   }
 }
