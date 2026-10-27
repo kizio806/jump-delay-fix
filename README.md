@@ -48,7 +48,7 @@ Jump Delay Fix offers three calibrated operational profiles:
 | :--- | :---: | :---: | :--- |
 | **`SMART`** *(Default)* | Dynamic (0 ticks baseline) | Standard (0 – 200 ms) | **Everyday play & general servers.** Automatically adapts timing based on rollback rate and ping. |
 | **`COMPETITIVE`** | -1 tick (Ultra-low latency) | Ping < 95 ms, rollback < 8% | **PvP, Bedwars, parkour & low-ping servers.** Fires jump inputs as early as ground contact is verified. |
-| **`STABLE`** | +1 tick (Anti-rubberband) | Ping > 210 ms, rollback > 30% | **High-ping connections & strict anti-cheat servers.** Adds conservative ground verification to guarantee zero lagbacks. |
+| **`STABLE`** | +1 tick (Anti-rubberband) | Ping > 210 ms, rollback > 30% | **High-ping connections & strict anti-cheat servers.** Adds conservative ground verification to mitigate lagbacks. |
 
 > 💡 **Auto Profile Switching:** When enabled, the mod dynamically steps between `COMPETITIVE`, `SMART`, and `STABLE` depending on real-time server conditions. You can toggle this feature at any time in the settings menu.
 
@@ -72,7 +72,7 @@ Jump Delay Fix is engineered with strict adherence to fair-play and server proto
 
 - **No Spoofed Movement:** The mod never sends impossible movement packets, alters jump trajectory, or grants illegitimate vertical velocity.
 - **Client Input Simulation:** It executes the standard vanilla `player.jumpFromGround()` routine exactly when the client establishes valid ground contact.
-- **Anti-Cheat Safe:** Thoroughly tested with leading server anti-cheat solutions, including **GrimAC**, **Vulcan**, **Polar**, **Matrix**, **Intave**, and **NCP**.
+- **Anti-Cheat Compatibility:** Tested with common server anti-cheat solutions, including **GrimAC**, **Vulcan**, **Polar**, **Matrix**, **Intave**, and **NCP** (using adaptive profiles for varying latency).
 - **Self-Healing Fallback:** If a server experiences sudden tick-rate drops or network jitter, the mod's built-in rollback watcher automatically backs off into `STABLE` profile to eliminate rubberbanding.
 
 ---
@@ -83,10 +83,12 @@ We maintain dedicated branches and published releases for every major modern Min
 
 | Minecraft Line | Version Tag | Supported Game Versions | Mod Loaders | Java Baseline | Git Branch |
 | :--- | :---: | :--- | :--- | :---: | :--- |
-| **26.3** *(Latest)* | `v1.4.1` | **26.3** | Fabric 0.18.4+ (Fabric API 0.160.6+)<br>NeoForge 26.3.0.1-beta+ | **Java 25** | [`main`](https://github.com/kizio806/jump-delay-fix) |
-| **26.2** | `v1.3.1` | **26.2** | Fabric 0.18.4+ (Fabric API 0.159.0+)<br>NeoForge 26.2.0.79+ | **Java 25** | [`support/26.2.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.2.x) |
-| **26.1** | `v1.2.1` | **26.1**, **26.1.1**, **26.1.2** | Fabric 0.18.4+ (Fabric API 0.155.2+)<br>NeoForge 26.1.2.103+ | **Java 25** | [`support/26.1.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.1.x) |
-| **1.21** | `v1.1.1` | **1.21.9**, **1.21.10**, **1.21.11** | Fabric 0.18.4+ (Fabric API 0.141.3+)<br>NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | **Java 21** | [`support/1.21.9-1.21.11`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.9-1.21.11) |
+| **26.3** *(Latest)* | `v1.4.2` | **26.3** | Fabric 0.18.4+ (Fabric API 0.160.6+)<br>NeoForge 26.3.0.1-beta+ | **Java 25** | [`main`](https://github.com/kizio806/jump-delay-fix) |
+| **26.2** | `v1.3.2` | **26.2** | Fabric 0.18.4+ (Fabric API 0.159.0+)<br>NeoForge 26.2.0.79+ | **Java 25** | [`support/26.2.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.2.x) |
+| **26.1** | `v1.2.2` | **26.1**, **26.1.1**, **26.1.2** | Fabric 0.18.4+ (Fabric API 0.155.2+)<br>NeoForge 26.1.2.103+ | **Java 25** | [`support/26.1.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.1.x) |
+| **1.21** | `v1.1.2` | **1.21.9**, **1.21.10**, **1.21.11** | Fabric 0.18.4+ (Fabric API 0.134.1+ / 0.138.4+ / 0.141.6+)<br>NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | **Java 21** | [`support/1.21.9-1.21.11`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.9-1.21.11) |
+
+> 📖 **Full Compatibility & Checksums Matrix:** See [docs/compatibility-matrix.md](docs/compatibility-matrix.md) for detailed verification results across all 16 loader-Minecraft combinations.
 
 ---
 

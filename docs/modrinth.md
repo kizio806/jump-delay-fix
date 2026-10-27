@@ -35,7 +35,7 @@ Jump Delay Fix offers three finely calibrated profiles:
 | :--- | :---: | :---: | :--- |
 | **`SMART`** *(Default)* | Dynamic (0 ticks baseline) | Standard (0 – 200 ms) | **Everyday play & general servers.** Automatically adapts timing based on rollback rate and ping. |
 | **`COMPETITIVE`** | -1 tick (Ultra-low latency) | Ping < 95 ms, rollback < 8% | **PvP, Bedwars, parkour & low-ping servers.** Fires jump inputs as early as ground contact is verified. |
-| **`STABLE`** | +1 tick (Anti-rubberband) | Ping > 210 ms, rollback > 30% | **High-ping connections & strict anti-cheat servers.** Adds conservative ground verification to guarantee zero lagbacks. |
+| **`STABLE`** | +1 tick (Anti-rubberband) | Ping > 210 ms, rollback > 30% | **High-ping connections & strict anti-cheat servers.** Adds conservative ground verification to mitigate lagbacks. |
 
 > 💡 **Auto Profile Switching:** When enabled, the mod dynamically steps between `COMPETITIVE`, `SMART`, and `STABLE` depending on real-time server conditions. You can toggle this feature at any time in the settings menu.
 
@@ -68,10 +68,10 @@ Jump Delay Fix is safe and transparent for multiplayer:
 
 | Release Line | Mod Version | Supported Minecraft Versions | Mod Loaders | Java Baseline |
 | :--- | :---: | :--- | :--- | :---: |
-| **26.3** | `1.4.1` | **26.3** | Fabric 0.18.4+ / NeoForge 26.3.0.1-beta+ | Java 25 |
-| **26.2** | `1.3.1` | **26.2** | Fabric 0.18.4+ / NeoForge 26.2.0.79+ | Java 25 |
-| **26.1** | `1.2.1` | **26.1**, **26.1.1**, **26.1.2** | Fabric 0.18.4+ / NeoForge 26.1.2.103+ | Java 25 |
-| **1.21** | `1.1.1` | **1.21.9**, **1.21.10**, **1.21.11** | Fabric 0.18.4+ / NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | Java 21 |
+| **26.3** | `1.4.2` | **26.3** | Fabric 0.18.4+ / NeoForge 26.3.0.1-beta+ | Java 25 |
+| **26.2** | `1.3.2` | **26.2** | Fabric 0.18.4+ / NeoForge 26.2.0.79+ | Java 25 |
+| **26.1** | `1.2.2` | **26.1**, **26.1.1**, **26.1.2** | Fabric 0.18.4+ / NeoForge 26.1.2.103+ | Java 25 |
+| **1.21** | `1.1.2` | **1.21.9**, **1.21.10**, **1.21.11** | Fabric 0.18.4+ / NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | Java 21 |
 
 ---
 

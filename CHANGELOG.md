@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.4.2
+
+### Added
+- Canonical compatibility matrix (`docs/compatibility-matrix.md`) detailing multi-branch support, loader dependencies, artifact generation strategies, and SHA-256 checksums across all 16 supported combinations.
+- Comprehensive 9-step procedure for porting and adding new Minecraft versions documented in `docs/development.md`.
+- Explicit player state predicates in Fabric and NeoForge input adapters covering active swimming (`isSwimming`), submerged status (`isInWater`), visual crawling (`isVisuallyCrawling`), vehicle passenger immunity (`isPassenger`), and flight/gliding.
+- Inconclusive jump tracking diagnostics (`getInconclusiveJumpCount()`) and regression verification.
+
+### Changed
+- Refined jump confirmation heuristics in `JumpHandler`: airborne jumps exceeding the timeout window without detected rollback or lift confirmation are marked inconclusive rather than falsely credited as successful confirmations, preventing skewed server latency statistics and inappropriate adaptive penalties.
+- Reorganized `ConfigManager` package structure to `com.kizio.jumpdelayfix.ConfigManager` in pure Java `:common` with package structure validation.
+- Completely removed dead and unused GameTest structure files from NeoForge resources.
+- Strengthened NeoForge loader version ranges to strictly bounded intervals (`[26.3,26.4)`), preventing runtime mismatches against untested future major releases.
+- Hardened CI/CD release workflow to ensure each artifact is published exclusively for its exact compatible Minecraft version without broad version leakage.
+
+### Compatibility
+- Minecraft: 26.3
+- Fabric: Loader 0.18.4+ / Fabric API 0.160.6+26.3
+- NeoForge: 26.3.0.1-beta+
+- Java: 25
+
 ## 1.4.1
 
 ### Added
