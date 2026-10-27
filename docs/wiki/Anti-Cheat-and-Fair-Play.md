@@ -22,16 +22,19 @@ Jump Delay Fix intercepts this delay logic purely on the client side:
 
 ## 🛡️ Anti-Cheat Compatibility Matrix
 
-Because Jump Delay Fix executes the game's genuine jump routine rather than spoofing movement packets, it complies with standard server movement simulation:
+Because Jump Delay Fix executes the game's genuine jump routine rather than spoofing movement packets, it aligns with standard server movement simulation under vanilla physics:
 
-| Anti-Cheat Solution | Compatibility Status | Notes |
-| :--- | :---: | :--- |
-| **GrimAC** | ✅ **100% Compatible** | GrimAC performs full 1:1 client simulation. Because jumps are executed on valid ground ticks, Grim's prediction engine matches the client. |
-| **Vulcan** | ✅ **100% Compatible** | No false positives for timer, speed, or invalid jump checks. |
-| **Polar** | ✅ **100% Compatible** | Validated on public competitive testing servers. |
-| **Matrix** | ✅ **100% Compatible** | Compatible across default and strict check profiles. |
-| **Intave** | ✅ **100% Compatible** | Compatible when using `SMART` or `STABLE` profiles on servers with high latency. |
-| **NoCheatPlus (NCP)** | ✅ **100% Compatible** | Passes all horizontal and vertical survivalfly checks. |
+| Anti-Cheat Solution | Tested Status | Recommended Profile | Notes |
+| :--- | :---: | :---: | :--- |
+| **GrimAC** | Compatible | `SMART` / `COMPETITIVE` | GrimAC performs 1:1 client simulation. Valid ground contact matches Grim's prediction engine. |
+| **Vulcan** | Compatible | `SMART` / `COMPETITIVE` | Standard movement and jump checks pass cleanly. |
+| **Polar** | Compatible | `SMART` | Validated in standard testing; use `SMART` for fluctuating latency. |
+| **Matrix** | Compatible | `SMART` / `STABLE` | Compatible on standard configurations; strict configs may benefit from `STABLE`. |
+| **Intave** | Compatible (profile-dependent) | `SMART` or `STABLE` | Strict servers with high latency require `STABLE` or `SMART` to prevent timing flags. |
+| **NoCheatPlus (NCP)** | Compatible | `SMART` / `COMPETITIVE` | Standard survivalfly checks pass when ground ticks match server state. |
+
+> [!NOTE]
+> Anti-cheat configurations vary significantly across servers. While Jump Delay Fix executes genuine vanilla jump routines without synthetic movement packets, aggressive server-side heuristics or extreme network jitter can cause desynchronization. If you experience rubberbanding, enable auto profile switching or switch to the `STABLE` profile.
 
 ---
 
