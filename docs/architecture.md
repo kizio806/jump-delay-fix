@@ -34,6 +34,14 @@ This repository maintains strict engineering consistency through:
 - pre-publication structure validation gate (`validateStructure`)
 - explicit line-ending, formatting, and editor rules (`.gitattributes`, `.editorconfig`, Spotless)
 
+## Multi-Loader Artifact & Packaging Contract
+
+Jump Delay Fix enforces a strict **Single JAR per Loader** architectural invariant across all supported Minecraft lines:
+- **Module Separation:** Core movement heuristics (`JumpHandler`), profile state (`RuntimeState`, `JumpProfile`), adaptive anti-cheat tracking (`ServerAdaptiveStats`), and configuration (`ConfigManager`) reside exclusively in `:common` as pure Java. No Minecraft or loader classes may be imported in `:common`.
+- **Thin Platform Adapters:** `:fabric` and `:neoforge` provide only thin event listeners (`ClientTickEvents` / `ClientTickEvent.Post`), keybinding registration, and configuration screen adapters.
+- **Single-JAR Multi-Version Packaging:** Rather than fragmenting releases into multiple patch-specific JARs, each loader module compiles a single production artifact (`jumpdelayfix-fabric-<base_mc>-<ver>.jar` and `jumpdelayfix-neoforge-<base_mc>-<ver>.jar`) that covers the entire patch line via verified dependency ranges (`fabric_minecraft_version_range` and `minecraft_version_range`).
+- **Platform Publication Parity:** Modrinth and CurseForge always receive two separate, clean releases per tag (`<version>-fabric` and `<version>-neoforge`), preventing launcher ambiguity while maintaining unified download management.
+
 ## Technical Strengths
 
 - clear package naming (`com.kizio.jumpdelayfix`)
