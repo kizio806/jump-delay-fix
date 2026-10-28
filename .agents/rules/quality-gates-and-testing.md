@@ -31,7 +31,7 @@ class JumpHandlerTest {
 ```java
 // Bad: Writing tests that rely on external files, network connections, or hardcoded absolute paths
 // Bad: Skipping strictCheck before pushing
-// Bad: Suppressing warnings with @SuppressWarnings without explicit architect justification
+// Bad: Suppressing warnings with @SuppressWarnings (strictly forbidden across the codebase; resolve root causes)
 ```
 
 ## Verification:

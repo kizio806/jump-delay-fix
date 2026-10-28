@@ -1,7 +1,9 @@
 package com.kizio.jumpdelayfix.neoforge.client.input;
 
+import com.kizio.jumpdelayfix.Constants;
 import com.kizio.jumpdelayfix.input.KeyBindingProvider;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -14,8 +16,9 @@ public final class NeoForgeKeyMappings implements KeyBindingProvider {
     private static final int DEFAULT_TOGGLE_KEY = SDLKeycode.SDLK_J;
     private static final int DEFAULT_PROFILE_KEY = SDLKeycode.SDLK_H;
     private static final int DEFAULT_CONFIG_KEY = SDLKeycode.SDLK_O;
-    @SuppressWarnings("deprecation")
-    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(net.minecraft.resources.Identifier.parse("jumpdelayfix:jumpdelayfix"));
+    private static final KeyMapping.Category KEY_CATEGORY = new KeyMapping.Category(
+            Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix")
+    );
 
     private static final KeyMapping TOGGLE_KEY = new KeyMapping(
             "key.jumpdelayfix.toggle",
@@ -42,6 +45,7 @@ public final class NeoForgeKeyMappings implements KeyBindingProvider {
     }
 
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
+        event.registerCategory(KEY_CATEGORY);
         event.register(TOGGLE_KEY);
         event.register(PROFILE_KEY);
         event.register(CONFIG_KEY);

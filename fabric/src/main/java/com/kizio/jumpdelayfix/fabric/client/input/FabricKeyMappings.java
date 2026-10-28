@@ -18,10 +18,7 @@ public final class FabricKeyMappings implements KeyBindingProvider {
     private static final int DEFAULT_PROFILE_KEY = SDLKeycode.SDLK_H;
     private static final int DEFAULT_CONFIG_KEY = SDLKeycode.SDLK_O;
 
-    @SuppressWarnings("deprecation")
-    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
-            Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix")
-    );
+    private static final KeyMapping.Category KEY_CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix"));
 
     private static KeyMapping toggleKey;
     private static KeyMapping profileKey;
