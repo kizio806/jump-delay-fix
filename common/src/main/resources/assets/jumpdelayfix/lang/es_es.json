@@ -1,5 +1,4 @@
 {
-  "category.jumpdelayfix": "Jump Delay Fix",
   "key.category.jumpdelayfix.jumpdelayfix": "Jump Delay Fix",
   "key.jumpdelayfix.toggle": "Activar/desactivar Jump Delay Fix",
   "key.jumpdelayfix.profile": "Cambiar perfil de salto",
@@ -12,7 +11,6 @@
   "message.jumpdelayfix.enabled": "ACTIVO",
   "message.jumpdelayfix.disabled": "INACTIVO",
   "screen.jumpdelayfix.settings.title": "Ajustes de Jump Delay Fix",
-  "screen.jumpdelayfix.settings.subtitle": "Clean control over movement behavior.",
   "gui.jumpdelayfix.toggle": "Activado: %s",
   "gui.jumpdelayfix.auto": "Perfil automatico: %s",
   "gui.jumpdelayfix.profile.cycle": "Cambiar perfil",

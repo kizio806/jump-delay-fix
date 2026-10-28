@@ -1,7 +1,6 @@
 package com.kizio.jumpdelayfix.fabric.client.input;
 
 import com.kizio.jumpdelayfix.Constants;
-import com.kizio.jumpdelayfix.input.KeyBindingProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -11,7 +10,7 @@ import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public final class FabricKeyMappings implements KeyBindingProvider {
+public final class FabricKeyMappings {
 
     private static final FabricKeyMappings INSTANCE = new FabricKeyMappings();
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
@@ -61,7 +60,6 @@ public final class FabricKeyMappings implements KeyBindingProvider {
         ));
     }
 
-    @Override
     public boolean consumeTogglePress() {
         if (toggleKey == null) {
             return false;
@@ -74,7 +72,6 @@ public final class FabricKeyMappings implements KeyBindingProvider {
         return pressed;
     }
 
-    @Override
     public boolean consumeProfileCyclePress() {
         if (profileKey == null) {
             return false;
@@ -87,7 +84,6 @@ public final class FabricKeyMappings implements KeyBindingProvider {
         return pressed;
     }
 
-    @Override
     public boolean consumeConfigScreenPress() {
         if (configKey == null) {
             return false;

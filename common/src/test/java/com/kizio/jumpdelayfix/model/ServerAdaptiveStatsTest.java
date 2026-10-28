@@ -28,4 +28,14 @@ class ServerAdaptiveStatsTest {
 
         assertTrue(stats.rollbackRate() < beforeDecay);
     }
+
+    @Test
+    void shouldDecayRollbackRateToZeroWhenBelowEpsilon() {
+        ServerAdaptiveStats stats = new ServerAdaptiveStats();
+        stats.update(0, 1);
+        for (int i = 0; i < 10000; i++) {
+            stats.update(0, 0);
+        }
+        assertEquals(0.0D, stats.rollbackRate());
+    }
 }
