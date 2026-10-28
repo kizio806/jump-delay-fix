@@ -1,19 +1,29 @@
 package com.kizio.jumpdelayfix.model;
+
 public final class ServerAdaptiveStats {
+
+    private static final double RATE_EPSILON = 1.0E-6D;
 
     private int confirmedJumps;
     private int rejectedJumps;
     private double smoothedRollbackRate;
-    public void update(int confirmedDelta, int rejectedDelta) {
-        confirmedJumps += Math.max(0, confirmedDelta);
-        rejectedJumps += Math.max(0, rejectedDelta);
 
-        int sampleSize = Math.max(0, confirmedDelta) + Math.max(0, rejectedDelta);
+    public void update(int confirmedDelta, int rejectedDelta) {
+        int validConfirmed = Math.max(0, confirmedDelta);
+        int validRejected = Math.max(0, rejectedDelta);
+
+        confirmedJumps += validConfirmed;
+        rejectedJumps += validRejected;
+
+        int sampleSize = validConfirmed + validRejected;
         if (sampleSize > 0) {
-            double batchRollbackRate = (double) Math.max(0, rejectedDelta) / sampleSize;
+            double batchRollbackRate = (double) validRejected / sampleSize;
             smoothedRollbackRate = (smoothedRollbackRate * 0.82D) + (batchRollbackRate * 0.18D);
         } else {
             smoothedRollbackRate *= 0.998D;
+            if (smoothedRollbackRate < RATE_EPSILON) {
+                smoothedRollbackRate = 0.0D;
+            }
         }
     }
 

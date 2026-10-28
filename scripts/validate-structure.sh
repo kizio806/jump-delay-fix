@@ -34,6 +34,22 @@ if [[ -n "$FORBIDDEN_ACCESSORS" ]]; then
     exit 1
 fi
 
+for src_root in "common/src/main/java" "fabric/src/main/java" "neoforge/src/main/java"; do
+    if [[ -d "$src_root" ]]; then
+        while IFS= read -r java_file; do
+            pkg=$(sed -n -E 's/^[[:space:]]*package[[:space:]]+([a-zA-Z0-9_.]+)[[:space:]]*;.*$/\1/p' "$java_file" | head -n 1)
+            if [[ -n "$pkg" ]]; then
+                expected_dir="$src_root/${pkg//.//}"
+                actual_dir="$(dirname "$java_file")"
+                if [[ "$actual_dir" != "$expected_dir" ]]; then
+                    echo "Package declaration mismatch: $java_file declares package '$pkg' but resides in '$actual_dir' (expected '$expected_dir')."
+                    exit 1
+                fi
+            fi
+        done < <(find "$src_root" -type f -name "*.java" | sort)
+    fi
+done
+
 required_docs=(
     "CHANGELOG.md"
     "CONTRIBUTING.md"

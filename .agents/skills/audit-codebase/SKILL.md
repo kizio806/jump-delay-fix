@@ -20,7 +20,7 @@ Use this skill when:
    - Run `./gradlew strictCheck publishReadyCheck` to identify compile warnings, formatting errors, or broken contracts.
    - Run `./gradlew --warning-mode all strictCheck` to check for Gradle deprecations.
 3. **Source Hygiene and Comments Audit:**
-   - Run `./scripts/validate-source-hygiene.sh` to ensure no Java comments (`//` or `/* */`), marker tags (`TODO`), or wildcard imports exist.
+   - Run `./scripts/validate-source-hygiene.sh` to ensure no marker tags (`TODO`, `FIXME`, `XXX`), wildcard imports, or warning suppressions (`@SuppressWarnings`) exist.
 4. **Loader Duplication Analysis:**
    - Compare `fabric/src/main/java` and `neoforge/src/main/java` implementations (specifically GUI screens, keybindings, and jump inputs) for copy-paste divergence.
 5. **Localization Completeness Check:**

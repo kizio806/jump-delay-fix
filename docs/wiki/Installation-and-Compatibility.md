@@ -10,10 +10,12 @@ Jump Delay Fix maintains dedicated release lines targeting specific Minecraft ve
 
 | Minecraft Version | Release Line | Mod Version | Supported Loaders | Loader Requirements | Java Runtime |
 | :--- | :---: | :---: | :--- | :--- | :---: |
-| **26.3** | `main` | **`1.4.1`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API 0.160.6+)<br>NeoForge >= 26.3.0.1-beta | **Java 25** |
-| **26.2** | `support/26.2.x` | **`1.3.1`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API 0.159.0+)<br>NeoForge >= 26.2.0.79 | **Java 25** |
-| **26.1**, **26.1.1**, **26.1.2** | `support/26.1.x` | **`1.2.1`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API 0.155.2+)<br>NeoForge >= 26.1.2.103 | **Java 25** |
-| **1.21.9**, **1.21.10**, **1.21.11** | `support/1.21.9-1.21.11` | **`1.1.1`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API 0.141.3+)<br>NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | **Java 21** |
+| **26.3** | `main` | **`1.4.2`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API 0.160.6+)<br>NeoForge >= 26.3.0.1-beta | **Java 25** |
+| **26.2** | `support/26.2.x` | **`1.3.2`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API 0.159.0+)<br>NeoForge >= 26.2.0.79 | **Java 25** |
+| **26.1**, **26.1.1**, **26.1.2** | `support/26.1.x` | **`1.2.2`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API 0.155.2+)<br>NeoForge >= 26.1.2.103 | **Java 25** |
+| **1.21.9**, **1.21.10**, **1.21.11** | `support/1.21.9-1.21.11` | **`1.1.2`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API 0.134.1+ / 0.138.4+ / 0.141.6+)<br>NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | **Java 21** |
+
+> 🔗 For the complete technical compatibility matrix and artifact checksums, see [docs/compatibility-matrix.md](https://github.com/kizio806/jump-delay-fix/blob/main/docs/compatibility-matrix.md).
 
 ---
 

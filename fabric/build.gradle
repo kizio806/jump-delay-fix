@@ -17,11 +17,8 @@ sourceSets {
     }
 }
 
-// loom.createRemapConfigurations(sourceSets.test)
-
 dependencies {
     minecraft "com.mojang:minecraft:${rootProject.ext.sharedVersions.minecraft}"
-    // no mappings for 26.1
 
     implementation "net.fabricmc:fabric-loader:${loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
@@ -40,9 +37,6 @@ loom {
         "${mod_id}" {
             sourceSet sourceSets.main
         }
-        "${mod_id}FabricTests" {
-            sourceSet sourceSets.test
-        }
     }
 
     runs {
@@ -56,19 +50,8 @@ loom {
             setConfigName('Fabric Dedicated Server')
             ideConfigGenerated(true)
         }
-        gameTestServer {
-            server()
-            setConfigName('Fabric GameTest Server')
-            ideConfigGenerated(false)
-            source(sourceSets.test)
-            vmArg '-Dfabric-api.gametest'
-            vmArg "-Dfabric-api.gametest.report-file=${layout.buildDirectory.file('test-results/fabricGameTest/junit.xml').get().asFile.absolutePath}"
-            runDir 'build/gametest'
-        }
     }
 }
-
-def fabricGameTestReport = layout.buildDirectory.file('test-results/fabricGameTest/junit.xml')
 
 def metadataProperties = [
         mod_id                        : mod_id,
@@ -253,21 +236,8 @@ tasks.register('verifyRuntimeDependencyCompatibility') {
     }
 }
 
-tasks.register('headlessGameTest') {
-    group = 'verification'
-    description = 'Runs Fabric GameTest server headlessly.'
-    dependsOn(tasks.named('runGameTestServer'))
-
-    doLast {
-        def reportFile = fabricGameTestReport.get().asFile
-        if (!reportFile.exists()) {
-            throw new GradleException("Missing Fabric GameTest report: ${reportFile}")
-        }
-    }
-}
-
 tasks.named('check') {
-    dependsOn(tasks.named('verifyRuntimeDependencyCompatibility'))
+    dependsOn(tasks.named('verifyRuntimeDependencyCompatibility'), tasks.named('validateProductionMetadata'))
 }
 
 jar {

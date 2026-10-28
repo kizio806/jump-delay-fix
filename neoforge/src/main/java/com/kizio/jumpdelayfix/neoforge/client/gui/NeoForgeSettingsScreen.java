@@ -11,6 +11,9 @@ import net.neoforged.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public final class NeoForgeSettingsScreen extends Screen {
 
+    private static final Component DESC_PROFILE = Component.translatable("gui.jumpdelayfix.desc.profile");
+    private static final Component DESC_AUTO = Component.translatable("gui.jumpdelayfix.desc.auto");
+
     private static final int BUTTON_WIDTH = 220;
     private static final int BUTTON_HEIGHT = 20;
     private static final int ROW_SPACING = 24;
@@ -71,8 +74,8 @@ public final class NeoForgeSettingsScreen extends Screen {
         extractor.centeredText(this.font, this.title, centerX, 20, 0xFFFFFF);
         extractor.centeredText(this.font, profileStatusText(), centerX, 48, 0xFFFFFF);
         extractor.centeredText(this.font, autoStatusText(), centerX, 60, 0xFFFFFF);
-        extractor.centeredText(this.font, Component.translatable("gui.jumpdelayfix.desc.profile"), centerX, this.height - 50, 0xA0A0A0);
-        extractor.centeredText(this.font, Component.translatable("gui.jumpdelayfix.desc.auto"), centerX, this.height - 38, 0xA0A0A0);
+        extractor.centeredText(this.font, DESC_PROFILE, centerX, this.height - 50, 0xA0A0A0);
+        extractor.centeredText(this.font, DESC_AUTO, centerX, this.height - 38, 0xA0A0A0);
     }
 
     @Override
@@ -85,7 +88,7 @@ public final class NeoForgeSettingsScreen extends Screen {
 
     private void refreshButtonLabels() {
         toggleButton.setMessage(Component.translatable("gui.jumpdelayfix.toggle", booleanComponent(JumpDelayFix.isEnabled())));
-        profileButton.setMessage(Component.literal(Component.translatable("gui.jumpdelayfix.profile.cycle").getString() + ": ")
+        profileButton.setMessage(Component.translatable("gui.jumpdelayfix.profile.cycle").append(": ")
                 .append(Component.translatable(JumpDelayFix.getProfile().translationKey())));
         autoButton.setMessage(Component.translatable("gui.jumpdelayfix.auto", booleanComponent(JumpDelayFix.isAutoProfileSwitchEnabled())));
     }

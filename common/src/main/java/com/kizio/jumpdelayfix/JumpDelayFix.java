@@ -102,6 +102,10 @@ public final class JumpDelayFix {
         return RuntimeState.isEnabled();
     }
 
+    public static synchronized boolean isInitialized() {
+        return initialized;
+    }
+
     public static synchronized JumpProfile getProfile() {
         return RuntimeState.getProfile();
     }
@@ -141,7 +145,7 @@ public final class JumpDelayFix {
     public static synchronized void resetToDefaults() {
         configManager.resetToDefaults();
         serverStats.clear();
-        activeServerId = DEFAULT_SERVER_ID;
+        activeServerId = normalizeServerId(jumpHandler.getServerIdentifier());
         RuntimeState.setEnabled(true);
         RuntimeState.setProfile(resolveProfileForServer(activeServerId));
         lastConfirmedJumps = jumpHandler.getConfirmedJumpCount();
@@ -168,6 +172,10 @@ public final class JumpDelayFix {
         return jumpHandler.getRejectedJumpCount();
     }
 
+    static synchronized int getInconclusiveJumpCount() {
+        return jumpHandler.getInconclusiveJumpCount();
+    }
+
     public static synchronized void onClientDisconnect() {
         configManager.flushNow();
         activeServerId = DEFAULT_SERVER_ID;
@@ -189,7 +197,12 @@ public final class JumpDelayFix {
     }
 
     private static void synchronizeServerContext() {
-        String serverId = normalizeServerId(jumpHandler.getServerIdentifier());
+        String rawServerId = jumpHandler.getServerIdentifier();
+        if (Objects.equals(rawServerId, activeServerId)) {
+            return;
+        }
+
+        String serverId = normalizeServerId(rawServerId);
         if (Objects.equals(serverId, activeServerId)) {
             return;
         }

@@ -40,11 +40,25 @@ class JumpHandlerIntegrationTest {
 
         tickPlayer(1);
         input.jumpTicks = 0;
+        input.jumpPressed = false;
         tickPlayer(3);
 
         assertEquals(1, handler.getConfirmedJumpCount());
         assertEquals(0, handler.getRejectedJumpCount());
         assertEquals(1, input.jumpCalls);
+    }
+
+    @Test
+    void shouldChainConsecutiveJumpImmediatelyOnLandingWhenJumpPressedContinuously() {
+        input.jumpPressed = true;
+
+        tickPlayer(1);
+        input.jumpTicks = 0;
+        tickPlayer(3);
+
+        assertEquals(1, handler.getConfirmedJumpCount());
+        assertEquals(0, handler.getRejectedJumpCount());
+        assertEquals(2, input.jumpCalls);
     }
 
     private void tickPlayer(int ticks) {

@@ -135,6 +135,10 @@ final class ConfigManager {
         }
     }
 
+    void setPendingSaveForTests(CompletableFuture<Void> pendingSave) {
+        this.pendingSave = pendingSave;
+    }
+
     private static <V> Map<String, V> createServerScopedLruMap() {
         return new LinkedHashMap<>(16, 0.75F, true) {
             @Override

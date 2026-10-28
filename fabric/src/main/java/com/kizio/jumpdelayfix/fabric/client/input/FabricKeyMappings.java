@@ -1,7 +1,6 @@
 package com.kizio.jumpdelayfix.fabric.client.input;
 
 import com.kizio.jumpdelayfix.Constants;
-import com.kizio.jumpdelayfix.input.KeyBindingProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -11,17 +10,14 @@ import net.minecraft.resources.Identifier;
 import org.lwjgl.sdl.SDLKeycode;
 
 @Environment(EnvType.CLIENT)
-public final class FabricKeyMappings implements KeyBindingProvider {
+public final class FabricKeyMappings {
 
     private static final FabricKeyMappings INSTANCE = new FabricKeyMappings();
     private static final int DEFAULT_TOGGLE_KEY = SDLKeycode.SDLK_J;
     private static final int DEFAULT_PROFILE_KEY = SDLKeycode.SDLK_H;
     private static final int DEFAULT_CONFIG_KEY = SDLKeycode.SDLK_O;
 
-    @SuppressWarnings("deprecation")
-    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
-            Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix")
-    );
+    private static final KeyMapping.Category KEY_CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix"));
 
     private static KeyMapping toggleKey;
     private static KeyMapping profileKey;
@@ -62,7 +58,6 @@ public final class FabricKeyMappings implements KeyBindingProvider {
         ));
     }
 
-    @Override
     public boolean consumeTogglePress() {
         if (toggleKey == null) {
             return false;
@@ -75,7 +70,6 @@ public final class FabricKeyMappings implements KeyBindingProvider {
         return pressed;
     }
 
-    @Override
     public boolean consumeProfileCyclePress() {
         if (profileKey == null) {
             return false;
@@ -88,7 +82,6 @@ public final class FabricKeyMappings implements KeyBindingProvider {
         return pressed;
     }
 
-    @Override
     public boolean consumeConfigScreenPress() {
         if (configKey == null) {
             return false;

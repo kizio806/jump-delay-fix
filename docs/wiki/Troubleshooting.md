@@ -30,7 +30,7 @@ This guide provides solutions to common issues, configuration problems, and erro
 ### 3. How do I completely reset all settings?
 - **In-Game Method:**
   1. Open the settings screen by pressing **`O`** (or through ModMenu / NeoForge Mod List).
-  2. Click **Reset to Defaults** (`Przywróć domyślne`).
+  2. Click **Reset to Defaults**.
   3. All cached server profiles and runtime settings will be restored to factory defaults immediately.
 - **Manual Method:**
   1. Close Minecraft.

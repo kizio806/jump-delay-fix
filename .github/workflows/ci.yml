@@ -116,15 +116,6 @@ jobs:
             fabric/build/test-results/**
           if-no-files-found: ignore
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
-        with:
-          files: fabric/build/reports/jacoco/test/jacocoTestReport.xml
-          flags: fabric
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: ${{ github.repository }}
-
       - name: Upload Fabric JAR
         if: success()
         uses: actions/upload-artifact@v4
@@ -168,15 +159,6 @@ jobs:
             neoforge/build/test-results/**
           if-no-files-found: ignore
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
-        with:
-          files: neoforge/build/reports/jacoco/test/jacocoTestReport.xml
-          flags: neoforge
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: ${{ github.repository }}
-
       - name: Upload NeoForge JAR
         if: success()
         uses: actions/upload-artifact@v4
@@ -208,4 +190,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Full strict check
-        run: ./gradlew --no-daemon publishReadyCheck strictCheck
+        run: ./gradlew --no-daemon strictCheck

@@ -46,5 +46,5 @@ Use clear conventional messages:
 ## Repository Standards
 
 - keep GitHub-facing docs aligned with the shared project shape: `CHANGELOG.md`, `docs/architecture.md`, `docs/development.md`, `docs/modrinth.md`, `docs/releases.md`, and `docs/wiki/*`
-- package root is `com.kizio.<project>`, with `kizio` as the maintainer name in code metadata
+- package root is `com.kizio.jumpdelayfix`, with `kizio` as the maintainer name in code metadata
 - naming and repo hygiene should follow [docs/development.md](docs/development.md)

@@ -47,11 +47,12 @@ We maintain four active long-term branches corresponding to distinct Minecraft A
 
 To maintain high code quality and prevent technical debt, the repository strictly enforces automated hygiene checks:
 
-1. **Zero Java Comments:** No line comments (`//`) or block comments (`/* */`) are allowed in any `.java` files. Code must be self-documenting through clean variable naming, descriptive methods, and clear architecture.
+1. **Comment Hygiene:** High-value explanatory comments are permitted for complex algorithms or contracts, while redundant narrative comments are forbidden.
 2. **No Wildcard Imports:** Explicit class imports are required (e.g., no `import java.util.*;`).
 3. **No TODO Markers:** Source files must not contain `TODO`, `FIXME`, or `XXX`.
-4. **Strict Compiler Flags:** All Java modules compile with `-Werror -Xlint:all`.
-5. **Enforcement Scripts:**
+4. **No Suppressed Warnings:** `@SuppressWarnings` is strictly forbidden across all modules.
+5. **Strict Compiler Flags:** All Java modules compile with `-Werror -Xlint:all`.
+6. **Enforcement Scripts:**
    ```bash
    ./scripts/validate-source-hygiene.sh
    ./scripts/validate-structure.sh
@@ -114,8 +115,11 @@ The script will:
 ### 3. Automated CI/CD Publishing
 Once a tag is pushed, `.github/workflows/release.yml` triggers automatically:
 - Builds release artifacts using the exact Java version detected from `gradle.properties`.
-- Publishes a formatted GitHub Release with release notes.
-- Publishes Fabric and NeoForge JARs to **Modrinth** using `Kir-Antipov/mc-publish`.
+- Publishes a formatted GitHub Release with release notes and SHA-256 checksums.
+- Publishes **two distinct, loader-separated entries** to **Modrinth** and **CurseForge**:
+  1. `Jump Delay Fix <version> for Fabric` (`<version>-fabric`, loader: `fabric`, matching full game version range).
+  2. `Jump Delay Fix <version> for NeoForge` (`<version>-neoforge`, loader: `neoforge`, matching full game version range).
+- **Universal Rule:** Never combine Fabric and NeoForge into a single release entry, and never produce multiple separate JARs for different patch versions on the same branch.
 
 ---
 

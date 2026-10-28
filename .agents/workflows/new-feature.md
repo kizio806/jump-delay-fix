@@ -19,7 +19,7 @@ flowchart TD
   - Client-side only. Must not require server-side mod installation.
   - Performance constraint: Must not cause frame drops, GC pressure, or allocations in tick loops.
   - Multi-loader parity: Must work identically on Fabric and NeoForge.
-  - Backward compatibility: Must not invalidate existing user settings in `jumpdelayfix.json`.
+  - Backward compatibility: Must not invalidate existing user settings in `jumpdelayfix.properties`.
 
 ---
 
@@ -51,7 +51,7 @@ flowchart TD
 
 ## Stage 4: Implementation
 - **Source Hygiene:**
-  - Strictly **ZERO** Java comments (`//` or `/* */`).
+  - High comment hygiene: meaningful explanatory comments are permitted; avoid redundant comments.
   - Strictly **ZERO** marker tags (`TODO`, `FIXME`, `XXX`).
   - Strictly **ZERO** wildcard imports.
   - Use self-documenting code with expressive method and variable names.
