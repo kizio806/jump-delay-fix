@@ -45,10 +45,10 @@ Compared with `item-display-control`, this repository keeps the same baseline in
 
 - auto profile switching depends on evolving multiplayer patterns and should stay telemetry-tested
 - upstream Minecraft loader/toolchain releases may require frequent metadata range updates
-- Gradle 9 migration is still pending (deprecation warnings are present in build output)
+- Gradle 10 compatibility should be tracked (Gradle 10 deprecation warnings are present in build output)
 
 ## Recommended Next Quality Milestones
 
 1. Keep GameTest smoke coverage active for each supported Minecraft patch update.
 2. Extend integration assertions for profile auto-switch decisions under edge latency/rollback patterns.
-3. Track and remove Gradle deprecations ahead of the Gradle 9 baseline shift.
+3. Track and resolve Gradle deprecations ahead of the Gradle 10 release.

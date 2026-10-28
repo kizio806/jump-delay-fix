@@ -40,7 +40,7 @@ public final class JumpHandler {
         return NO_OP;
     }
     public void tick() {
-        if (!RuntimeState.isEnabled()) {
+        if (!RuntimeState.isEnabled() || !input.isPlayerValid()) {
             resetTransientState();
             return;
         }

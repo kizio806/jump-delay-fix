@@ -87,8 +87,10 @@ public final class ConfigStorage {
 
             Path targetDirectory = parent != null ? parent : Path.of(".");
             Path temporaryFile = Files.createTempFile(targetDirectory, "jumpdelayfix-", ".properties.tmp");
-            try (OutputStream output = Files.newOutputStream(temporaryFile)) {
-                properties.store(output, "JumpDelayFix configuration");
+            try {
+                try (OutputStream output = Files.newOutputStream(temporaryFile)) {
+                    properties.store(output, "JumpDelayFix configuration");
+                }
                 try {
                     Files.move(
                             temporaryFile,
