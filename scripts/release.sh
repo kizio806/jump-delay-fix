@@ -177,7 +177,8 @@ fi
 
 echo "--- 5. Preparing release commit and tag ---"
 
-if ! git diff-index --quiet HEAD --; then
+git update-index -q --refresh || true
+if [[ -n "$(git status --porcelain)" ]]; then
     git add -A
     git commit -m "chore(release): ${TAG_NAME}"
 fi

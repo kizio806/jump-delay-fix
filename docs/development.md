@@ -1,19 +1,17 @@
 # Code Style
 
-## Shared Baseline
+## Architectural Baseline
 
-This repository follows the same repository style as `item-display-control` and `event-hub`.
+Jump Delay Fix is engineered as a zero-overhead, multi-loader Minecraft mod adhering to clean architecture principles:
 
-Practical rule:
-
-- `jump-delay-fix` establishes the baseline for release/docs structure
-- the other repositories should keep the same top-level standard unless a technical difference requires otherwise
+- loader-independent business logic and configuration live entirely in `:common`
+- platform-specific modules (`:fabric` and `:neoforge`) are thin adapters bridging client events to `:common`
+- release automation and documentation maintain identical standards across all active branches
 
 ## Package Naming
 
 - root package: `com.kizio.jumpdelayfix`
-- use `com.kizio.<project>` for future repositories
-- keep author naming as `kizio`
+- maintainer identifier: `kizio`
 - do not encode temporary account suffixes such as `kizio806` into code namespaces
 
 ## Module Boundaries
