@@ -1,32 +1,73 @@
-# Installation and Compatibility
+# Installation and Compatibility Guide
 
-## Requirements
+This guide provides full instructions for installing Jump Delay Fix on Fabric and NeoForge across Minecraft **26.1.x** (`26.1`, `26.1.1`, `26.1.2`).
 
-- Minecraft Java Edition
-- Fabric Loader or NeoForge
+---
 
-## Supported Versions
+## 📦 Compatibility & Version Matrix
 
-| Loader    | Minecraft     |
-|-----------|---------------|
-| Fabric    | 26.1.x        |
-| NeoForge  | 26.1.x        |
+Jump Delay Fix provides a single unified artifact covering the entire 26.1 patch line:
 
-## Installation
+| Minecraft Versions | Release Line | Mod Version | Supported Loaders | Loader Requirements | Java Runtime |
+| :--- | :---: | :---: | :--- | :--- | :---: |
+| **26.1**, **26.1.1**, **26.1.2** | `support/26.1.x` | **`1.2.2`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API 0.155.2+)<br>NeoForge >= 26.1.2.103 | **Java 25** |
 
-### Fabric
+> 🔗 For the complete technical compatibility matrix and artifact checksums, see [docs/compatibility-matrix.md](https://github.com/kizio806/jump-delay-fix/blob/main/docs/compatibility-matrix.md).
 
-1. Install [Fabric Loader](https://fabricmc.net/use/) for the correct Minecraft version.
-2. Install [Fabric API](https://modrinth.com/mod/fabric-api) for the same version.
-3. Download the Fabric JAR from [Modrinth](https://modrinth.com/mod/jump-delay-fix) or [GitHub Releases](https://github.com/kizio806/jump-delay-fix/releases).
-4. Place the JAR in your `mods/` folder.
+---
 
-### NeoForge
+## ☕ Java Requirements
 
-1. Install [NeoForge](https://neoforged.net/) for the correct Minecraft version.
-2. Download the NeoForge JAR from [Modrinth](https://modrinth.com/mod/jump-delay-fix) or [GitHub Releases](https://github.com/kizio806/jump-delay-fix/releases).
-3. Place the JAR in your `mods/` folder.
+- **Minecraft 26.1.x:** Requires **Java 25** (JDK/JRE 25). Modern Minecraft launchers (Official Launcher, Prism Launcher, Modrinth App) bundle this automatically when creating a 26.1.x instance.
 
-## Optional Dependencies
+---
 
-- [ModMenu](https://modrinth.com/mod/modmenu) (Fabric only) — enables the in-game settings screen from the mods list.
+## 📥 Installation Steps
+
+### Option A: Fabric
+
+1. **Install Fabric Loader:** Run the official installer from [fabricmc.net](https://fabricmc.net/) for Minecraft 26.1, 26.1.1, or 26.1.2.
+2. **Install Fabric API:** Download the matching [Fabric API](https://modrinth.com/mod/fabric-api) version (0.155.2+26.1.2) and place it in your `.minecraft/mods` folder.
+3. *(Recommended)* **Install ModMenu:** Download [ModMenu](https://modrinth.com/mod/modmenu) to access the settings GUI directly from Minecraft's mod menu.
+4. **Download Jump Delay Fix:**
+   - Grab `jumpdelayfix-fabric-26.1.2-1.2.2.jar` from [Modrinth](https://modrinth.com/mod/jump-delay-fix) or [GitHub Releases](https://github.com/kizio806/jump-delay-fix/releases).
+5. **Place into Mods Folder:** Move the JAR into `.minecraft/mods`.
+6. **Launch Game:** Start Minecraft using your Fabric profile.
+
+---
+
+### Option B: NeoForge
+
+1. **Install NeoForge:** Run the official installer from [neoforged.net](https://neoforged.net/) for Minecraft 26.1.x (version 26.1.2.103 or newer).
+2. **Download Jump Delay Fix:**
+   - Grab `jumpdelayfix-neoforge-26.1.2-1.2.2.jar` from [Modrinth](https://modrinth.com/mod/jump-delay-fix) or [GitHub Releases](https://github.com/kizio806/jump-delay-fix/releases).
+3. **Place into Mods Folder:** Move the JAR into `.minecraft/mods`.
+4. **Launch Game:** Start Minecraft using your NeoForge profile. Settings can be accessed via the **Mods** menu or in-game hotkey (`O`).
+
+---
+
+## 💻 Launcher-Specific Instructions
+
+### Prism Launcher
+1. Right-click your Minecraft instance and choose **Edit Instance**.
+2. Click **Mods** in the left sidebar.
+3. Click **Add Mod** (or drag and drop the downloaded `.jar`).
+4. Ensure the required Fabric API / NeoForge is checked in the **Version** tab.
+
+### Modrinth App
+1. Open your profile in the Modrinth App.
+2. Click **Add Content**.
+3. Search for **Jump Delay Fix** and click **Install**.
+
+### Official Minecraft Launcher
+1. Open the Minecraft Launcher and click the **Installations** tab.
+2. Hover over your Fabric or NeoForge profile and click the folder icon to open `.minecraft`.
+3. Open the `mods` folder and place the downloaded JAR file inside.
+
+---
+
+## 🌐 Server-Side Status
+
+- **Jump Delay Fix is 100% Client-Side.**
+- **Do NOT install on dedicated servers:** The mod has no server-side component. Servers run standard vanilla, Paper, Purpur, or modded engines without requiring Jump Delay Fix.
+- Players with Jump Delay Fix installed on their client can connect to any vanilla or modded server freely.
