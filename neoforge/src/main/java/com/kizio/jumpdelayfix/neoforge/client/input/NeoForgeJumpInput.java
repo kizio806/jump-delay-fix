@@ -28,7 +28,7 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public boolean isPlayerValid() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client != null ? client.player : null;
+        LocalPlayer player = client.player;
         if (player == null || !player.isAlive() || player.isSleeping()
                 || player.isPassenger() || player.isFallFlying()
                 || player.getAbilities().flying || player.isInWater() || player.isSwimming()
@@ -47,14 +47,14 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public boolean isPlayerOnGround() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client != null ? client.player : null;
+        LocalPlayer player = client.player;
         return player != null && player.onGround();
     }
 
     @Override
     public void jump() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client != null ? client.player : null;
+        LocalPlayer player = client.player;
         if (player != null) {
             player.jumpFromGround();
         }
@@ -63,7 +63,7 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public double getPlayerY() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client != null ? client.player : null;
+        LocalPlayer player = client.player;
         if (player == null) {
             return Double.NaN;
         }
