@@ -21,6 +21,7 @@ Future AI agents working in this repository must operate as **experienced senior
 - **Do NOT create rules or assertions without evidence:** Every constraint must be grounded in Gradle tasks, bash validation scripts, or Minecraft runtime requirements.
 - **Do NOT assume existing code is correct:** Always run tests, inspect bytecode dependencies, and check git blame/history.
 - **Do NOT add trivial or redundant comments:** Meaningful explanatory comments are permitted when clarifying non-obvious algorithms or contracts, but redundant comments that merely restate the code, `TODO`/`FIXME`/`XXX` tags, and wildcard imports are prohibited.
+- **Do NOT suppress warnings:** `@SuppressWarnings` and warning-silencing annotations of any kind are strictly forbidden. Resolve deprecations, type mismatches, and linter warnings at the source.
 
 ---
 
@@ -62,6 +63,7 @@ Before touching any code, an AI agent must complete four distinct analysis steps
 - **Comment Hygiene:** Meaningful, high-value comments explaining complex algorithms or non-obvious contracts are permitted. Redundant, trivial comments that merely narrate self-explanatory code are strictly discouraged.
 - **Zero Markers:** No `TODO`, `FIXME`, or `XXX` tags in Java files.
 - **Zero Wildcard Imports:** `import java.util.*;` is strictly prohibited. Use explicit single-class imports.
+- **Zero Warning Suppressions:** `@SuppressWarnings` is strictly forbidden. Resolve warnings and deprecations using modern non-deprecated APIs. Enforced by `validateSourceHygiene`.
 
 ### 2. Code Style & Clean Architecture
 - **Formatting:** 4 spaces for indentation, UTF-8 encoding, Unix line endings (`\n`), no trailing whitespace. Enforced by Spotless.

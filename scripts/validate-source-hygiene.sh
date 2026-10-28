@@ -46,4 +46,11 @@ if [[ -n "$WILDCARD_IMPORT_MATCHES" ]]; then
     exit 1
 fi
 
+SUPPRESS_WARNINGS_MATCHES=$(rg -n --glob '*.java' '@SuppressWarnings' "${EXISTING_SOURCE_DIRS[@]}" || true)
+if [[ -n "$SUPPRESS_WARNINGS_MATCHES" ]]; then
+    echo "Java source hygiene violation: @SuppressWarnings is strictly forbidden across the codebase. Fix the root cause instead of suppressing warnings."
+    echo "$SUPPRESS_WARNINGS_MATCHES"
+    exit 1
+fi
+
 echo "Source hygiene validation passed."

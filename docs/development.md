@@ -43,6 +43,7 @@ Practical rule:
 - Java sources must not contain `TODO`, `FIXME`, or `XXX` markers (enforced by `validateSourceHygiene`)
 - root `src/` directory is prohibited; all sources must reside in `common/`, `fabric/`, or `neoforge/` (enforced by `validateStructure`)
 - wildcard imports are forbidden (enforced by `validateSourceHygiene`)
+- `@SuppressWarnings` annotations are strictly forbidden across all modules; warnings must be resolved by fixing root causes rather than silencing them (enforced by `validateSourceHygiene`)
 - compilation is enforced with `-Xlint:all -Werror`
 
 ## Procedure for Adding or Porting to a New Minecraft Version

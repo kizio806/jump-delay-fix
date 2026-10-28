@@ -7,6 +7,7 @@ In the `jump-delay-fix` codebase, code must maintain high readability and clean 
 - **Meaningful Comments Only:** Explanatory comments are permitted when clarifying complex or non-obvious algorithms, timing heuristics, or cross-loader subtleties. Redundant comments that merely restate self-evident code (e.g., `// check if grounded` before `if (isGrounded)`) are prohibited.
 - **No Incomplete Markers:** Never commit `TODO`, `FIXME`, or `XXX` markers in `.java` files. Any unfinished work or technical debt must be tracked via GitHub Issues, not code comments. Enforced by `scripts/validate-source-hygiene.sh`.
 - **No Wildcard Imports:** Always import explicit, fully qualified class names. Wildcard package imports (e.g., `import java.util.*;`) are prohibited. Enforced by `scripts/validate-source-hygiene.sh`.
+- **No Warning Suppressions:** Never use `@SuppressWarnings` or warning suppression annotations. All warnings under `-Xlint:all -Werror` must be resolved by fixing root causes (e.g. updating deprecated API calls, fixing types, removing dead code). Enforced by `scripts/validate-source-hygiene.sh`.
 - **Format Integrity:** 4 spaces for indentation, UTF-8 character encoding, Unix line endings (`LF`), and no trailing whitespace. Enforced by Spotless.
 
 ## Do:
@@ -41,6 +42,9 @@ if (input.isPlayerOnGround()) {
 
 // Bad: Wildcard import will fail scripts/validate-source-hygiene.sh
 import java.util.*;
+
+// Bad: Warning suppression will fail scripts/validate-source-hygiene.sh
+@SuppressWarnings("deprecation")
 ```
 
 ## Verification:
