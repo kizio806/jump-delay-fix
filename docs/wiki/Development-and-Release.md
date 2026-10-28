@@ -115,8 +115,11 @@ The script will:
 ### 3. Automated CI/CD Publishing
 Once a tag is pushed, `.github/workflows/release.yml` triggers automatically:
 - Builds release artifacts using the exact Java version detected from `gradle.properties`.
-- Publishes a formatted GitHub Release with release notes.
-- Publishes Fabric and NeoForge JARs to **Modrinth** using `Kir-Antipov/mc-publish`.
+- Publishes a formatted GitHub Release with release notes and SHA-256 checksums.
+- Publishes **two distinct, loader-separated entries** to **Modrinth** and **CurseForge**:
+  1. `Jump Delay Fix <version> for Fabric` (`<version>-fabric`, loader: `fabric`, matching full game version range).
+  2. `Jump Delay Fix <version> for NeoForge` (`<version>-neoforge`, loader: `neoforge`, matching full game version range).
+- **Universal Rule:** Never combine Fabric and NeoForge into a single release entry, and never produce multiple separate JARs for different patch versions on the same branch.
 
 ---
 
