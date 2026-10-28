@@ -58,8 +58,20 @@ case "$BRANCH" in
     support/26.2.x)
         EXPECTED_VERSION_PREFIX="1.3."
         ;;
-    main|release/*)
-        EXPECTED_VERSION_PREFIX="1.4."
+    release/*)
+        RELEASE_SUFFIX="${BRANCH#release/}"
+        if [[ "$RELEASE_SUFFIX" =~ ^([0-9]+\.[0-9]+) ]]; then
+            EXPECTED_VERSION_PREFIX="${BASH_REMATCH[1]}."
+        else
+            EXPECTED_VERSION_PREFIX=""
+        fi
+        ;;
+    main)
+        if [[ "$MOD_VERSION" =~ ^(1\.[0-3]\.) ]]; then
+            echo "Error: Mod version '$MOD_VERSION' on main belongs to an older support line (expected >= 1.4.0)."
+            exit 1
+        fi
+        EXPECTED_VERSION_PREFIX=""
         ;;
     *)
         echo "Warning: Current branch '$BRANCH' is not one of the standard support/release branches."
@@ -143,7 +155,8 @@ fi
 
 echo "--- 5. Preparing release commit and tag ---"
 
-if ! git diff-index --quiet HEAD --; then
+git update-index -q --refresh || true
+if [[ -n "$(git status --porcelain)" ]]; then
     git add -A
     git commit -m "chore(release): ${TAG_NAME}"
 fi

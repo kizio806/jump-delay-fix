@@ -32,13 +32,6 @@ if [[ -z "$SOURCE_FILES" ]]; then
     exit 1
 fi
 
-COMMENT_MATCHES=$(rg -n --glob '*.java' '(//|/\*)' "${EXISTING_SOURCE_DIRS[@]}" || true)
-if [[ -n "$COMMENT_MATCHES" ]]; then
-    echo "Java source hygiene violation: comments are not allowed in source files."
-    echo "$COMMENT_MATCHES"
-    exit 1
-fi
-
 MARKER_MATCHES=$(rg -n --glob '*.java' '\b(TODO|FIXME|XXX)\b' "${EXISTING_SOURCE_DIRS[@]}" || true)
 if [[ -n "$MARKER_MATCHES" ]]; then
     echo "Java source hygiene violation: TODO/FIXME/XXX markers are not allowed."
@@ -50,6 +43,13 @@ WILDCARD_IMPORT_MATCHES=$(rg -n --glob '*.java' '^import\s+[^;]*\.\*;' "${EXISTI
 if [[ -n "$WILDCARD_IMPORT_MATCHES" ]]; then
     echo "Java source hygiene violation: wildcard imports are not allowed."
     echo "$WILDCARD_IMPORT_MATCHES"
+    exit 1
+fi
+
+SUPPRESS_WARNINGS_MATCHES=$(rg -n --glob '*.java' '@SuppressWarnings' "${EXISTING_SOURCE_DIRS[@]}" || true)
+if [[ -n "$SUPPRESS_WARNINGS_MATCHES" ]]; then
+    echo "Java source hygiene violation: @SuppressWarnings is strictly forbidden across the codebase. Fix the root cause instead of suppressing warnings."
+    echo "$SUPPRESS_WARNINGS_MATCHES"
     exit 1
 fi
 

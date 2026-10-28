@@ -23,7 +23,7 @@ body:
     id: mc_version
     attributes:
       label: Minecraft version
-      placeholder: "e.g. 1.21.11"
+      placeholder: "e.g. 26.3"
     validations:
       required: true
 
@@ -31,7 +31,7 @@ body:
     id: mod_version
     attributes:
       label: Jump Delay Fix version
-      placeholder: "e.g. 1.1.0"
+      placeholder: "e.g. 1.4.2"
     validations:
       required: true
 
@@ -40,7 +40,7 @@ body:
     attributes:
       label: Loader version
       description: Fabric Loader or NeoForge version.
-      placeholder: "e.g. 0.18.4 / 21.1.174"
+      placeholder: "e.g. 0.18.4 / 26.3.0.1-beta"
     validations:
       required: true
 
@@ -48,7 +48,7 @@ body:
     id: java_version
     attributes:
       label: Java version
-      placeholder: "e.g. 21.0.6"
+      placeholder: "e.g. 25"
     validations:
       required: true
 

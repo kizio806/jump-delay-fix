@@ -11,7 +11,7 @@ Jump Delay Fix registers dedicated key mappings in Minecraft's standard controls
 | Action | Default Key | Translation Key | Description |
 | :--- | :---: | :--- | :--- |
 | **Toggle Mod** | **`J`** | `key.jumpdelayfix.toggle` | Instantly toggles the mod ON or OFF in-game. |
-| **Cycle Profile** | **`H`** | `key.jumpdelayfix.profile` | Cycles sequentially through `SMART` → `COMPETITIVE` → `STABLE`. |
+| **Cycle Profile** | **`H`** | `key.jumpdelayfix.profile` | Cycles sequentially through `SMART` → `STABLE` → `COMPETITIVE`. |
 | **Open Settings** | **`O`** | `key.jumpdelayfix.config` | Opens the graphical configuration interface directly. |
 
 ### Customizing Keybinds
@@ -72,7 +72,7 @@ You can access the settings screen in three ways:
 - **Mod State:** Toggle the entire mod `ON` or `OFF`.
 - **Auto Profile Switching:** Toggle adaptive switching `ON` or `OFF`.
 - **Active Profile:** Cycle manual profile between `SMART`, `COMPETITIVE`, and `STABLE`.
-- **Reset to Defaults (`Przywróć domyślne`):** Restores factory configuration with a single click:
+- **Reset to Defaults:** Restores factory configuration with a single click:
   - Enables the mod.
   - Sets active profile to `SMART`.
   - Enables auto profile switching.

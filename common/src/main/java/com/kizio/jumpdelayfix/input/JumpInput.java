@@ -4,6 +4,9 @@ public interface JumpInput {
     boolean isJumpPressed();
     boolean isPlayerOnGround();
     void jump();
+    default boolean isPlayerValid() {
+        return true;
+    }
     default int requiredGroundedTicksBeforeJump() {
         return 1;
     }
