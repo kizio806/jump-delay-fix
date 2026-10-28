@@ -1,7 +1,6 @@
 package com.kizio.jumpdelayfix.neoforge.client.input;
 
 import com.kizio.jumpdelayfix.Constants;
-import com.kizio.jumpdelayfix.input.KeyBindingProvider;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
@@ -10,7 +9,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import org.lwjgl.sdl.SDLKeycode;
 
 @OnlyIn(Dist.CLIENT)
-public final class NeoForgeKeyMappings implements KeyBindingProvider {
+public final class NeoForgeKeyMappings {
 
     private static final NeoForgeKeyMappings INSTANCE = new NeoForgeKeyMappings();
     private static final int DEFAULT_TOGGLE_KEY = SDLKeycode.SDLK_J;
@@ -51,7 +50,6 @@ public final class NeoForgeKeyMappings implements KeyBindingProvider {
         event.register(CONFIG_KEY);
     }
 
-    @Override
     public boolean consumeTogglePress() {
         boolean pressed = false;
         while (TOGGLE_KEY.consumeClick()) {
@@ -60,7 +58,6 @@ public final class NeoForgeKeyMappings implements KeyBindingProvider {
         return pressed;
     }
 
-    @Override
     public boolean consumeProfileCyclePress() {
         boolean pressed = false;
         while (PROFILE_KEY.consumeClick()) {
@@ -69,7 +66,6 @@ public final class NeoForgeKeyMappings implements KeyBindingProvider {
         return pressed;
     }
 
-    @Override
     public boolean consumeConfigScreenPress() {
         boolean pressed = false;
         while (CONFIG_KEY.consumeClick()) {

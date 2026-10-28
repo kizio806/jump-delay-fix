@@ -39,7 +39,7 @@ serverProfile.bXkuc2VydmVyLm5ldA===STABLE
 
 Jump Delay Fix automatically recognizes which server or world you are playing on and loads your previously selected profile:
 
-- **Server Identifier:** Uses the server's network address (e.g. `mc.hypixel.net`, `play.example.com:25565`) or `global` for singleplayer worlds.
+- **Server Identifier:** Uses the server's network address (e.g. `mc.hypixel.net`, `play.example.com:25565`) or `singleplayer` for singleplayer worlds.
 - **Base64 Encoding:** Server addresses are encoded to ensure valid property keys without whitespace, colons, or punctuation issues.
 - **LRU Eviction (Least Recently Used):** The mod caches up to **128 servers**. When you connect to a 129th server, the oldest inactive server entry is automatically pruned to keep the configuration file clean and lightweight.
 
@@ -57,7 +57,7 @@ Jump Delay Fix automatically recognizes which server or world you are playing on
 ## 🔄 Resetting Configuration
 
 ### Method 1: In-Game Settings Screen
-Open the settings screen (`O` key by default, or via ModMenu / Mod List) and click the **Reset to Defaults** button (`Przywróć domyślne`).
+Open the settings screen (`O` key by default, or via ModMenu / Mod List) and click the **Reset to Defaults** button.
 
 ### Method 2: Manual File Deletion
 1. Close Minecraft.

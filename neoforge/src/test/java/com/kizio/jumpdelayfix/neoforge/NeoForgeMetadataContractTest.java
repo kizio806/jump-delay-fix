@@ -40,7 +40,7 @@ class NeoForgeMetadataContractTest {
     private static String readResource(String resourcePath) throws IOException {
         try (InputStream stream = NeoForgeMetadataContractTest.class.getResourceAsStream(resourcePath)) {
             assertNotNull(stream, "Missing test resource: " + resourcePath);
-            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            return new String(stream.readAllBytes(), StandardCharsets.ISO_8859_1);
         }
     }
 }

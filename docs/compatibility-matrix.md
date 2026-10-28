@@ -58,7 +58,7 @@ Every declared combination of Mod Loader and Minecraft version is independently 
 2. **Unified Minor Line (`26.1.x`):**
    Fabric API (`>=26.1 <26.2`) and NeoForge (`[26.1,26.2)`) accept the entire patch range. One unified JAR per loader covers 26.1, 26.1.1, and 26.1.2 without runtime conflict.
 3. **Multi-Artifact Line (`1.21.9–1.21.11`):**
-   Fabric API binds each release to an exact patch (`0.134.1+1.21.9` for 1.21.9, `0.138.4+1.21.10` for 1.21.10, `0.141.6+1.21.11` for 1.21.11). Therefore, 6 dedicated versioned JARs (3 Fabric, 3 NeoForge) are generated via `scripts/build-all-versions.sh` and published as distinct version targets.
+   Fabric API binds each release to an exact patch (`0.134.1+1.21.9` for 1.21.9, `0.138.4+1.21.10` for 1.21.10, `0.141.6+1.21.11` for 1.21.11). Therefore, 6 dedicated versioned JARs (3 Fabric, 3 NeoForge) are built and published as distinct version targets.
 
 ---
 

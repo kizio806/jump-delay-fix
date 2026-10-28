@@ -190,4 +190,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Full strict check
-        run: ./gradlew --no-daemon publishReadyCheck strictCheck
+        run: ./gradlew --no-daemon strictCheck

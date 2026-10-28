@@ -1,5 +1,4 @@
 {
-  "category.jumpdelayfix": "Jump Delay Fix",
   "key.category.jumpdelayfix.jumpdelayfix": "Jump Delay Fix",
   "key.jumpdelayfix.toggle": "切换 Jump Delay Fix",
   "key.jumpdelayfix.profile": "切换跳跃配置",
@@ -12,7 +11,6 @@
   "message.jumpdelayfix.enabled": "开",
   "message.jumpdelayfix.disabled": "关",
   "screen.jumpdelayfix.settings.title": "Jump Delay Fix 设置",
-  "screen.jumpdelayfix.settings.subtitle": "Clean control over movement behavior.",
   "gui.jumpdelayfix.toggle": "启用: %s",
   "gui.jumpdelayfix.auto": "自动配置: %s",
   "gui.jumpdelayfix.profile.cycle": "切换配置",
