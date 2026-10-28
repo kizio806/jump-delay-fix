@@ -26,7 +26,7 @@ Welcome to the official **Jump Delay Fix** documentation and wiki.
 | Key | Action | Details |
 | :---: | :--- | :--- |
 | **`J`** | **Toggle Mod** | Instantly turns Jump Delay Fix ON or OFF. |
-| **`H`** | **Cycle Profile** | Switches between `SMART` → `COMPETITIVE` → `STABLE`. |
+| **`H`** | **Cycle Profile** | Switches between `SMART` → `STABLE` → `COMPETITIVE`. |
 | **`O`** | **Open Settings** | Directly opens the in-game configuration screen. |
 
 > *All keybinds are fully rebindable in Minecraft's **Options → Controls → Key Binds** under the **Jump Delay Fix** category.*

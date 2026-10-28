@@ -1,43 +1,76 @@
-# Troubleshooting
+# Troubleshooting & FAQ
 
-## Mod is not loading
+This guide provides solutions to common issues, configuration problems, and error messages when running Jump Delay Fix.
 
-- Verify that you are running **Java 25**.
-- Check that you have the correct Fabric API or NeoForge version installed.
-- Verify the JAR filename matches your Minecraft version line (26.2).
+---
 
-## Jump feels the same as vanilla
+## 🔍 Frequently Encountered Issues
 
-- Press `H` to ensure Jump Delay Fix is toggled **ON**.
-- Check settings via `K` to ensure the mod is active.
+### 1. I am experiencing rubberbanding or lagbacks on multiplayer servers
+- **Cause:** Network latency spikes (ping > 150 ms), severe server tick drops, or a strict server anti-cheat misinterpreting timing under packet loss.
+- **Solution:**
+  1. Press **`H`** to switch your profile to **`STABLE`**. The `STABLE` profile introduces an extra grounded verification tick to guarantee synchronization with the server.
+  2. Open settings (**`O`**) and ensure **Auto Profile Switching** is enabled. The mod will automatically adapt to network lag.
+  3. If the server enforces zero-modification policies, toggle the mod off with **`J`**.
 
-## Rubberbanding or movement lag on multiplayer servers
+---
 
-- Switch profile to **Stable Anti-Rubberband** using `J` or via the settings screen (`K`).
-- Ensure Auto Profile Switching is turned ON so the mod automatically adjusts to packet latency.
+### 2. Keybinds conflict with another mod
+- **Default Keybinds:**
+  - **`J`** — Toggle Mod ON / OFF (`key.jumpdelayfix.toggle`)
+  - **`H`** — Cycle Profile (`key.jumpdelayfix.profile`)
+  - **`O`** — Open Settings Screen (`key.jumpdelayfix.config`)
+- **Solution:**
+  1. Go to **Options → Controls → Key Binds**.
+  2. Scroll to the **Jump Delay Fix** category.
+  3. Reassign the conflicting keys or press `ESC` to unbind them.
 
-## Config file location and resetting
+---
 
-```
-.minecraft/config/jumpdelayfix.properties
-```
+### 3. How do I completely reset all settings?
+- **In-Game Method:**
+  1. Open the settings screen by pressing **`O`** (or through ModMenu / NeoForge Mod List).
+  2. Click **Reset to Defaults**.
+  3. All cached server profiles and runtime settings will be restored to factory defaults immediately.
+- **Manual Method:**
+  1. Close Minecraft.
+  2. Navigate to your `.minecraft/config/` folder.
+  3. Delete `jumpdelayfix.properties`.
+  4. Restart Minecraft.
 
-To reset settings:
-- Use the **Reset to Defaults** button in the settings screen (`K`), or
-- Delete `.minecraft/config/jumpdelayfix.properties` while the game is closed.
+---
 
-## Build fails locally
+### 4. Game crashes on launch with `UnsupportedClassVersionError` or `ClassNotFoundException`
+- **Cause:** Incompatible Java runtime version or mismatched mod loader.
+- **Solutions:**
+  - **Check Java Version:** Minecraft **26.2** requires **Java 25**. Make sure your launcher instance is configured to use the appropriate JDK.
+  - **Check Loader Compatibility:**
+    - If you are running **Fabric**, make sure you installed `jumpdelayfix-fabric-...jar` and have [Fabric API](https://modrinth.com/mod/fabric-api) installed for 26.2.
+    - If you are running **NeoForge**, make sure you installed `jumpdelayfix-neoforge-...jar` (>= 26.2.0.79).
+    - Do NOT place both Fabric and NeoForge JARs in the same `mods/` directory.
 
-Run:
+---
 
-```bash
-./gradlew clean buildAll strictCheck --stacktrace
-```
+### 5. Settings screen doesn't open from the Mods list
+- **On Fabric:** Fabric does not have a built-in mods GUI menu. You need to install [ModMenu](https://modrinth.com/mod/modmenu) to access the settings button in the mods list, or simply press the **`O`** key in-game.
+- **On NeoForge:** Open **Mods → Jump Delay Fix → Config**, or press **`O`** in-game.
 
-## Reporting Issues
+---
 
-Open an issue at [github.com/kizio806/jump-delay-fix/issues](https://github.com/kizio806/jump-delay-fix/issues) with:
+### 6. Where can I find diagnostic logs?
+Jump Delay Fix logs initialization and configuration events with the `jumpdelayfix` tag:
+1. Open `.minecraft/logs/latest.log`.
+2. Search for `Jump Delay Fix`.
+3. You should see log lines like:
+   ```
+   [Client thread/INFO] [jumpdelayfix]: Jump Delay Fix Fabric client starting
+   [Client thread/INFO] [jumpdelayfix]: Jump Delay Fix initialized
+   ```
 
-- Minecraft version (26.2)
-- Loader (Fabric / NeoForge) and version
-- Full crash log or latest.log
+---
+
+## 💬 Getting Further Help
+
+If you encounter an issue not covered here:
+- Open an issue on our [GitHub Issue Tracker](https://github.com/kizio806/jump-delay-fix/issues).
+- Include your Minecraft version (26.2), mod loader version, Jump Delay Fix version, and relevant excerpts from `.minecraft/logs/latest.log`.
