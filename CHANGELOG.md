@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - Refined jump confirmation heuristics in `JumpHandler`: airborne jumps exceeding the timeout window without detected rollback or lift confirmation are marked inconclusive rather than falsely credited as successful confirmations, preventing skewed server latency statistics and inappropriate adaptive penalties.
 - Reorganized `ConfigManager` package structure to `com.kizio.jumpdelayfix.ConfigManager` in pure Java `:common` with package structure validation.
 - Completely removed dead and unused GameTest structure files and duplicate resources.
+- Eliminated all `@SuppressWarnings` annotations across the codebase with automated `validateSourceHygiene` enforcement.
 - Strengthened NeoForge loader version ranges to strictly bounded intervals (`[21.9,21.10)`, `[21.10,21.11)`, `[21.11,21.12)`).
 - Hardened CI/CD release workflow to ensure each artifact is published exclusively for its exact compatible Minecraft version without broad version leakage.
 
