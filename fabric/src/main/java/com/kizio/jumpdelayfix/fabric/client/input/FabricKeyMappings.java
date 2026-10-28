@@ -18,8 +18,7 @@ public final class FabricKeyMappings implements KeyBindingProvider {
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
 
-    @SuppressWarnings("deprecation")
-    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.register(
+    private static final KeyMapping.Category KEY_CATEGORY = new KeyMapping.Category(
             Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix")
     );
 
