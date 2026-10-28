@@ -51,16 +51,16 @@ Practical rule:
 When adding support for a new Minecraft version (minor update or new major line), follow this 9-step procedure:
 
 ### 1. Select Compile Target and Support Range
-- Identify the base Minecraft version (e.g. `1.21.11` or `1.21.10`).
-- Decide whether the new version can share an existing minor line or requires dedicated versioned artifacts. On the 1.21.x line, Fabric API requires dedicated versioned artifacts for each patch.
+- Identify the base Minecraft version (e.g. `26.4` or `26.3.1`).
+- Decide whether the new version can share an existing minor line (single patch-line rule: `fabric_game_versions` and `neoforge_game_versions` must share the same major.minor) or requires branching into a new support line.
 
 ### 2. Determine Loader & Dependency Versions
 - Consult Fabric Maven and NeoForge Maven for matching runtime artifacts:
   - Fabric Loader (e.g. `>=0.18.4`)
-  - Fabric API (e.g. `0.134.1+1.21.9`, `0.138.4+1.21.10`, `0.141.6+1.21.11`)
-  - NeoForge (e.g. `21.9.16-beta`, `21.10.64`, `21.11.48`)
-  - ModMenu (e.g. `16.0.1` or `17.0.0-beta.2`)
-- Determine the NeoForge loader range (e.g. `[21.9,21.10)` or `[21.9,21.12)`). Ensure the range is bounded on both sides.
+  - Fabric API (e.g. `0.160.6+26.3`)
+  - NeoForge (e.g. `26.3.0.1-beta`)
+  - ModMenu (e.g. `18.0.0` or `17.0.0`)
+- Determine the NeoForge loader range (e.g. `[26.3,26.4)`). Ensure the range is bounded on both sides to prevent running against untested future major versions.
 
 ### 3. Check Mappings & Player Input APIs
 - For modern lines (Minecraft >= 26.x), official Mojang mappings are standard across both Fabric and NeoForge.

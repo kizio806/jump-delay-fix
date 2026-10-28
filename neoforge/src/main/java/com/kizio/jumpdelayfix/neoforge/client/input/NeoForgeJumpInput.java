@@ -1,9 +1,9 @@
 package com.kizio.jumpdelayfix.neoforge.client.input;
 
-import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.input.JumpInput;
 import com.kizio.jumpdelayfix.input.LatencyCompensation;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -14,7 +14,8 @@ import java.util.Locale;
 public final class NeoForgeJumpInput implements JumpInput {
 
     private int lastPlayerId = -1;
-    private boolean wasValid = false;
+    private ServerData lastServerData;
+    private String cachedServerIdentifier = "multiplayer-unknown";
 
     @Override
     public boolean isJumpPressed() {
@@ -28,14 +29,14 @@ public final class NeoForgeJumpInput implements JumpInput {
     public boolean isPlayerOnGround() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client.player;
-        return isPlayerValid(player) && player.onGround();
+        return player != null && player.onGround();
     }
 
     @Override
     public void jump() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client.player;
-        if (isPlayerValid(player)) {
+        if (player != null) {
             player.jumpFromGround();
         }
     }
@@ -44,27 +45,25 @@ public final class NeoForgeJumpInput implements JumpInput {
     public double getPlayerY() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client.player;
-        if (!isPlayerValid(player)) {
-            return Double.NaN;
-        }
-        return player.getY();
+        return player != null ? player.getY() : Double.NaN;
     }
 
-    private boolean isPlayerValid(LocalPlayer player) {
+    @Override
+    public boolean isPlayerValid() {
+        Minecraft client = Minecraft.getInstance();
+        LocalPlayer player = client.player;
         if (player == null || !player.isAlive() || player.isSleeping()
                 || player.isPassenger() || player.isFallFlying()
                 || player.getAbilities().flying || player.isInWater() || player.isSwimming()
                 || player.isVisuallyCrawling()) {
-            if (wasValid) {
-                JumpDelayFix.resetTransientState();
-                wasValid = false;
-            }
+            lastPlayerId = -1;
             return false;
         }
-        wasValid = true;
+
         int currentId = player.getId();
         if (lastPlayerId != -1 && lastPlayerId != currentId) {
-            JumpDelayFix.resetTransientState();
+            lastPlayerId = currentId;
+            return false;
         }
         lastPlayerId = currentId;
         return true;
@@ -97,12 +96,23 @@ public final class NeoForgeJumpInput implements JumpInput {
             return "singleplayer";
         }
 
-        var serverData = client.getCurrentServer();
-        if (serverData != null && serverData.ip != null && !serverData.ip.isBlank()) {
-            return serverData.ip.toLowerCase(Locale.ROOT);
+        ServerData serverData = client.getCurrentServer();
+        if (serverData == null) {
+            lastServerData = null;
+            cachedServerIdentifier = "multiplayer-unknown";
+            return cachedServerIdentifier;
         }
 
-        return "multiplayer-unknown";
+        if (serverData != lastServerData) {
+            lastServerData = serverData;
+            if (serverData.ip != null && !serverData.ip.isBlank()) {
+                cachedServerIdentifier = serverData.ip.trim().toLowerCase(Locale.ROOT);
+            } else {
+                cachedServerIdentifier = "multiplayer-unknown";
+            }
+        }
+
+        return cachedServerIdentifier;
     }
 
     private int getEstimatedLatencyMs(Minecraft client) {

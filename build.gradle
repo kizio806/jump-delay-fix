@@ -44,9 +44,7 @@ sonar {
 
 ext.sharedVersions = [
         minecraft: providers.gradleProperty('minecraft_version').get(),
-        mappings : providers.gradleProperty('yarn_mappings').get(),
-        loom     : providers.gradleProperty('loom_version').get(),
-        neoGradle: providers.gradleProperty('neoforge_moddev_gradle_version').get()
+        mappings : providers.gradleProperty('yarn_mappings').get()
 ]
 
 subprojects {

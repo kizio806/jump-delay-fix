@@ -1,5 +1,4 @@
 {
-  "category.jumpdelayfix": "Jump Delay Fix",
   "key.category.jumpdelayfix.jumpdelayfix": "Jump Delay Fix",
   "key.jumpdelayfix.toggle": "Jump Delay Fix umschalten",
   "key.jumpdelayfix.profile": "Sprungprofil wechseln",
@@ -12,12 +11,11 @@
   "message.jumpdelayfix.enabled": "AN",
   "message.jumpdelayfix.disabled": "AUS",
   "screen.jumpdelayfix.settings.title": "Jump Delay Fix Einstellungen",
-  "screen.jumpdelayfix.settings.subtitle": "Clean control over movement behavior.",
   "gui.jumpdelayfix.toggle": "Aktiviert: %s",
   "gui.jumpdelayfix.auto": "Auto-Profil: %s",
   "gui.jumpdelayfix.profile.cycle": "Profil wechseln",
-  "gui.jumpdelayfix.reset_defaults": "Standardwerte wiederherstellen",
-  "gui.jumpdelayfix.option.done": "Done",
+  "gui.jumpdelayfix.reset_defaults": "Auf Standard zurücksetzen",
+  "gui.jumpdelayfix.option.done": "Fertig",
   "gui.jumpdelayfix.desc.profile": "Cycle the manual profile used for jump timing. Picking a profile manually also turns off auto profile switching until you enable it again.",
   "gui.jumpdelayfix.desc.auto": "Lets the mod watch rollback history and swap between profiles automatically for the current server."
 }

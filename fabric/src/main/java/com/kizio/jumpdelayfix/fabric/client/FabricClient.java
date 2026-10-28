@@ -48,7 +48,6 @@ public final class FabricClient {
 
     private static void registerEvents(FabricKeyMappings keyBindings) {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            JumpDelayFix.onClientTick();
             if (keyBindings.consumeTogglePress()) {
                 JumpDelayFix.toggleEnabled();
             }
@@ -60,6 +59,7 @@ public final class FabricClient {
                     client.setScreen(new FabricSettingsScreen(client.currentScreen));
                 }
             }
+            JumpDelayFix.onClientTick();
         });
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> JumpDelayFix.resetTransientState());

@@ -9,10 +9,13 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,17 +30,22 @@ public final class NeoForgeClient {
     private NeoForgeClient() {
     }
 
-    public static synchronized void init(IEventBus modEventBus) {
+    public static synchronized void init(IEventBus modEventBus, ModContainer modContainer) {
         if (initialized) {
             return;
         }
 
         LOGGER.info("{} NeoForge client starting", Constants.MOD_NAME);
+        modContainer.registerExtensionPoint(
+                IConfigScreenFactory.class,
+                (container, screen) -> new NeoForgeSettingsScreen(screen)
+        );
         modEventBus.addListener(NeoForgeKeyMappings::onRegisterKeyMappings);
         modEventBus.addListener(NeoForgeClient::onClientSetup);
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientLogout);
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientPlayerClone);
+        NeoForge.EVENT_BUS.addListener((GameShuttingDownEvent event) -> JumpDelayFix.flushPendingConfiguration());
         initialized = true;
     }
 
@@ -54,8 +62,11 @@ public final class NeoForgeClient {
     }
 
     private static void onClientTick(ClientTickEvent.Post event) {
+        if (!JumpDelayFix.isInitialized()) {
+            return;
+        }
+
         NeoForgeKeyMappings keyBindings = NeoForgeKeyMappings.getInstance();
-        JumpDelayFix.onClientTick();
         if (keyBindings.consumeTogglePress()) {
             JumpDelayFix.toggleEnabled();
         }
@@ -68,6 +79,7 @@ public final class NeoForgeClient {
                 client.setScreen(new NeoForgeSettingsScreen(client.screen));
             }
         }
+        JumpDelayFix.onClientTick();
     }
 
     private static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {

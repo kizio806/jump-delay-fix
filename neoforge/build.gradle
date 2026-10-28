@@ -142,6 +142,7 @@ jar {
 }
 
 tasks.named('check') {
+    dependsOn(tasks.named('validateProductionMetadata'), tasks.named('verifyDedicatedServerSafe'))
 }
 
 tasks.named('sourcesJar') {

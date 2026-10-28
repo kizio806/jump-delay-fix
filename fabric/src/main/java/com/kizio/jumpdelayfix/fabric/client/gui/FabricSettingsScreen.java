@@ -12,6 +12,9 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public final class FabricSettingsScreen extends Screen {
 
+    private static final Text DESC_PROFILE = Text.translatable("gui.jumpdelayfix.desc.profile");
+    private static final Text DESC_AUTO = Text.translatable("gui.jumpdelayfix.desc.auto");
+
     private static final int BUTTON_WIDTH = 220;
     private static final int BUTTON_HEIGHT = 20;
     private static final int ROW_SPACING = 24;
@@ -71,17 +74,10 @@ public final class FabricSettingsScreen extends Screen {
 
         int centerX = this.width / 2;
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, centerX, 20, 0xFFFFFF);
-        context.drawCenteredTextWithShadow(
-                this.textRenderer,
-                Text.translatable("screen.jumpdelayfix.settings.subtitle"),
-                centerX,
-                34,
-                0xA0A0A0
-        );
         context.drawCenteredTextWithShadow(this.textRenderer, profileStatusText(), centerX, 48, 0xFFFFFF);
         context.drawCenteredTextWithShadow(this.textRenderer, autoStatusText(), centerX, 60, 0xFFFFFF);
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.translatable("gui.jumpdelayfix.desc.profile"), centerX, this.height - 50, 0xA0A0A0);
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.translatable("gui.jumpdelayfix.desc.auto"), centerX, this.height - 38, 0xA0A0A0);
+        context.drawCenteredTextWithShadow(this.textRenderer, DESC_PROFILE, centerX, this.height - 50, 0xA0A0A0);
+        context.drawCenteredTextWithShadow(this.textRenderer, DESC_AUTO, centerX, this.height - 38, 0xA0A0A0);
     }
 
     @Override
@@ -94,7 +90,7 @@ public final class FabricSettingsScreen extends Screen {
 
     private void refreshButtonLabels() {
         toggleButton.setMessage(Text.translatable("gui.jumpdelayfix.toggle", booleanText(JumpDelayFix.isEnabled())));
-        profileButton.setMessage(Text.literal(Text.translatable("gui.jumpdelayfix.profile.cycle").getString() + ": ")
+        profileButton.setMessage(Text.translatable("gui.jumpdelayfix.profile.cycle").copy().append(": ")
                 .append(Text.translatable(JumpDelayFix.getProfile().translationKey())));
         autoButton.setMessage(Text.translatable("gui.jumpdelayfix.auto", booleanText(JumpDelayFix.isAutoProfileSwitchEnabled())));
     }

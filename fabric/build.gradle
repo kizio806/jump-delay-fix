@@ -30,6 +30,7 @@ dependencies {
 
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 loom {
@@ -242,7 +243,7 @@ tasks.register('verifyRuntimeDependencyCompatibility') {
 }
 
 tasks.named('check') {
-    dependsOn(tasks.named('verifyRuntimeDependencyCompatibility'))
+    dependsOn(tasks.named('verifyRuntimeDependencyCompatibility'), tasks.named('validateProductionMetadata'))
 }
 
 jar {
