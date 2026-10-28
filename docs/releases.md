@@ -35,6 +35,7 @@ Ensure the project builds correctly with the new metadata.
 
 Update `CHANGELOG.md` for user-visible changes for the new `<mod_version>`.
 That section becomes the release body for both GitHub Releases and Modrinth.
+For the complete list of verified combinations and artifact checksums, refer to [compatibility-matrix.md](compatibility-matrix.md).
 
 ## 5. One-Command Release Procedure
 
