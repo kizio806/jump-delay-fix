@@ -13,14 +13,14 @@
 ### 2. Keybindings conflict with other mods
 - **Default Keybinds:**
   - **`J`** — Toggle Jump Delay Fix (ON / OFF)
-  - **`H`** — Cycle Profile (`SMART` → `COMPETITIVE` → `STABLE`)
+  - **`H`** — Cycle Profile (`SMART` → `STABLE` → `COMPETITIVE`)
   - **`O`** — Open Settings GUI directly
 - **Solution:** Open Minecraft Options → Controls → Key Binds, scroll down to the **Jump Delay Fix** category, and reassign conflicting keys.
 
 ---
 
 ### 3. Resetting Configuration
-- **In-Game:** Open the settings screen (**`O`** by default or via ModMenu / NeoForge Mod List) and click **Reset to Defaults** (`Przywróć domyślne`).
+- **In-Game:** Open the settings screen (**`O`** by default or via ModMenu / NeoForge Mod List) and click **Reset to Defaults**.
 - **Manual:** Delete `.minecraft/config/jumpdelayfix.properties` while the game is closed.
 
 ---

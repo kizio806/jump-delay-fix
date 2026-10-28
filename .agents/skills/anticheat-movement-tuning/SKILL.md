@@ -20,9 +20,9 @@ Use this skill when:
      * If no lift is observed within `JUMP_NO_LIFT_TIMEOUT_TICKS` (3 ticks), jump is marked rejected (`onJumpRejected()`).
      * If landing happens before `MIN_AIRBORNE_TICKS_FOR_CONFIRMATION` (2 ticks), jump is marked rejected.
 2. **Review Profile Characteristics:**
-   - `COMPETITIVE`: 0 grounded ticks offset, max 1 adaptive penalty tick, 2 streak to recover. Best for low latency (<=95ms) and low rollback rate (<=8%).
-   - `SMART`: +1 grounded tick offset, max 2 adaptive penalty ticks, 3 streak to recover. Adaptive default.
-   - `STABLE`: +2 grounded ticks offset, max 3 adaptive penalty ticks, 4 streak to recover. Safe fallback for high latency (>=210ms) or high rollback rate (>=30%).
+   - `COMPETITIVE`: -1 grounded tick offset, max 1 adaptive penalty tick, 5 successful jumps to reduce penalty. Best for low latency (<=95ms) and low rollback rate (<=8%).
+   - `SMART`: 0 grounded tick offset, max 3 adaptive penalty ticks, 3 successful jumps to reduce penalty. Adaptive default.
+   - `STABLE`: +1 grounded tick offset, max 5 adaptive penalty ticks, 2 successful jumps to reduce penalty. Safe fallback for high latency (>=210ms) or high rollback rate (>=30%).
 3. **Write Unit Tests with Edge-Case Timing:**
    - Create deterministic test scenarios using `FakeJumpInput` simulating latency spikes, packet loss, or server rubberbanding.
    - Verify streak counters and penalty increments in `JumpHandlerTest` and `JumpHandlerIntegrationTest`.

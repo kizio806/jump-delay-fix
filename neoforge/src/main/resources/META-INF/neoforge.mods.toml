@@ -26,17 +26,3 @@ mandatory=true
 versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
-
-[[dependencies.${mod_id}]]
-modId="jei"
-mandatory=false
-versionRange="[0,)"
-ordering="NONE"
-side="CLIENT"
-
-[[dependencies.${mod_id}]]
-modId="emi"
-mandatory=false
-versionRange="[0,)"
-ordering="NONE"
-side="CLIENT"

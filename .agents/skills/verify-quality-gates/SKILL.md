@@ -43,7 +43,7 @@ Use this skill when:
 1. Spotless Format Check
    Validates 4-space indent, newline at EOF, no trailing whitespace
 2. Hygiene Validation
-   Scans for // or /* */ comments, TODO/FIXME/XXX, and wildcard imports
+   Scans for TODO/FIXME/XXX markers, wildcard imports, and @SuppressWarnings
 3. Multi-Loader Safety
    Bytecode scan for client class references in dedicated server classes
 4. Test Execution
@@ -58,7 +58,7 @@ Use this skill when:
 - Test reports in `common/build/reports/tests/test/` and `fabric/build/reports/tests/test/`.
 
 ## Validation checklist
-- [ ] No Java comments or markers in `common/`, `fabric/`, or `neoforge/`.
+- [ ] No marker tags (TODO/FIXME/XXX) or @SuppressWarnings in `common/`, `fabric/`, or `neoforge/`.
 - [ ] No wildcard imports in Java files.
 - [ ] Zero compiler warnings (`-Xlint:all -Werror` active).
 - [ ] `:neoforge:verifyDedicatedServerSafe` reported no offending classes.
