@@ -11,12 +11,21 @@ All notable changes to this project will be documented in this file.
 - Inconclusive jump tracking diagnostics (`getInconclusiveJumpCount()`) and regression verification.
 
 ### Changed
+- Zero-allocation `JumpInput` architecture: refactored input abstraction from per-tick functional allocations to direct state query methods, eliminating per-tick garbage collection pressure during the client tick loop.
+- Memory leak prevention: bounded `ServerAdaptiveStats` history with a 256-entry LRU (Least Recently Used) cache, preventing unbounded heap growth across long-running multiplayer sessions.
+- Concurrency hardening: added synchronization guards to profile queries and server adaptive tracking against race conditions during asynchronous network/tick events.
 - Refined jump confirmation heuristics in `JumpHandler`: airborne jumps exceeding the timeout window without detected rollback or lift confirmation are marked inconclusive rather than falsely credited as successful confirmations, preventing skewed server latency statistics and inappropriate adaptive penalties.
 - Reorganized `ConfigManager` package structure to `com.kizio.jumpdelayfix.ConfigManager` in pure Java `:common` with package structure validation.
 - Completely removed dead and unused GameTest structure files from NeoForge resources.
 - Eliminated all `@SuppressWarnings` annotations across the codebase and migrated keymapping categories to non-deprecated APIs with automated `validateSourceHygiene` enforcement.
 - Strengthened NeoForge loader version ranges to strictly bounded intervals (`[26.2,26.3)`), preventing runtime mismatches against untested future major releases.
 - Hardened CI/CD release workflow to ensure each artifact is published exclusively for its exact compatible Minecraft version without broad version leakage.
+
+### Fixed
+- Localized settings menu "Done" button (`gui.jumpdelayfix.option.done`) across Italian (`Fatto`), Japanese (`完了`), Portuguese (`Concluído`), Russian (`Готово`), and Simplified Chinese (`完成`).
+- Rectified profile cycling order in documentation and wiki guides to reflect actual implementation sequence (`SMART` → `STABLE` → `COMPETITIVE`).
+- Fixed misleading keybinding descriptions in troubleshooting documentation across all loaders (`J` for toggle, `H` for profile cycle, `O` for settings GUI).
+- Remedied broken anchor links and external repository references across project documentation, ensuring clean onboarding for new contributors.
 
 ### Compatibility
 - Minecraft: 26.2
