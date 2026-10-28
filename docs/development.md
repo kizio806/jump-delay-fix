@@ -93,14 +93,9 @@ Run the isolated candidate probe to verify compilation and dependency resolution
 ```
 
 ### 6. Build Release Artifacts
-- For single-line branches:
-  ```bash
-  ./gradlew clean buildAll
-  ```
-- For multi-artifact lines (e.g. 1.21.9–1.21.11):
-  ```bash
-  ./scripts/build-all-versions.sh
-  ```
+```bash
+./gradlew clean buildAll
+```
 
 ### 7. Inspect Built JARs and Checksums
 Directly inspect the ZIP archive contents to guarantee clean production packaging:

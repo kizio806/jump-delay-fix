@@ -29,7 +29,7 @@ public final class NeoForgeStatusMessages {
         client.player.sendOverlayMessage(Component.translatable("message.jumpdelayfix.status", state));
     }
 
-    public static void sendProfileStatus(com.kizio.jumpdelayfix.model.JumpProfile profile) {
+    public static void sendProfileStatus(JumpProfile profile) {
         Minecraft client = Minecraft.getInstance();
         if (client == null || client.player == null) {
             return;
