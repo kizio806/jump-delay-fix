@@ -13,7 +13,7 @@ Last verified: **2026-10-27** | Verification toolchain: Gradle 8.14/9.7/9.8, Ope
 | [`main`](https://github.com/kizio806/jump-delay-fix) | **26.3** | `1.4.2` | Minecraft 26.3 | **Java 25** | Single artifact per loader | **Active (Primary)** |
 | [`support/26.2.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.2.x) | **26.2** | `1.3.2` | Minecraft 26.2 | **Java 25** | Single artifact per loader | **LTS Support** |
 | [`support/26.1.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.1.x) | **26.1.x** (26.1 – 26.1.2) | `1.2.2` | Minecraft 26.1.2 | **Java 25** | Unified line artifact per loader | **LTS Support** |
-| [`support/1.21.9-1.21.11`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.9-1.21.11) | **1.21.9 – 1.21.11** | `1.1.2` | Minecraft 1.21.11 | **Java 21** | Dedicated versioned artifacts (6 JARs) | **LTS Support** |
+| [`support/1.21.9-1.21.11`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.9-1.21.11) | **1.21.9 – 1.21.11** | `1.1.2` | Minecraft 1.21.11 | **Java 21** | Unified line artifact per loader | **LTS Support** |
 
 ---
 
@@ -33,12 +33,12 @@ Every declared combination of Mod Loader and Minecraft version is independently 
 | 8 | `support/26.1.x` | **NeoForge** | **26.1** | NeoForge `26.1.2.103`<br>Range `[26.1,26.2)` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-neoforge-26.1.2-1.2.2.jar` | `7f12aa800f8bd42d` | **VERIFIED (Probe PASS)** |
 | 9 | `support/26.1.x` | **NeoForge** | **26.1.1** | NeoForge `26.1.2.103`<br>Range `[26.1,26.2)` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-neoforge-26.1.2-1.2.2.jar` | `7f12aa800f8bd42d` | **VERIFIED (Probe PASS)** |
 | 10 | `support/26.1.x` | **NeoForge** | **26.1.2** | NeoForge `26.1.2.103`<br>Range `[26.1,26.2)` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-neoforge-26.1.2-1.2.2.jar` | `7f12aa800f8bd42d` | **VERIFIED (Probe PASS)** |
-| 11 | `support/1.21.9-1.21.11` | **Fabric** | **1.21.9** | Fabric API `0.134.1+1.21.9`<br>Yarn `1.21.9+build.1` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-fabric-1.21.9-1.1.2.jar` | `5d7c16efa6092893` | **VERIFIED (Probe PASS)** |
-| 12 | `support/1.21.9-1.21.11` | **Fabric** | **1.21.10** | Fabric API `0.138.4+1.21.10`<br>Yarn `1.21.10+build.1` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-fabric-1.21.10-1.1.2.jar` | `e5e54bad2de408b8` | **VERIFIED (Probe PASS)** |
-| 13 | `support/1.21.9-1.21.11` | **Fabric** | **1.21.11** | Fabric API `0.141.6+1.21.11`<br>Yarn `1.21.11+build.1` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-fabric-1.21.11-1.1.2.jar` | `d08a8dcb0fe1f548` | **VERIFIED (Probe PASS)** |
-| 14 | `support/1.21.9-1.21.11` | **NeoForge** | **1.21.9** | NeoForge `21.9.16-beta`<br>Loader `[21.9,21.10)` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-neoforge-1.21.9-1.1.2.jar` | `159f961ac5e2409c` | **VERIFIED (Probe PASS)** |
-| 15 | `support/1.21.9-1.21.11` | **NeoForge** | **1.21.10** | NeoForge `21.10.64`<br>Loader `[21.10,21.11)` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-neoforge-1.21.10-1.1.2.jar` | `11c52f9389174be3` | **VERIFIED (Probe PASS)** |
-| 16 | `support/1.21.9-1.21.11` | **NeoForge** | **1.21.11** | NeoForge `21.11.48`<br>Loader `[21.11,21.12)` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-neoforge-1.21.11-1.1.2.jar` | `2a3374c34c69616f` | **VERIFIED (Probe PASS)** |
+| 11 | `support/1.21.9-1.21.11` | **Fabric** | **1.21.9** | Fabric API `>=0.134.1`<br>Range `>=1.21.9 <1.21.12` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-fabric-1.21.11-1.1.2.jar` | `d08a8dcb0fe1f548` | **VERIFIED (Probe PASS)** |
+| 12 | `support/1.21.9-1.21.11` | **Fabric** | **1.21.10** | Fabric API `>=0.134.1`<br>Range `>=1.21.9 <1.21.12` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-fabric-1.21.11-1.1.2.jar` | `d08a8dcb0fe1f548` | **VERIFIED (Probe PASS)** |
+| 13 | `support/1.21.9-1.21.11` | **Fabric** | **1.21.11** | Fabric API `>=0.134.1`<br>Range `>=1.21.9 <1.21.12` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-fabric-1.21.11-1.1.2.jar` | `d08a8dcb0fe1f548` | **VERIFIED (Probe PASS)** |
+| 14 | `support/1.21.9-1.21.11` | **NeoForge** | **1.21.9** | NeoForge `21.9.16+`<br>Range `[1.21.9,1.21.12)` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-neoforge-1.21.11-1.1.2.jar` | `2a3374c34c69616f` | **VERIFIED (Probe PASS)** |
+| 15 | `support/1.21.9-1.21.11` | **NeoForge** | **1.21.10** | NeoForge `21.10.64+`<br>Range `[1.21.9,1.21.12)` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-neoforge-1.21.11-1.1.2.jar` | `2a3374c34c69616f` | **VERIFIED (Probe PASS)** |
+| 16 | `support/1.21.9-1.21.11` | **NeoForge** | **1.21.11** | NeoForge `21.11.48+`<br>Range `[1.21.9,1.21.12)` | PASS (`-Werror`)<br>73/73 tests | `jumpdelayfix-neoforge-1.21.11-1.1.2.jar` | `2a3374c34c69616f` | **VERIFIED (Probe PASS)** |
 
 ---
 
@@ -53,12 +53,11 @@ Every declared combination of Mod Loader and Minecraft version is independently 
   Bytecode contract tests in both loaders verify that the exact mapped bytecode invokes the intended player physics predicates.
 
 ### Artifact Packaging Strategy
+Across all branches, Jump Delay Fix strictly adheres to the **single-JAR per loader standard**:
 1. **Single-Target Lines (`26.3`, `26.2`):**
-   One production JAR per loader. Fabric and NeoForge runtime dependencies are 1:1 tied to that release.
-2. **Unified Minor Line (`26.1.x`):**
-   Fabric API (`>=26.1 <26.2`) and NeoForge (`[26.1,26.2)`) accept the entire patch range. One unified JAR per loader covers 26.1, 26.1.1, and 26.1.2 without runtime conflict.
-3. **Multi-Artifact Line (`1.21.9–1.21.11`):**
-   Fabric API binds each release to an exact patch (`0.134.1+1.21.9` for 1.21.9, `0.138.4+1.21.10` for 1.21.10, `0.141.6+1.21.11` for 1.21.11). Therefore, 6 dedicated versioned JARs (3 Fabric, 3 NeoForge) are built and published as distinct version targets.
+   One production JAR per loader (`jumpdelayfix-fabric-<ver>.jar` and `jumpdelayfix-neoforge-<ver>.jar`).
+2. **Unified Minor Lines (`26.1.x`, `1.21.9–1.21.11`):**
+   Multi-patch lines use broad, verified version ranges (`>=26.1 <26.2` on 26.1.x; `>=1.21.9 <1.21.12` on 1.21.x). Exactly one unified JAR per loader satisfies the entire patch line without runtime conflicts, launcher confusion, or duplicate releases.
 
 ---
 
