@@ -73,7 +73,7 @@ def metadataProperties = [
         minecraft_version             : minecraft_version,
         fabric_minecraft_version_range: fabric_minecraft_version_range,
         loader_version                : loader_version,
-        fabric_api_version            : fabric_api_version
+        fabric_api_version            : project.hasProperty('fabric_api_min_version') ? fabric_api_min_version : fabric_api_version
 ]
 
 def commonIconFile = project(':common').layout.projectDirectory.file("src/main/resources/${mod_icon}").asFile
@@ -197,14 +197,10 @@ def readFabricModMetadata = { File jarFile ->
 
 tasks.register('verifyRuntimeDependencyCompatibility') {
     group = 'verification'
-    description = 'Checks whether declared Fabric runtime dependencies support every configured Fabric game version.'
+    description = 'Checks whether declared Fabric runtime dependencies support target Minecraft version.'
 
     doLast {
-        def supportedVersions = fabric_game_versions
-                .toString()
-                .split(',')
-                .collect { it.trim() }
-                .findAll { !it.isEmpty() }
+        def targetVersion = minecraft_version.toString().trim()
         def incompatibleDependencies = []
 
         [
@@ -225,17 +221,14 @@ tasks.register('verifyRuntimeDependencyCompatibility') {
                 throw new GradleException("Resolved dependency ${artifact.moduleVersion.id} does not declare a minecraft dependency in fabric.mod.json")
             }
 
-            def incompatibleVersions = supportedVersions.findAll { version ->
-                !supportsMinecraftRequirement(version, minecraftRequirement)
-            }
-            if (!incompatibleVersions.isEmpty()) {
-                incompatibleDependencies << "${artifact.moduleVersion.id} requires '${minecraftRequirement}' but fabric_game_versions declares ${supportedVersions} (fails: ${incompatibleVersions.join(', ')})"
+            if (!supportsMinecraftRequirement(targetVersion, minecraftRequirement)) {
+                incompatibleDependencies << "${artifact.moduleVersion.id} requires '${minecraftRequirement}' but minecraft_version is ${targetVersion}"
             }
         }
 
         if (!incompatibleDependencies.isEmpty()) {
             throw new GradleException(
-                    "Fabric runtime dependency metadata is incompatible with configured Fabric support:\n - " +
+                    "Fabric runtime dependency metadata is incompatible with target Minecraft version:\n - " +
                             incompatibleDependencies.join('\n - ')
             )
         }

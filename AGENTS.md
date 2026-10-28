@@ -79,6 +79,8 @@ Before touching any code, an AI agent must complete four distinct analysis steps
 - Never break configuration keys in `ConfigStorage` without migration logic.
 - When adding new configuration properties, provide safe fallback defaults in `RuntimeConfig.defaults()`.
 - When adding GUI components or key mappings, ensure identical behavior on both Fabric and NeoForge.
+- **Universal Multi-Loader Packaging Invariant:** Every release branch builds **EXACTLY ONE Fabric JAR** and **EXACTLY ONE NeoForge JAR** covering the full supported Minecraft patch range via `./gradlew buildAll`. Never create multi-JAR build scripts (e.g. `build-all-versions.sh`) or fragment releases into multiple patch-specific JARs.
+- **Platform Publishing Invariant:** Modrinth and CurseForge releases must always consist of **EXACTLY TWO separate entries** per release (`<version>-fabric` and `<version>-neoforge`). Never bundle multiple loaders into a single release entry, and never declare platform game versions that exceed the internal constraints of `fabric.mod.json` or `neoforge.mods.toml`.
 
 ---
 

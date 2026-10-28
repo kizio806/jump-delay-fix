@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Unified Minecraft 1.21.9, 1.21.10, and 1.21.11 support across both Fabric and NeoForge loaders.
-- Dedicated multi-version build script (`scripts/build-all-versions.sh`) generating 6 versioned production JARs with checksum verification.
+- Unified single-JAR architecture per loader: Jump Delay Fix Fabric JAR and NeoForge JAR seamlessly support Minecraft 1.21.9, 1.21.10, and 1.21.11 via comprehensive version ranges (`fabric_minecraft_version_range=>=1.21.9 <1.21.12`, `minecraft_version_range=[1.21.9,1.21.12)`).
 - Canonical compatibility matrix (`docs/compatibility-matrix.md`) detailing Minecraft 1.21.x versions, loader dependencies, and release targets.
 - Comprehensive 9-step procedure for porting and adding new Minecraft versions documented in `docs/development.md`.
 - Explicit player state predicates in Fabric (Yarn mappings: `isTouchingWater`, `isSwimming`, `isCrawling`, `hasVehicle`, `isGliding`) and NeoForge (`isInWater`, `isSwimming`, `isVisuallyCrawling`, `isPassenger`, `isFallFlying`) input adapters.

@@ -122,46 +122,24 @@ echo "--- 2. Running strict verification and pre-publish gates ---"
 ./gradlew --no-daemon strictCheck publishReadyCheck
 
 echo "--- 3. Building release artifacts ---"
-if [[ -f "./scripts/build-all-versions.sh" ]]; then
-    ./scripts/build-all-versions.sh
-else
-    ./gradlew --no-daemon buildAll
-fi
+./gradlew --no-daemon buildAll
 
 echo "--- 4. Verifying built artifacts ---"
-if [[ -d "release-artifacts" && -f "./scripts/build-all-versions.sh" ]]; then
-    echo "Verifying multi-version release artifacts in release-artifacts/:"
-    for ver in 1.21.9 1.21.10 1.21.11; do
-        fab="release-artifacts/${MOD_ID}-fabric-${ver}-${MOD_VERSION}.jar"
-        neo="release-artifacts/${MOD_ID}-neoforge-${ver}-${MOD_VERSION}.jar"
-        if [[ ! -f "$fab" ]]; then
-            echo "Error: Fabric artifact not found: $fab"
-            exit 1
-        fi
-        if [[ ! -f "$neo" ]]; then
-            echo "Error: NeoForge artifact not found: $neo"
-            exit 1
-        fi
-        echo "Found Fabric artifact: $fab ($(du -h "$fab" | cut -f1))"
-        echo "Found NeoForge artifact: $neo ($(du -h "$neo" | cut -f1))"
-    done
-else
-    FABRIC_JAR="fabric/build/libs/${MOD_ID}-fabric-${MINECRAFT_VERSION}-${MOD_VERSION}.jar"
-    NEOFORGE_JAR="neoforge/build/libs/${MOD_ID}-neoforge-${MINECRAFT_VERSION}-${MOD_VERSION}.jar"
+FABRIC_JAR="fabric/build/libs/${MOD_ID}-fabric-${MINECRAFT_VERSION}-${MOD_VERSION}.jar"
+NEOFORGE_JAR="neoforge/build/libs/${MOD_ID}-neoforge-${MINECRAFT_VERSION}-${MOD_VERSION}.jar"
 
-    if [[ ! -f "$FABRIC_JAR" ]]; then
-        echo "Error: Fabric artifact not found: $FABRIC_JAR"
-        exit 1
-    fi
-
-    if [[ ! -f "$NEOFORGE_JAR" ]]; then
-        echo "Error: NeoForge artifact not found: $NEOFORGE_JAR"
-        exit 1
-    fi
-
-    echo "Found Fabric artifact: $FABRIC_JAR ($(du -h "$FABRIC_JAR" | cut -f1))"
-    echo "Found NeoForge artifact: $NEOFORGE_JAR ($(du -h "$NEOFORGE_JAR" | cut -f1))"
+if [[ ! -f "$FABRIC_JAR" ]]; then
+    echo "Error: Fabric artifact not found: $FABRIC_JAR"
+    exit 1
 fi
+
+if [[ ! -f "$NEOFORGE_JAR" ]]; then
+    echo "Error: NeoForge artifact not found: $NEOFORGE_JAR"
+    exit 1
+fi
+
+echo "Found Fabric artifact: $FABRIC_JAR ($(du -h "$FABRIC_JAR" | cut -f1))"
+echo "Found NeoForge artifact: $NEOFORGE_JAR ($(du -h "$NEOFORGE_JAR" | cut -f1))"
 
 if [[ "$MODE" == "dry-run" ]]; then
     echo ""
