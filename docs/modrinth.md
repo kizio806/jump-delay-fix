@@ -48,7 +48,7 @@ All keybindings can be customized in Minecraft's **Options → Controls → Key 
 | Action | Default Key | Translation Key | Description |
 | :--- | :---: | :--- | :--- |
 | **Toggle Mod** | `J` | `key.jumpdelayfix.toggle` | Instantly turn Jump Delay Fix on or off in-game |
-| **Cycle Profile** | `H` | `key.jumpdelayfix.profile` | Quickly cycle between `SMART`, `COMPETITIVE`, and `STABLE` |
+| **Cycle Profile** | `H` | `key.jumpdelayfix.profile` | Quickly cycle between `SMART` → `STABLE` → `COMPETITIVE` |
 | **Open Settings** | `O` | `key.jumpdelayfix.config` | Open the Jump Delay Fix configuration screen |
 
 ---

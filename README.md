@@ -2,7 +2,7 @@
 
 [![CI Status](https://github.com/kizio806/jump-delay-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/kizio806/jump-delay-fix/actions/workflows/ci.yml)
 [![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=kizio806_jump-delay-fix&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=kizio806_jump-delay-fix)
-[![Codecov Coverage](https://codecov.io/gh/kizio806/jump-delay-fix/graph/badge.svg?token=)](https://codecov.io/gh/kizio806/jump-delay-fix)
+[![Codecov Coverage](https://codecov.io/gh/kizio806/jump-delay-fix/graph/badge.svg)](https://codecov.io/gh/kizio806/jump-delay-fix)
 [![GitHub Release](https://img.shields.io/github/v/release/kizio806/jump-delay-fix?sort=semver&logo=github)](https://github.com/kizio806/jump-delay-fix/releases)
 [![Modrinth](https://img.shields.io/badge/Modrinth-Jump%20Delay%20Fix-00AF5C?logo=modrinth)](https://modrinth.com/mod/jump-delay-fix)
 [![License](https://img.shields.io/github/license/kizio806/jump-delay-fix)](LICENSE)
@@ -15,16 +15,16 @@
 
 ## 📖 Table of Contents
 
-- [Features](#-features)
-- [Jump Profiles](#-jump-profiles)
-- [Controls & Hotkeys](#-controls--hotkeys)
-- [Multiplayer & Anti-Cheat Compatibility](#-multiplayer--anti-cheat-compatibility)
-- [Supported Versions & Platforms](#-supported-versions--platforms)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Building from Source](#-building-from-source)
-- [Wiki & Documentation](#-wiki--documentation)
-- [License](#-license)
+- [Features](#features)
+- [Jump Profiles](#jump-profiles)
+- [Controls & Hotkeys](#controls--hotkeys)
+- [Multiplayer & Anti-Cheat Compatibility](#multiplayer--anti-cheat-compatibility)
+- [Supported Versions & Platforms](#supported-versions--platforms)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Building from Source](#building-from-source)
+- [Wiki & Documentation](#wiki--documentation)
+- [License](#license)
 
 ---
 
@@ -162,8 +162,11 @@ For in-depth guides and developer documentation, visit our wiki and reference do
 - **Technical Documentation:**
   - [Architecture Assessment](docs/architecture.md)
   - [Development Guidelines](docs/development.md)
+  - [Installation Guide](docs/installation.md)
+  - [Full Compatibility Matrix](docs/compatibility-matrix.md)
   - [Releases Guide](docs/releases.md)
   - [Modrinth Publishing Guide](docs/modrinth.md)
+  - [Troubleshooting & FAQ](docs/troubleshooting.md)
   - [Changelog](CHANGELOG.md)
 
 ---
