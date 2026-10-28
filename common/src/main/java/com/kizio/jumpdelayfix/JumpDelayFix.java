@@ -102,6 +102,10 @@ public final class JumpDelayFix {
         return RuntimeState.isEnabled();
     }
 
+    public static synchronized boolean isInitialized() {
+        return initialized;
+    }
+
     public static synchronized JumpProfile getProfile() {
         return RuntimeState.getProfile();
     }
@@ -193,7 +197,12 @@ public final class JumpDelayFix {
     }
 
     private static void synchronizeServerContext() {
-        String serverId = normalizeServerId(jumpHandler.getServerIdentifier());
+        String rawServerId = jumpHandler.getServerIdentifier();
+        if (Objects.equals(rawServerId, activeServerId)) {
+            return;
+        }
+
+        String serverId = normalizeServerId(rawServerId);
         if (Objects.equals(serverId, activeServerId)) {
             return;
         }

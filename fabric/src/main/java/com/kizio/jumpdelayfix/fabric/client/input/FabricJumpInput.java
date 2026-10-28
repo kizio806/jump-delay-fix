@@ -1,11 +1,11 @@
 package com.kizio.jumpdelayfix.fabric.client.input;
 
-import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.input.JumpInput;
 import com.kizio.jumpdelayfix.input.LatencyCompensation;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
 
 import java.util.Locale;
@@ -14,7 +14,8 @@ import java.util.Locale;
 public final class FabricJumpInput implements JumpInput {
 
     private int lastPlayerId = -1;
-    private boolean wasValid = false;
+    private String cachedServerIdentifier = "multiplayer-unknown";
+    private ServerData lastServerData;
 
     @Override
     public boolean isJumpPressed() {
@@ -25,17 +26,36 @@ public final class FabricJumpInput implements JumpInput {
     }
 
     @Override
+    public boolean isPlayerValid() {
+        Minecraft client = Minecraft.getInstance();
+        LocalPlayer player = client != null ? client.player : null;
+        if (player == null || !player.isAlive() || player.isSleeping()
+                || player.isPassenger() || player.isFallFlying()
+                || player.getAbilities().flying || player.isInWater() || player.isSwimming()
+                || player.isVisuallyCrawling()) {
+            return false;
+        }
+        int currentId = player.getId();
+        if (lastPlayerId != -1 && lastPlayerId != currentId) {
+            lastPlayerId = currentId;
+            return false;
+        }
+        lastPlayerId = currentId;
+        return true;
+    }
+
+    @Override
     public boolean isPlayerOnGround() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client.player;
-        return isPlayerValid(player) && player.onGround();
+        LocalPlayer player = client != null ? client.player : null;
+        return player != null && player.onGround();
     }
 
     @Override
     public void jump() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client.player;
-        if (isPlayerValid(player)) {
+        LocalPlayer player = client != null ? client.player : null;
+        if (player != null) {
             player.jumpFromGround();
         }
     }
@@ -43,31 +63,11 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public double getPlayerY() {
         Minecraft client = Minecraft.getInstance();
-        LocalPlayer player = client.player;
-        if (!isPlayerValid(player)) {
+        LocalPlayer player = client != null ? client.player : null;
+        if (player == null) {
             return Double.NaN;
         }
         return player.getY();
-    }
-
-    private boolean isPlayerValid(LocalPlayer player) {
-        if (player == null || !player.isAlive() || player.isSleeping()
-                || player.isPassenger() || player.isFallFlying()
-                || player.getAbilities().flying || player.isInWater() || player.isSwimming()
-                || player.isVisuallyCrawling()) {
-            if (wasValid) {
-                JumpDelayFix.resetTransientState();
-                wasValid = false;
-            }
-            return false;
-        }
-        wasValid = true;
-        int currentId = player.getId();
-        if (lastPlayerId != -1 && lastPlayerId != currentId) {
-            JumpDelayFix.resetTransientState();
-        }
-        lastPlayerId = currentId;
-        return true;
     }
 
     @Override
@@ -97,12 +97,23 @@ public final class FabricJumpInput implements JumpInput {
             return "singleplayer";
         }
 
-        var serverData = client.getCurrentServer();
-        if (serverData != null && serverData.ip != null && !serverData.ip.isBlank()) {
-            return serverData.ip.toLowerCase(Locale.ROOT);
+        ServerData serverData = client.getCurrentServer();
+        if (serverData == null) {
+            lastServerData = null;
+            cachedServerIdentifier = "multiplayer-unknown";
+            return cachedServerIdentifier;
         }
 
-        return "multiplayer-unknown";
+        if (serverData != lastServerData) {
+            lastServerData = serverData;
+            if (serverData.ip != null && !serverData.ip.isBlank()) {
+                cachedServerIdentifier = serverData.ip.trim().toLowerCase(Locale.ROOT);
+            } else {
+                cachedServerIdentifier = "multiplayer-unknown";
+            }
+        }
+
+        return cachedServerIdentifier;
     }
 
     private int getEstimatedLatencyMs(Minecraft client) {
