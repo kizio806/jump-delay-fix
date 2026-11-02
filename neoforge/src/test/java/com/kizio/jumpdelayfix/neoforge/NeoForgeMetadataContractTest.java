@@ -29,7 +29,7 @@ class NeoForgeMetadataContractTest {
 
     @Test
     void shouldEnforcePlayerStateChecksInBytecodeContract() throws IOException {
-        String bytecode = readResource("/com/kizio/jumpdelayfix/neoforge/client/input/NeoForgeJumpInput.class");
+        String bytecode = readResource("/com/kizio/jumpdelayfix/client/input/ClientJumpInput.class");
         assertTrue(bytecode.contains("isInWater"));
         assertTrue(bytecode.contains("isSwimming"));
         assertTrue(bytecode.contains("isVisuallyCrawling"));
