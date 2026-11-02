@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- **Zero Loader Duplication**: Extracted shared client classes (`StatusMessages`, `ClientJumpInput`, `SettingsScreen`) to `common/src/client/java`, compiling the shared client sources directly into Fabric and NeoForge loader artifacts without redundant duplication.
+- **Quality Gates & Metrics Transparency**: Removed `sonar.cpd.exclusions` from build configuration and SonarCloud analysis, ensuring honest duplication tracking across loaders. Applied JaCoCo test reporting across all subprojects.
+- **CI/CD Security Hardening**: Pinned all GitHub Actions across all workflow definitions (`ci.yml`, `codeql.yml`, `release.yml`, `sonarcloud.yml`, `wiki-sync.yml`, `labeler.yml`) to immutable full commit SHAs.
+
 ## 1.2.2
 
 ### Added
