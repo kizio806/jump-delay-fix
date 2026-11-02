@@ -13,6 +13,7 @@ base {
 sourceSets {
     main {
         java.srcDirs += project(':common').sourceSets.main.java.srcDirs
+        java.srcDirs += "${project(':common').projectDir}/src/client/java"
         resources.srcDirs += project(':common').sourceSets.main.resources.srcDirs
     }
 }
