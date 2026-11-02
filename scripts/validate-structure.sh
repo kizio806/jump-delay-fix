@@ -76,6 +76,7 @@ if (( ${#missing_docs[@]} > 0 )); then
 fi
 
 required_tests=(
+    "common/src/test/java/com/kizio/jumpdelayfix/architecture/CommonArchitectureTest.java"
     "common/src/test/java/com/kizio/jumpdelayfix/config/RuntimeConfigTest.java"
     "common/src/test/java/com/kizio/jumpdelayfix/jump/JumpHandlerIntegrationTest.java"
     "fabric/src/test/java/com/kizio/jumpdelayfix/fabric/FabricMetadataContractTest.java"
