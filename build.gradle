@@ -235,7 +235,7 @@ tasks.register('publishReadyCheck') {
             'validateStructure',
             'verifySemverVersion',
             'verifyMinecraftVersionMatrix',
-            ':common:test',
+            ':common:check',
             ':fabric:test',
             ':fabric:verifyRuntimeDependencyCompatibility',
             ':fabric:validateProductionMetadata',
