@@ -1,0 +1,37 @@
+package com.kizio.jumpdelayfix.client;
+
+import com.kizio.jumpdelayfix.model.JumpProfile;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+
+public final class StatusMessages {
+
+    private StatusMessages() {
+    }
+
+    public static void sendToggleStatus(boolean enabled) {
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.player == null) {
+            return;
+        }
+
+        MutableComponent state = Component.translatable(enabled
+                ? "message.jumpdelayfix.enabled"
+                : "message.jumpdelayfix.disabled")
+                .withStyle(enabled ? ChatFormatting.GREEN : ChatFormatting.RED);
+
+        client.player.sendOverlayMessage(Component.translatable("message.jumpdelayfix.status", state));
+    }
+
+    public static void sendProfileStatus(JumpProfile profile) {
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.player == null || profile == null) {
+            return;
+        }
+
+        MutableComponent profileComponent = Component.translatable(profile.translationKey()).withStyle(ChatFormatting.AQUA);
+        client.player.sendOverlayMessage(Component.translatable("message.jumpdelayfix.profile_status", profileComponent));
+    }
+}

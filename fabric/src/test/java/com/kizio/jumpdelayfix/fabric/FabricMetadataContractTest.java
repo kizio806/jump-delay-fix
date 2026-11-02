@@ -28,8 +28,8 @@ class FabricMetadataContractTest {
 
     @Test
     void shouldEnforcePlayerStateChecksInBytecodeContract() throws IOException {
-        try (var stream = getClass().getResourceAsStream("/com/kizio/jumpdelayfix/fabric/client/input/FabricJumpInput.class")) {
-            org.junit.jupiter.api.Assertions.assertNotNull(stream, "Missing FabricJumpInput class");
+        try (var stream = getClass().getResourceAsStream("/com/kizio/jumpdelayfix/client/input/ClientJumpInput.class")) {
+            org.junit.jupiter.api.Assertions.assertNotNull(stream, "Missing ClientJumpInput class");
             String bytecode = new String(stream.readAllBytes(), StandardCharsets.ISO_8859_1);
             assertTrue(bytecode.contains("isInWater"));
             assertTrue(bytecode.contains("isSwimming"));
