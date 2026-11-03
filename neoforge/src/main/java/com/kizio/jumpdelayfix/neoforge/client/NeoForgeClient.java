@@ -2,6 +2,7 @@ package com.kizio.jumpdelayfix.neoforge.client;
 
 import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.Constants;
+import com.kizio.jumpdelayfix.client.StatusMessages;
 import com.kizio.jumpdelayfix.neoforge.client.gui.NeoForgeSettingsScreen;
 import com.kizio.jumpdelayfix.neoforge.client.input.NeoForgeJumpInput;
 import com.kizio.jumpdelayfix.neoforge.client.input.NeoForgeKeyMappings;
@@ -56,7 +57,7 @@ public final class NeoForgeClient {
                 ? client.gameDirectory.toPath().resolve("config")
                 : Path.of("config");
 
-        JumpDelayFix.init(new NeoForgeJumpInput(), NeoForgeStatusMessages::sendToggleStatus, configDir);
+        JumpDelayFix.init(new NeoForgeJumpInput(), StatusMessages::sendToggleStatus, configDir);
         LOGGER.info("{} NeoForge config directory: {}", Constants.MOD_NAME, configDir.toAbsolutePath());
     }
 
@@ -70,7 +71,7 @@ public final class NeoForgeClient {
             JumpDelayFix.toggleEnabled();
         }
         if (keyBindings.consumeProfileCyclePress()) {
-            NeoForgeStatusMessages.sendProfileStatus(JumpDelayFix.cycleProfile());
+            StatusMessages.sendProfileStatus(JumpDelayFix.cycleProfile());
         }
         if (keyBindings.consumeConfigScreenPress()) {
             Minecraft client = Minecraft.getInstance();

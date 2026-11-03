@@ -3,28 +3,22 @@ package com.kizio.jumpdelayfix.state;
 import com.kizio.jumpdelayfix.model.JumpProfile;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class RuntimeState {
 
-    private static final AtomicBoolean ENABLED = new AtomicBoolean(true);
+    private static final AtomicReference<Boolean> ENABLED = new AtomicReference<>(Boolean.TRUE);
     private static final AtomicReference<JumpProfile> PROFILE = new AtomicReference<>(JumpProfile.SMART);
 
     private RuntimeState() {
-
     }
 
     public static boolean isEnabled() {
-        return ENABLED.get();
+        return Boolean.TRUE.equals(ENABLED.get());
     }
 
     public static boolean toggle() {
-        boolean current;
-        do {
-            current = ENABLED.get();
-        } while (!ENABLED.compareAndSet(current, !current));
-        return !current;
+        return Boolean.TRUE.equals(ENABLED.updateAndGet(current -> !Boolean.TRUE.equals(current)));
     }
 
     public static void setEnabled(boolean enabled) {
@@ -44,7 +38,7 @@ public final class RuntimeState {
     }
 
     public static void reset() {
-        ENABLED.set(true);
+        ENABLED.set(Boolean.TRUE);
         PROFILE.set(JumpProfile.SMART);
     }
 }

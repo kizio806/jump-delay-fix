@@ -20,12 +20,8 @@ public final class ConfigManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
     private static final int CONFIG_SAVE_DEBOUNCE_TICKS = 10;
     private static final int MAX_TRACKED_SERVERS = 128;
-    private static final ExecutorService CONFIG_IO = Executors.newSingleThreadExecutor(runnable -> {
-        Thread thread = new Thread(runnable, Constants.MOD_ID + "-config-io");
-        thread.setDaemon(true);
-        return thread;
-    });
 
+    private final ExecutorService configIo;
     private RuntimeConfig runtimeConfig = RuntimeConfig.defaults();
     private final Map<String, JumpProfile> serverProfiles = BoundedLruMap.create(MAX_TRACKED_SERVERS);
     private Path configFilePath = Path.of("config", "jumpdelayfix.properties");
@@ -34,6 +30,15 @@ public final class ConfigManager {
     private CompletableFuture<Void> pendingSave = CompletableFuture.completedFuture(null);
 
     public ConfigManager() {
+        this(Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, Constants.MOD_ID + "-config-io");
+            thread.setDaemon(true);
+            return thread;
+        }));
+    }
+
+    public ConfigManager(ExecutorService configIo) {
+        this.configIo = Objects.requireNonNull(configIo, "configIo");
     }
 
     public void load(Path configDirectory) {
@@ -117,13 +122,13 @@ public final class ConfigManager {
 
     public void shutdown() {
         awaitPendingSaves();
-        CONFIG_IO.shutdown();
+        configIo.shutdown();
         try {
-            if (!CONFIG_IO.awaitTermination(2, TimeUnit.SECONDS)) {
-                CONFIG_IO.shutdownNow();
+            if (!configIo.awaitTermination(2, TimeUnit.SECONDS)) {
+                configIo.shutdownNow();
             }
         } catch (InterruptedException e) {
-            CONFIG_IO.shutdownNow();
+            configIo.shutdownNow();
             Thread.currentThread().interrupt();
         }
     }
@@ -139,7 +144,7 @@ public final class ConfigManager {
         Map<String, JumpProfile> serverProfilesSnapshot = new LinkedHashMap<>(serverProfiles);
 
         pendingSave = pendingSave.exceptionally(exception -> null)
-                .thenRunAsync(() -> ConfigStorage.save(filePathSnapshot, configSnapshot, serverProfilesSnapshot), CONFIG_IO);
+                .thenRunAsync(() -> ConfigStorage.save(filePathSnapshot, configSnapshot, serverProfilesSnapshot), configIo);
     }
 
     private void awaitPendingSaves() {
