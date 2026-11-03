@@ -1,30 +1,22 @@
 package com.kizio.jumpdelayfix.fabric.client.input;
 
-import com.kizio.jumpdelayfix.Constants;
+import com.kizio.jumpdelayfix.client.input.AbstractKeyMappings;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.resources.Identifier;
-import org.lwjgl.sdl.SDLKeycode;
 
 @Environment(EnvType.CLIENT)
-public final class FabricKeyMappings {
+public final class FabricKeyMappings extends AbstractKeyMappings {
 
     private static final FabricKeyMappings INSTANCE = new FabricKeyMappings();
-    private static final int DEFAULT_TOGGLE_KEY = SDLKeycode.SDLK_J;
-    private static final int DEFAULT_PROFILE_KEY = SDLKeycode.SDLK_H;
-    private static final int DEFAULT_CONFIG_KEY = SDLKeycode.SDLK_O;
-
-    private static final KeyMapping.Category KEY_CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix"));
 
     private static KeyMapping toggleKey;
     private static KeyMapping profileKey;
     private static KeyMapping configKey;
 
     private FabricKeyMappings() {
-
     }
 
     public static FabricKeyMappings getInstance() {
@@ -59,38 +51,14 @@ public final class FabricKeyMappings {
     }
 
     public boolean consumeTogglePress() {
-        if (toggleKey == null) {
-            return false;
-        }
-
-        boolean pressed = false;
-        while (toggleKey.consumeClick()) {
-            pressed = true;
-        }
-        return pressed;
+        return consumePress(toggleKey);
     }
 
     public boolean consumeProfileCyclePress() {
-        if (profileKey == null) {
-            return false;
-        }
-
-        boolean pressed = false;
-        while (profileKey.consumeClick()) {
-            pressed = true;
-        }
-        return pressed;
+        return consumePress(profileKey);
     }
 
     public boolean consumeConfigScreenPress() {
-        if (configKey == null) {
-            return false;
-        }
-
-        boolean pressed = false;
-        while (configKey.consumeClick()) {
-            pressed = true;
-        }
-        return pressed;
+        return consumePress(configKey);
     }
 }

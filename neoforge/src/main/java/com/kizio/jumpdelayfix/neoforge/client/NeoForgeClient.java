@@ -95,5 +95,6 @@ public final class NeoForgeClient {
 
     private static void onGameShuttingDown(GameShuttingDownEvent event) {
         JumpDelayFix.flushPendingConfiguration();
+        JumpDelayFix.shutdown();
     }
 }

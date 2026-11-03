@@ -1,0 +1,10 @@
+rules:
+  cache-poisoning:
+    ignore:
+      - ci.yml
+      - release.yml
+      - sonarcloud.yml
+      - codeql.yml
+  dependabot-cooldown:
+    ignore:
+      - dependabot.yml
