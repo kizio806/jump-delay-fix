@@ -25,6 +25,7 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     compileOnly "com.terraformersmc:modmenu:${modmenu_version}"
     runtimeOnly "com.terraformersmc:modmenu:${modmenu_version}"
+    testCompileOnly "com.terraformersmc:modmenu:${modmenu_version}"
 
     testImplementation platform(libs.junit.bom)
     testImplementation libs.junit.jupiter
