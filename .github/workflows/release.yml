@@ -34,7 +34,7 @@ jobs:
           echo "version=${JVM_VER:-25}" >> "$GITHUB_OUTPUT"
 
       - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.0.0
+        uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       - name: Setup JDK
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
@@ -43,7 +43,7 @@ jobs:
           java-version: ${{ steps.jvm.outputs.version }}
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.0.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       - name: Ensure Gradle executable bit
         run: chmod +x ./gradlew
@@ -76,65 +76,82 @@ jobs:
 
       - name: Compute artifact names
         id: artifacts
+        env:
+          MOD_ID: ${{ steps.metadata.outputs.mod_id }}
+          MOD_VERSION: ${{ steps.metadata.outputs.mod_version }}
+          MC_VERSION: ${{ steps.metadata.outputs.minecraft_version }}
         run: |
-          MOD_ID="${{ steps.metadata.outputs.mod_id }}"
-          MOD_VERSION="${{ steps.metadata.outputs.mod_version }}"
-          MC_VERSION="${{ steps.metadata.outputs.minecraft_version }}"
-          echo "fabric_jar=fabric/build/libs/${MOD_ID}-fabric-${MC_VERSION}-${MOD_VERSION}.jar" >> "$GITHUB_OUTPUT"
-          echo "neoforge_jar=neoforge/build/libs/${MOD_ID}-neoforge-${MC_VERSION}-${MOD_VERSION}.jar" >> "$GITHUB_OUTPUT"
+          {
+            echo "fabric_jar=fabric/build/libs/${MOD_ID}-fabric-${MC_VERSION}-${MOD_VERSION}.jar"
+            echo "neoforge_jar=neoforge/build/libs/${MOD_ID}-neoforge-${MC_VERSION}-${MOD_VERSION}.jar"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Normalize Fabric game versions
         id: fabric_versions
+        env:
+          FABRIC_VERSIONS: ${{ steps.metadata.outputs.fabric_game_versions }}
         run: |
-          NORMALIZED=$(echo "${{ steps.metadata.outputs.fabric_game_versions }}" \
+          NORMALIZED=$(echo "$FABRIC_VERSIONS" \
             | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
           if [ -z "$NORMALIZED" ]; then
             echo "No valid Fabric versions found."
             exit 1
           fi
-          echo "list<<EOF_LIST" >> "$GITHUB_OUTPUT"
-          echo "$NORMALIZED" >> "$GITHUB_OUTPUT"
-          echo "EOF_LIST" >> "$GITHUB_OUTPUT"
+          {
+            echo "list<<EOF_LIST"
+            echo "$NORMALIZED"
+            echo "EOF_LIST"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Normalize NeoForge game versions
         id: neoforge_versions
+        env:
+          NEOFORGE_VERSIONS: ${{ steps.metadata.outputs.neoforge_game_versions }}
         run: |
-          NORMALIZED=$(echo "${{ steps.metadata.outputs.neoforge_game_versions }}" \
+          NORMALIZED=$(echo "$NEOFORGE_VERSIONS" \
             | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed '/^$/d')
           if [ -z "$NORMALIZED" ]; then
             echo "No valid NeoForge versions found."
             exit 1
           fi
-          echo "list<<EOF_LIST" >> "$GITHUB_OUTPUT"
-          echo "$NORMALIZED" >> "$GITHUB_OUTPUT"
-          echo "EOF_LIST" >> "$GITHUB_OUTPUT"
+          {
+            echo "list<<EOF_LIST"
+            echo "$NORMALIZED"
+            echo "EOF_LIST"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Compute Fabric supported range label
         id: fabric_range
+        env:
+          VERSION_LIST: ${{ steps.fabric_versions.outputs.list }}
         run: |
-          FIRST=$(echo "${{ steps.fabric_versions.outputs.list }}" | head -n1)
-          LAST=$(echo "${{ steps.fabric_versions.outputs.list }}" | tail -n1)
+          FIRST=$(echo "$VERSION_LIST" | head -n1)
+          LAST=$(echo "$VERSION_LIST" | tail -n1)
           LABEL=$([ "$FIRST" = "$LAST" ] && echo "$FIRST" || echo "$FIRST-$LAST")
           echo "label=$LABEL" >> "$GITHUB_OUTPUT"
 
       - name: Compute NeoForge supported range label
         id: neoforge_range
+        env:
+          VERSION_LIST: ${{ steps.neoforge_versions.outputs.list }}
         run: |
-          FIRST=$(echo "${{ steps.neoforge_versions.outputs.list }}" | head -n1)
-          LAST=$(echo "${{ steps.neoforge_versions.outputs.list }}" | tail -n1)
+          FIRST=$(echo "$VERSION_LIST" | head -n1)
+          LAST=$(echo "$VERSION_LIST" | tail -n1)
           LABEL=$([ "$FIRST" = "$LAST" ] && echo "$FIRST" || echo "$FIRST-$LAST")
           echo "label=$LABEL" >> "$GITHUB_OUTPUT"
 
       - name: Verify tag matches mod_version
         if: startsWith(github.ref, 'refs/tags/')
+        env:
+          MOD_VERSION: ${{ steps.metadata.outputs.mod_version }}
         run: |
           TAG_VERSION=${GITHUB_REF_NAME#v}
           if [ "$TAG_VERSION" = "$GITHUB_REF_NAME" ]; then
             echo "Tag must match vX.Y.Z. Got: ${GITHUB_REF_NAME}"
             exit 1
           fi
-          if [ "${{ steps.metadata.outputs.mod_version }}" != "$TAG_VERSION" ]; then
-            echo "Tag version ($TAG_VERSION) does not match mod_version (${{ steps.metadata.outputs.mod_version }})."
+          if [ "$MOD_VERSION" != "$TAG_VERSION" ]; then
+            echo "Tag version ($TAG_VERSION) does not match mod_version ($MOD_VERSION)."
             exit 1
           fi
 
@@ -143,6 +160,11 @@ jobs:
 
       - name: Generate release notes
         if: startsWith(github.ref, 'refs/tags/')
+        env:
+          MOD_VERSION: ${{ steps.metadata.outputs.mod_version }}
+          MC_VERSION: ${{ steps.metadata.outputs.minecraft_version }}
+          FABRIC_VERSIONS: ${{ steps.metadata.outputs.fabric_game_versions }}
+          NEOFORGE_VERSIONS: ${{ steps.metadata.outputs.neoforge_game_versions }}
         run: |
           CURRENT="${GITHUB_REF_NAME}"
           VERSION="${CURRENT#v}"
@@ -174,18 +196,21 @@ jobs:
           {
             echo "## Jump Delay Fix ${CURRENT}"
             echo
-            echo "- Mod version: ${{ steps.metadata.outputs.mod_version }}"
-            echo "- Minecraft version: ${{ steps.metadata.outputs.minecraft_version }}"
-            echo "- Fabric versions: ${{ steps.metadata.outputs.fabric_game_versions }}"
-            echo "- NeoForge versions: ${{ steps.metadata.outputs.neoforge_game_versions }}"
+            echo "- Mod version: ${MOD_VERSION}"
+            echo "- Minecraft version: ${MC_VERSION}"
+            echo "- Fabric versions: ${FABRIC_VERSIONS}"
+            echo "- NeoForge versions: ${NEOFORGE_VERSIONS}"
             echo
             cat "$NOTES_SOURCE"
           } > release-notes.md
 
       - name: Generate checksums
+        env:
+          FABRIC_JAR: ${{ steps.artifacts.outputs.fabric_jar }}
+          NEOFORGE_JAR: ${{ steps.artifacts.outputs.neoforge_jar }}
         run: |
-          sha256sum "${{ steps.artifacts.outputs.fabric_jar }}" > fabric/build/libs/FABRIC-SHA256SUMS.txt
-          sha256sum "${{ steps.artifacts.outputs.neoforge_jar }}" > neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
+          sha256sum "$FABRIC_JAR" > fabric/build/libs/FABRIC-SHA256SUMS.txt
+          sha256sum "$NEOFORGE_JAR" > neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
 
       - name: Upload artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -200,15 +225,20 @@ jobs:
 
       - name: Create GitHub release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
-        with:
-          name: Jump Delay Fix v${{ steps.metadata.outputs.mod_version }} (Fabric MC ${{ steps.fabric_range.outputs.label }}, NeoForge MC ${{ steps.neoforge_range.outputs.label }})
-          body_path: release-notes.md
-          files: |
-            ${{ steps.artifacts.outputs.fabric_jar }}
-            fabric/build/libs/FABRIC-SHA256SUMS.txt
-            ${{ steps.artifacts.outputs.neoforge_jar }}
-            neoforge/build/libs/NEOFORGE-SHA256SUMS.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+          RELEASE_TITLE: "Jump Delay Fix ${{ github.ref_name }} (Fabric MC ${{ steps.fabric_range.outputs.label }}, NeoForge MC ${{ steps.neoforge_range.outputs.label }})"
+          FABRIC_JAR: ${{ steps.artifacts.outputs.fabric_jar }}
+          NEOFORGE_JAR: ${{ steps.artifacts.outputs.neoforge_jar }}
+        run: |
+          gh release create "$TAG_NAME" \
+            "$FABRIC_JAR" \
+            fabric/build/libs/FABRIC-SHA256SUMS.txt \
+            "$NEOFORGE_JAR" \
+            neoforge/build/libs/NEOFORGE-SHA256SUMS.txt \
+            --title "$RELEASE_TITLE" \
+            --notes-file release-notes.md
 
       - name: Check publishing credentials
         if: startsWith(github.ref, 'refs/tags/')
