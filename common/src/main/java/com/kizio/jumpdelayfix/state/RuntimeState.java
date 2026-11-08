@@ -7,38 +7,78 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class RuntimeState {
 
-    private static final AtomicReference<Boolean> ENABLED = new AtomicReference<>(Boolean.TRUE);
-    private static final AtomicReference<JumpProfile> PROFILE = new AtomicReference<>(JumpProfile.SMART);
+    private static final RuntimeState DEFAULT_INSTANCE = new RuntimeState();
 
-    private RuntimeState() {
+    private final AtomicReference<Boolean> enabled;
+    private final AtomicReference<JumpProfile> profile;
+
+    public RuntimeState() {
+        this(true, JumpProfile.SMART);
+    }
+
+    public RuntimeState(boolean initialEnabled, JumpProfile initialProfile) {
+        this.enabled = new AtomicReference<>(initialEnabled);
+        this.profile = new AtomicReference<>(Objects.requireNonNull(initialProfile, "initialProfile"));
+    }
+
+    public static RuntimeState defaultInstance() {
+        return DEFAULT_INSTANCE;
+    }
+
+    public boolean isStateEnabled() {
+        return Boolean.TRUE.equals(enabled.get());
+    }
+
+    public boolean toggleState() {
+        return Boolean.TRUE.equals(enabled.updateAndGet(current -> !Boolean.TRUE.equals(current)));
+    }
+
+    public void setStateEnabled(boolean isEnabled) {
+        enabled.set(isEnabled);
+    }
+
+    public JumpProfile stateProfile() {
+        return profile.get();
+    }
+
+    public JumpProfile cycleStateProfile() {
+        return profile.updateAndGet(JumpProfile::next);
+    }
+
+    public void setStateProfile(JumpProfile newProfile) {
+        profile.set(Objects.requireNonNull(newProfile, "profile"));
+    }
+
+    public void resetState() {
+        enabled.set(Boolean.TRUE);
+        profile.set(JumpProfile.SMART);
     }
 
     public static boolean isEnabled() {
-        return Boolean.TRUE.equals(ENABLED.get());
+        return DEFAULT_INSTANCE.isStateEnabled();
     }
 
     public static boolean toggle() {
-        return Boolean.TRUE.equals(ENABLED.updateAndGet(current -> !Boolean.TRUE.equals(current)));
+        return DEFAULT_INSTANCE.toggleState();
     }
 
     public static void setEnabled(boolean enabled) {
-        ENABLED.set(enabled);
+        DEFAULT_INSTANCE.setStateEnabled(enabled);
     }
 
     public static JumpProfile getProfile() {
-        return PROFILE.get();
+        return DEFAULT_INSTANCE.stateProfile();
     }
 
     public static JumpProfile cycleProfile() {
-        return PROFILE.updateAndGet(JumpProfile::next);
+        return DEFAULT_INSTANCE.cycleStateProfile();
     }
 
     public static void setProfile(JumpProfile profile) {
-        PROFILE.set(Objects.requireNonNull(profile, "profile"));
+        DEFAULT_INSTANCE.setStateProfile(profile);
     }
 
     public static void reset() {
-        ENABLED.set(Boolean.TRUE);
-        PROFILE.set(JumpProfile.SMART);
+        DEFAULT_INSTANCE.resetState();
     }
 }

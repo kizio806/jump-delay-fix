@@ -35,6 +35,7 @@ public final class JumpDelayFixEngine {
 
     private final ConfigManager configManager;
     private final Map<String, ServerAdaptiveStats> serverStats;
+    private final RuntimeState runtimeState;
 
     private JumpHandler jumpHandler = JumpHandler.noOp();
     private ToggleFeedback toggleFeedback = ToggleFeedback.NO_OP;
@@ -47,12 +48,21 @@ public final class JumpDelayFixEngine {
     private int profileSwitchCooldownTicks;
 
     public JumpDelayFixEngine() {
-        this(new ConfigManager(), BoundedLruMap.create(MAX_TRACKED_SERVERS));
+        this(new ConfigManager(), BoundedLruMap.create(MAX_TRACKED_SERVERS), RuntimeState.defaultInstance());
     }
 
     public JumpDelayFixEngine(ConfigManager configManager, Map<String, ServerAdaptiveStats> serverStats) {
+        this(configManager, serverStats, RuntimeState.defaultInstance());
+    }
+
+    public JumpDelayFixEngine(
+            ConfigManager configManager,
+            Map<String, ServerAdaptiveStats> serverStats,
+            RuntimeState runtimeState
+    ) {
         this.configManager = Objects.requireNonNull(configManager, "configManager");
         this.serverStats = Objects.requireNonNull(serverStats, "serverStats");
+        this.runtimeState = Objects.requireNonNull(runtimeState, "runtimeState");
     }
 
     public synchronized void init(JumpInput input, ToggleFeedback feedback) {
@@ -68,8 +78,8 @@ public final class JumpDelayFixEngine {
 
         serverStats.clear();
         activeServerId = DEFAULT_SERVER_ID;
-        RuntimeState.setEnabled(true);
-        RuntimeState.setProfile(resolveProfileForServer(activeServerId));
+        runtimeState.setStateEnabled(true);
+        runtimeState.setStateProfile(resolveProfileForServer(activeServerId));
 
         lastConfirmedJumps = 0;
         lastRejectedJumps = 0;
@@ -100,7 +110,7 @@ public final class JumpDelayFixEngine {
     }
 
     public synchronized boolean toggleEnabled() {
-        boolean enabled = RuntimeState.toggle();
+        boolean enabled = runtimeState.toggleState();
         if (!enabled) {
             jumpHandler.resetTransientState();
         }
@@ -111,7 +121,7 @@ public final class JumpDelayFixEngine {
     }
 
     public synchronized boolean isEnabled() {
-        return RuntimeState.isEnabled();
+        return runtimeState.isStateEnabled();
     }
 
     public synchronized boolean isInitialized() {
@@ -119,11 +129,11 @@ public final class JumpDelayFixEngine {
     }
 
     public synchronized JumpProfile getProfile() {
-        return RuntimeState.getProfile();
+        return runtimeState.stateProfile();
     }
 
     public synchronized JumpProfile cycleProfile() {
-        JumpProfile profile = RuntimeState.cycleProfile();
+        JumpProfile profile = runtimeState.cycleStateProfile();
         rememberManualProfileSelection(profile);
 
         LOGGER.debug("{} profile {}", Constants.MOD_NAME, profile.name());
@@ -132,7 +142,7 @@ public final class JumpDelayFixEngine {
 
     public synchronized JumpProfile setProfile(JumpProfile profile) {
         JumpProfile resolvedProfile = Objects.requireNonNull(profile, "profile");
-        RuntimeState.setProfile(resolvedProfile);
+        runtimeState.setStateProfile(resolvedProfile);
         rememberManualProfileSelection(resolvedProfile);
 
         LOGGER.debug("{} profile {}", Constants.MOD_NAME, resolvedProfile.name());
@@ -234,7 +244,7 @@ public final class JumpDelayFixEngine {
 
         activeServerId = serverId;
         jumpHandler.resetTransientState();
-        RuntimeState.setProfile(resolveProfileForServer(activeServerId));
+        runtimeState.setStateProfile(resolveProfileForServer(activeServerId));
         lastConfirmedJumps = jumpHandler.getConfirmedJumpCount();
         lastRejectedJumps = jumpHandler.getRejectedJumpCount();
     }
@@ -269,12 +279,12 @@ public final class JumpDelayFixEngine {
         }
 
         JumpProfile targetProfile = chooseAutoProfile(jumpHandler.getLatencyMs(), stats.rollbackRate());
-        JumpProfile currentProfile = RuntimeState.getProfile();
+        JumpProfile currentProfile = runtimeState.stateProfile();
         if (targetProfile == currentProfile) {
             return;
         }
 
-        RuntimeState.setProfile(targetProfile);
+        runtimeState.setStateProfile(targetProfile);
         rememberProfileForActiveServer(targetProfile);
         profileSwitchCooldownTicks = AUTO_SWITCH_COOLDOWN_TICKS;
 
@@ -367,7 +377,11 @@ public final class JumpDelayFixEngine {
         lastRejectedJumps = 0;
         profileSwitchCooldownTicks = 0;
 
-        RuntimeState.reset();
+        runtimeState.resetState();
         initialized = false;
+    }
+
+    public RuntimeState getRuntimeState() {
+        return runtimeState;
     }
 }

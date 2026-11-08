@@ -157,7 +157,7 @@ public final class ConfigManager {
         }
     }
 
-    public void setPendingSaveForTests(CompletableFuture<Void> pendingSave) {
+    void setPendingSaveForTests(CompletableFuture<Void> pendingSave) {
         this.pendingSave = pendingSave;
     }
 }

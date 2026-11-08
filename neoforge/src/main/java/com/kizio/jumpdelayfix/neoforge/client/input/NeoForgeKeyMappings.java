@@ -41,14 +41,17 @@ public final class NeoForgeKeyMappings extends AbstractKeyMappings {
         event.register(CONFIG_KEY);
     }
 
+    @Override
     public boolean consumeTogglePress() {
         return consumePress(TOGGLE_KEY);
     }
 
+    @Override
     public boolean consumeProfileCyclePress() {
         return consumePress(PROFILE_KEY);
     }
 
+    @Override
     public boolean consumeConfigScreenPress() {
         return consumePress(CONFIG_KEY);
     }

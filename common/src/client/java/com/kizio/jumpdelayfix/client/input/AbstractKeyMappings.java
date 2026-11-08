@@ -17,6 +17,12 @@ public abstract class AbstractKeyMappings {
     public static final KeyMapping.Category KEY_CATEGORY =
             new KeyMapping.Category(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "jumpdelayfix"));
 
+    public abstract boolean consumeTogglePress();
+
+    public abstract boolean consumeProfileCyclePress();
+
+    public abstract boolean consumeConfigScreenPress();
+
     protected static boolean consumePress(KeyMapping mapping) {
         if (mapping == null) {
             return false;

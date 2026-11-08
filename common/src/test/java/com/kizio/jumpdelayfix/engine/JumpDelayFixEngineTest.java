@@ -101,4 +101,21 @@ class JumpDelayFixEngineTest {
         engine.flushPendingConfiguration();
         engine.shutdown();
     }
+
+    @Test
+    void shouldSupportIsolatedRuntimeStateInjection() {
+        com.kizio.jumpdelayfix.state.RuntimeState isolatedState =
+                new com.kizio.jumpdelayfix.state.RuntimeState(false, JumpProfile.COMPETITIVE);
+        JumpDelayFixEngine engine =
+                new JumpDelayFixEngine(new ConfigManager(), new HashMap<>(), isolatedState);
+
+        assertEquals(isolatedState, engine.getRuntimeState());
+        assertFalse(engine.isEnabled());
+        assertEquals(JumpProfile.COMPETITIVE, engine.getProfile());
+
+        assertTrue(engine.toggleEnabled());
+        assertTrue(isolatedState.isStateEnabled());
+        assertEquals(JumpProfile.SMART, engine.cycleProfile());
+        assertEquals(JumpProfile.SMART, isolatedState.stateProfile());
+    }
 }

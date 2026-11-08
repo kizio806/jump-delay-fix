@@ -11,13 +11,15 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-and-release:
     name: Build and Publish Release Artifacts
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository

@@ -12,9 +12,6 @@ coverage:
         target: 80%
         threshold: 0%
 
-ignore:
-  - "build-logic/**"
-
 comment:
   layout: "header, diff, flags, components"
   behavior: default
