@@ -1,6 +1,6 @@
 plugins {
-    id 'com.diffplug.spotless' version '8.10.4'
-    id 'org.sonarqube' version '7.5.0.8588'
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.sonarqube)
     id 'jacoco'
 }
 
@@ -50,11 +50,7 @@ subprojects {
 
     sonar {
         properties {
-            if (project.name == 'common') {
-                property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
-            } else {
-                property 'sonar.coverage.exclusions', '**/*'
-            }
+            property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
         }
     }
 
@@ -71,9 +67,7 @@ subprojects {
 
     tasks.withType(Test).configureEach {
         useJUnitPlatform()
-        if (project.name == 'common') {
-            finalizedBy('jacocoTestReport')
-        }
+        finalizedBy('jacocoTestReport')
     }
 
     tasks.withType(JacocoReport).configureEach {

@@ -1,4 +1,4 @@
-package com.kizio.jumpdelayfix;
+package com.kizio.jumpdelayfix.config;
 
 import com.kizio.jumpdelayfix.model.JumpProfile;
 import org.junit.jupiter.api.Test;
@@ -69,5 +69,26 @@ class ConfigManagerTest {
         manager.setPendingSaveForTests(failed);
 
         assertDoesNotThrow(manager::flushNow);
+    }
+
+    @Test
+    void shouldShutdownCleanly() {
+        ConfigManager manager = new ConfigManager();
+        manager.load(tempDir);
+        assertDoesNotThrow(manager::shutdown);
+    }
+
+    @Test
+    void shouldAllowMultipleInstancesWithIndependentExecutors() {
+        ConfigManager manager1 = new ConfigManager();
+        manager1.load(tempDir);
+        manager1.shutdown();
+
+        ConfigManager manager2 = new ConfigManager();
+        manager2.load(tempDir.resolve("sub"));
+        manager2.rememberProfile("test-server", JumpProfile.COMPETITIVE);
+        manager2.flushIfDue();
+        assertDoesNotThrow(manager2::flushNow);
+        manager2.shutdown();
     }
 }

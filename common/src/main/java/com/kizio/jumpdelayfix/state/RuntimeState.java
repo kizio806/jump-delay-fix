@@ -3,50 +3,82 @@ package com.kizio.jumpdelayfix.state;
 import com.kizio.jumpdelayfix.model.JumpProfile;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class RuntimeState {
 
-    private static final AtomicBoolean ENABLED = new AtomicBoolean(true);
-    private static final AtomicReference<JumpProfile> PROFILE = new AtomicReference<>(JumpProfile.SMART);
+    private static final RuntimeState DEFAULT_INSTANCE = new RuntimeState();
 
-    private RuntimeState() {
+    private final AtomicReference<Boolean> enabled;
+    private final AtomicReference<JumpProfile> profile;
 
+    public RuntimeState() {
+        this(true, JumpProfile.SMART);
+    }
+
+    public RuntimeState(boolean initialEnabled, JumpProfile initialProfile) {
+        this.enabled = new AtomicReference<>(initialEnabled);
+        this.profile = new AtomicReference<>(Objects.requireNonNull(initialProfile, "initialProfile"));
+    }
+
+    public static RuntimeState defaultInstance() {
+        return DEFAULT_INSTANCE;
+    }
+
+    public boolean isStateEnabled() {
+        return Boolean.TRUE.equals(enabled.get());
+    }
+
+    public boolean toggleState() {
+        return Boolean.TRUE.equals(enabled.updateAndGet(current -> !Boolean.TRUE.equals(current)));
+    }
+
+    public void setStateEnabled(boolean isEnabled) {
+        enabled.set(isEnabled);
+    }
+
+    public JumpProfile stateProfile() {
+        return profile.get();
+    }
+
+    public JumpProfile cycleStateProfile() {
+        return profile.updateAndGet(JumpProfile::next);
+    }
+
+    public void setStateProfile(JumpProfile newProfile) {
+        profile.set(Objects.requireNonNull(newProfile, "profile"));
+    }
+
+    public void resetState() {
+        enabled.set(Boolean.TRUE);
+        profile.set(JumpProfile.SMART);
     }
 
     public static boolean isEnabled() {
-        return ENABLED.get();
+        return DEFAULT_INSTANCE.isStateEnabled();
     }
 
     public static boolean toggle() {
-        while (true) {
-            boolean current = ENABLED.get();
-            boolean next = !current;
-            if (ENABLED.compareAndSet(current, next)) {
-                return next;
-            }
-        }
+        return DEFAULT_INSTANCE.toggleState();
     }
 
     public static void setEnabled(boolean enabled) {
-        ENABLED.set(enabled);
+        DEFAULT_INSTANCE.setStateEnabled(enabled);
     }
 
     public static JumpProfile getProfile() {
-        return PROFILE.get();
+        return DEFAULT_INSTANCE.stateProfile();
     }
 
     public static JumpProfile cycleProfile() {
-        return PROFILE.updateAndGet(JumpProfile::next);
+        return DEFAULT_INSTANCE.cycleStateProfile();
     }
 
     public static void setProfile(JumpProfile profile) {
-        PROFILE.set(Objects.requireNonNull(profile, "profile"));
+        DEFAULT_INSTANCE.setStateProfile(profile);
     }
 
     public static void reset() {
-        ENABLED.set(true);
-        PROFILE.set(JumpProfile.SMART);
+        DEFAULT_INSTANCE.resetState();
     }
 }

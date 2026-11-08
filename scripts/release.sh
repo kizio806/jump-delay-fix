@@ -6,6 +6,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 MODE="dry-run"
+ALLOW_EXISTING_TAG="false"
 
 for arg in "$@"; do
     case "$arg" in
@@ -15,9 +16,12 @@ for arg in "$@"; do
         --dry-run)
             MODE="dry-run"
             ;;
+        --allow-existing-tag)
+            ALLOW_EXISTING_TAG="true"
+            ;;
         *)
             echo "Unknown argument: $arg"
-            echo "Usage: $0 [--dry-run | --publish]"
+            echo "Usage: $0 [--dry-run | --publish] [--allow-existing-tag]"
             exit 1
             ;;
     esac
@@ -94,17 +98,21 @@ if ! grep -q "^## ${MOD_VERSION}" CHANGELOG.md; then
     exit 1
 fi
 
-if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-    echo "Error: Local git tag '$TAG_NAME' already exists."
-    exit 1
-fi
-
-if git remote get-url origin >/dev/null 2>&1; then
-    REMOTE_TAG_CHECK=$(git ls-remote --tags origin "refs/tags/${TAG_NAME}" || true)
-    if [[ -n "$REMOTE_TAG_CHECK" ]]; then
-        echo "Error: Remote tag '$TAG_NAME' already exists on origin."
+if [[ "$ALLOW_EXISTING_TAG" != "true" ]]; then
+    if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+        echo "Error: Local git tag '$TAG_NAME' already exists."
         exit 1
     fi
+
+    if git remote get-url origin >/dev/null 2>&1; then
+        REMOTE_TAG_CHECK=$(git ls-remote --tags origin "refs/tags/${TAG_NAME}" || true)
+        if [[ -n "$REMOTE_TAG_CHECK" ]]; then
+            echo "Error: Remote tag '$TAG_NAME' already exists on origin."
+            exit 1
+        fi
+    fi
+else
+    echo "Notice: Allowing release preparation with existing tag '$TAG_NAME'."
 fi
 
 if [[ "$MODE" == "publish" ]]; then
@@ -161,7 +169,11 @@ if [[ -n "$(git status --porcelain)" ]]; then
     git commit -m "chore(release): ${TAG_NAME}"
 fi
 
-git tag -a "$TAG_NAME" -m "Release ${TAG_NAME}"
+if [[ "$ALLOW_EXISTING_TAG" == "true" ]] && git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+    echo "Notice: Tag '$TAG_NAME' already exists. Skipping tag creation."
+else
+    git tag -a "$TAG_NAME" -m "Release ${TAG_NAME}"
+fi
 
 echo "--- 6. Pushing branch and tag to origin ---"
 git push origin "$BRANCH" "$TAG_NAME"

@@ -1,8 +1,8 @@
-package com.kizio.jumpdelayfix;
+package com.kizio.jumpdelayfix.config;
 
-import com.kizio.jumpdelayfix.config.ConfigStorage;
-import com.kizio.jumpdelayfix.config.RuntimeConfig;
+import com.kizio.jumpdelayfix.Constants;
 import com.kizio.jumpdelayfix.model.JumpProfile;
+import com.kizio.jumpdelayfix.util.BoundedLruMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,26 +13,35 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-final class ConfigManager {
+public final class ConfigManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Constants.MOD_ID);
     private static final int CONFIG_SAVE_DEBOUNCE_TICKS = 10;
     private static final int MAX_TRACKED_SERVERS = 128;
-    private static final ExecutorService CONFIG_IO = Executors.newSingleThreadExecutor(runnable -> {
-        Thread thread = new Thread(runnable, Constants.MOD_ID + "-config-io");
-        thread.setDaemon(true);
-        return thread;
-    });
 
+    private final ExecutorService configIo;
     private RuntimeConfig runtimeConfig = RuntimeConfig.defaults();
-    private final Map<String, JumpProfile> serverProfiles = createServerScopedLruMap();
+    private final Map<String, JumpProfile> serverProfiles = BoundedLruMap.create(MAX_TRACKED_SERVERS);
     private Path configFilePath = Path.of("config", "jumpdelayfix.properties");
     private int saveCooldownTicks;
     private boolean dirty;
     private CompletableFuture<Void> pendingSave = CompletableFuture.completedFuture(null);
 
-    void load(Path configDirectory) {
+    public ConfigManager() {
+        this(Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, Constants.MOD_ID + "-config-io");
+            thread.setDaemon(true);
+            return thread;
+        }));
+    }
+
+    public ConfigManager(ExecutorService configIo) {
+        this.configIo = Objects.requireNonNull(configIo, "configIo");
+    }
+
+    public void load(Path configDirectory) {
         awaitPendingSaves();
         configFilePath = Objects.requireNonNull(configDirectory, "configDirectory").resolve("jumpdelayfix.properties");
 
@@ -46,11 +55,11 @@ final class ConfigManager {
         dirty = false;
     }
 
-    boolean autoProfileSwitch() {
+    public boolean autoProfileSwitch() {
         return runtimeConfig.autoProfileSwitch();
     }
 
-    void setAutoProfileSwitch(boolean enabled) {
+    public void setAutoProfileSwitch(boolean enabled) {
         if (runtimeConfig.autoProfileSwitch() == enabled) {
             return;
         }
@@ -59,16 +68,16 @@ final class ConfigManager {
         markDirty();
     }
 
-    JumpProfile resolveProfile(String serverId) {
+    public JumpProfile resolveProfile(String serverId) {
         return serverProfiles.getOrDefault(serverId, JumpProfile.SMART);
     }
 
-    void rememberProfile(String serverId, JumpProfile profile) {
+    public void rememberProfile(String serverId, JumpProfile profile) {
         serverProfiles.put(Objects.requireNonNull(serverId, "serverId"), Objects.requireNonNull(profile, "profile"));
         markDirty();
     }
 
-    void flushIfDue() {
+    public void flushIfDue() {
         if (!dirty) {
             return;
         }
@@ -82,7 +91,7 @@ final class ConfigManager {
         dirty = false;
     }
 
-    void flushNow() {
+    public void flushNow() {
         awaitPendingSaves();
         if (!dirty) {
             return;
@@ -93,7 +102,7 @@ final class ConfigManager {
         saveCooldownTicks = 0;
     }
 
-    void resetToDefaults() {
+    public void resetToDefaults() {
         awaitPendingSaves();
         runtimeConfig = RuntimeConfig.defaults();
         serverProfiles.clear();
@@ -102,13 +111,26 @@ final class ConfigManager {
         flushNow();
     }
 
-    void resetForTests() {
+    public void resetForTests() {
         awaitPendingSaves();
         runtimeConfig = RuntimeConfig.defaults();
         serverProfiles.clear();
         configFilePath = Path.of("config", "jumpdelayfix.properties");
         saveCooldownTicks = 0;
         dirty = false;
+    }
+
+    public void shutdown() {
+        awaitPendingSaves();
+        configIo.shutdown();
+        try {
+            if (!configIo.awaitTermination(2, TimeUnit.SECONDS)) {
+                configIo.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            configIo.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void markDirty() {
@@ -122,7 +144,7 @@ final class ConfigManager {
         Map<String, JumpProfile> serverProfilesSnapshot = new LinkedHashMap<>(serverProfiles);
 
         pendingSave = pendingSave.exceptionally(exception -> null)
-                .thenRunAsync(() -> ConfigStorage.save(filePathSnapshot, configSnapshot, serverProfilesSnapshot), CONFIG_IO);
+                .thenRunAsync(() -> ConfigStorage.save(filePathSnapshot, configSnapshot, serverProfilesSnapshot), configIo);
     }
 
     private void awaitPendingSaves() {
@@ -137,14 +159,5 @@ final class ConfigManager {
 
     void setPendingSaveForTests(CompletableFuture<Void> pendingSave) {
         this.pendingSave = pendingSave;
-    }
-
-    private static <V> Map<String, V> createServerScopedLruMap() {
-        return new LinkedHashMap<>(16, 0.75F, true) {
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<String, V> eldest) {
-                return size() > MAX_TRACKED_SERVERS;
-            }
-        };
     }
 }
