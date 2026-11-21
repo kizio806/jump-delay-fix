@@ -32,7 +32,7 @@ jobs:
         id: jvm
         run: |
           JVM_VER=$(grep '^java_version=' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
-          echo "version=${JVM_VER:-21}" >> "$GITHUB_OUTPUT"
+          echo "version=${JVM_VER:-25}" >> "$GITHUB_OUTPUT"
 
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
@@ -85,7 +85,7 @@ jobs:
             echo "fabric_game_versions=$FABRIC_VERSIONS"
             echo "neoforge_game_versions=$NEOFORGE_VERSIONS"
             echo "modrinth_game_versions=$MODRINTH_VERSIONS"
-            echo "java_version=${JAVA_VERSION:-21}"
+            echo "java_version=${JAVA_VERSION:-25}"
           } >> "$GITHUB_OUTPUT"
 
       - name: Compute artifact names
