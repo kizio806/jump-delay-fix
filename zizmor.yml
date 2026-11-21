@@ -1,4 +1,7 @@
 rules:
+  dangerous-triggers:
+    ignore:
+      - labeler.yml
   cache-poisoning:
     ignore:
       - ci.yml
