@@ -1,4 +1,7 @@
 rules:
+  dangerous-triggers:
+    ignore:
+      - labeler.yml
   cache-poisoning:
     ignore:
       - ci.yml
@@ -8,3 +11,15 @@ rules:
   dependabot-cooldown:
     ignore:
       - dependabot.yml
+  hash-pin:
+    ignore:
+      - ci.yml
+      - release.yml
+      - sonarcloud.yml
+  artipacked:
+    ignore:
+      - ci.yml
+      - release.yml
+      - sonarcloud.yml
+      - codeql.yml
+      - wiki-sync.yml
