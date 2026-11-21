@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*+mc*'
+      - 'v*'
   workflow_dispatch:
 
 concurrency:
