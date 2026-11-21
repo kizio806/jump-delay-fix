@@ -5,6 +5,7 @@ import com.kizio.jumpdelayfix.input.LatencyCompensation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.effect.MobEffects;
 
 import java.util.Locale;
 
@@ -29,7 +30,7 @@ public class ClientJumpInput implements JumpInput {
         if (player == null || !player.isAlive() || player.isSleeping()
                 || player.isPassenger() || player.isFallFlying()
                 || player.getAbilities().flying || player.isInWater() || player.isSwimming()
-                || player.isVisuallyCrawling()) {
+                || player.isVisuallyCrawling() || player.hasEffect(MobEffects.LEVITATION)) {
             return false;
         }
         int currentId = player.getId();

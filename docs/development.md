@@ -131,6 +131,14 @@ Run the entire validation gauntlet:
 - Update `.github/workflows/release.yml` if new versioned publication steps are needed.
 - Document any user-visible changes in `CHANGELOG.md`.
 
+## Running the Game Client in Development
+
+To launch a debug Minecraft client instance directly from Gradle:
+- **Fabric:** `./gradlew :fabric:runClient`
+- **NeoForge:** `./gradlew :neoforge:runClient`
+
+Both tasks assemble the local mod JARs, configure an isolated sandbox run directory (`run/`), and start the Minecraft client with hot reloading and debug logging enabled.
+
 ## Documentation Style
 
 - short sections
