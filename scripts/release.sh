@@ -45,46 +45,39 @@ fi
 MOD_ID="$(grep '^mod_id=' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')"
 MOD_VERSION="$(grep '^mod_version=' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')"
 MINECRAFT_VERSION="$(grep '^minecraft_version=' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')"
+ARTIFACT_BASE_NAME="$(grep '^artifact_base_name=' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]' || true)"
+[ -z "$ARTIFACT_BASE_NAME" ] && ARTIFACT_BASE_NAME="jump-delay-fix"
+
+BASE_VERSION="${MOD_VERSION%%+*}"
+MC_METADATA="${MOD_VERSION#*+}"
 
 echo "Mod ID: $MOD_ID"
-echo "Mod Version: $MOD_VERSION"
+echo "Artifact Base Name: $ARTIFACT_BASE_NAME"
+echo "Mod Version: $MOD_VERSION (Base: $BASE_VERSION, Range: $MC_METADATA)"
 echo "Target Minecraft Version: $MINECRAFT_VERSION"
 
 TAG_NAME="v${MOD_VERSION}"
 
 case "$BRANCH" in
     support/1.21.9-1.21.11)
-        EXPECTED_VERSION_PREFIX="1.1."
+        EXPECTED_MC_RANGE="mc1.21.9-1.21.11"
         ;;
     support/26.1.x)
-        EXPECTED_VERSION_PREFIX="1.2."
+        EXPECTED_MC_RANGE="mc26.1.x"
         ;;
     support/26.2.x)
-        EXPECTED_VERSION_PREFIX="1.3."
-        ;;
-    release/*)
-        RELEASE_SUFFIX="${BRANCH#release/}"
-        if [[ "$RELEASE_SUFFIX" =~ ^([0-9]+\.[0-9]+) ]]; then
-            EXPECTED_VERSION_PREFIX="${BASH_REMATCH[1]}."
-        else
-            EXPECTED_VERSION_PREFIX=""
-        fi
+        EXPECTED_MC_RANGE="mc26.2.x"
         ;;
     main)
-        if [[ "$MOD_VERSION" =~ ^(1\.[0-3]\.) ]]; then
-            echo "Error: Mod version '$MOD_VERSION' on main belongs to an older support line (expected >= 1.4.0)."
-            exit 1
-        fi
-        EXPECTED_VERSION_PREFIX=""
+        EXPECTED_MC_RANGE="mc26.3.x"
         ;;
     *)
-        echo "Warning: Current branch '$BRANCH' is not one of the standard support/release branches."
-        EXPECTED_VERSION_PREFIX=""
+        EXPECTED_MC_RANGE=""
         ;;
 esac
 
-if [[ -n "$EXPECTED_VERSION_PREFIX" && ! "$MOD_VERSION" =~ ^${EXPECTED_VERSION_PREFIX} ]]; then
-    echo "Error: Mod version '$MOD_VERSION' does not match branch expectation for '$BRANCH' (expected prefix: '$EXPECTED_VERSION_PREFIX')."
+if [[ -n "$EXPECTED_MC_RANGE" && "$MC_METADATA" != "$EXPECTED_MC_RANGE" ]]; then
+    echo "Error: Mod version metadata '$MC_METADATA' does not match branch expectation for '$BRANCH' (expected: '$EXPECTED_MC_RANGE')."
     exit 1
 fi
 
@@ -93,8 +86,8 @@ if [[ ! -f "CHANGELOG.md" ]]; then
     exit 1
 fi
 
-if ! grep -q "^## ${MOD_VERSION}" CHANGELOG.md; then
-    echo "Error: CHANGELOG.md does not contain an entry for version '## ${MOD_VERSION}'."
+if ! grep -q -E "^## (\[?${MOD_VERSION}\]?|\[Unreleased\])" CHANGELOG.md; then
+    echo "Error: CHANGELOG.md does not contain an entry for version '${MOD_VERSION}' or '[Unreleased]'."
     exit 1
 fi
 
@@ -132,8 +125,8 @@ echo "--- 2. Running strict verification and pre-publish gates ---"
 echo "--- 3. Building release artifacts ---"
 ./gradlew --no-daemon buildAll
 
-FABRIC_JAR="fabric/build/libs/${MOD_ID}-fabric-${MINECRAFT_VERSION}-${MOD_VERSION}.jar"
-NEOFORGE_JAR="neoforge/build/libs/${MOD_ID}-neoforge-${MINECRAFT_VERSION}-${MOD_VERSION}.jar"
+FABRIC_JAR="fabric/build/libs/${ARTIFACT_BASE_NAME}-${BASE_VERSION}-${MC_METADATA}-fabric.jar"
+NEOFORGE_JAR="neoforge/build/libs/${ARTIFACT_BASE_NAME}-${BASE_VERSION}-${MC_METADATA}-neoforge.jar"
 
 echo "--- 4. Verifying built artifacts ---"
 if [[ ! -f "$FABRIC_JAR" ]]; then

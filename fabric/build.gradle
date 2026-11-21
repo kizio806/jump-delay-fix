@@ -6,8 +6,12 @@ plugins {
     id 'net.fabricmc.fabric-loom' version "${loom_version}"
 }
 
+def baseVersion = mod_version.split('\\+')[0]
+def mcMetadata = mod_version.contains('+') ? mod_version.split('\\+')[1] : "mc${minecraft_version}"
+def artifactBaseName = findProperty('artifact_base_name') ?: 'jump-delay-fix'
+
 base {
-    archivesName = "${mod_id}-fabric-${minecraft_version}"
+    archivesName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric"
 }
 
 sourceSets {
@@ -249,9 +253,14 @@ tasks.named('check') {
 }
 
 jar {
+    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar"
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_id}" }
     }
+}
+
+tasks.named('sourcesJar') {
+    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources.jar"
 }
 
 tasks.named('sourcesJar') {
