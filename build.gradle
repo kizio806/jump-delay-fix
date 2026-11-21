@@ -118,7 +118,7 @@ tasks.register('verifySemverVersion') {
 tasks.register('verifyReleaseArtifacts') {
     group = 'verification'
     description = 'Validates that Fabric and NeoForge jars exist with standard release naming.'
-    dependsOn(':fabric:jar', ':neoforge:jar')
+    dependsOn(':fabric:assemble', ':neoforge:assemble')
     doLast {
         def baseVersion = resolvedModVersion.split('\\+')[0]
         def mcMetadata = resolvedModVersion.contains('+') ? resolvedModVersion.split('\\+')[1] : "mc${minecraft_version}"
