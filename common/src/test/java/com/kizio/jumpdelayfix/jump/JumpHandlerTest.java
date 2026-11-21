@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JumpHandlerTest {
 
@@ -18,6 +20,8 @@ class JumpHandlerTest {
 
     @BeforeEach
     void setUp() {
+        RuntimeState.setEnabled(true);
+        RuntimeState.setProfile(JumpProfile.SMART);
         runtimeState = new RuntimeState(true, JumpProfile.SMART);
         input = new FakeJumpInput();
         handler = new JumpHandler(input, runtimeState);
@@ -63,6 +67,32 @@ class JumpHandlerTest {
         isolatedState.setStateEnabled(false);
         isolatedHandler.tick();
         assertEquals(1, isolatedInput.jumpCalls, "Isolated handler must honor injected disabled state");
+    }
+
+    @Test
+    void shouldConstructWithDefaultRuntimeState() {
+        JumpHandler defaultHandler = new JumpHandler(input);
+        assertNotNull(defaultHandler);
+        input.jumpPressed = true;
+        input.onGround = true;
+        defaultHandler.tick();
+        assertEquals(1, input.jumpCalls);
+    }
+
+    @Test
+    void shouldThrowWhenConstructorArgumentsAreNull() {
+        assertThrows(NullPointerException.class, () -> new JumpHandler(null));
+        assertThrows(NullPointerException.class, () -> new JumpHandler(null, runtimeState));
+        assertThrows(NullPointerException.class, () -> new JumpHandler(input, null));
+    }
+
+    @Test
+    void shouldReturnNoOpInstance() {
+        JumpHandler noOp = JumpHandler.noOp();
+        assertNotNull(noOp);
+        noOp.tick();
+        noOp.resetTransientState();
+        assertEquals(0, noOp.getConfirmedJumpCount());
     }
 
     @Test
