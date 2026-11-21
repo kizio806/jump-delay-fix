@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class JumpHandlerIntegrationTest {
 
     private TickDrivenJumpInput input;
+    private RuntimeState runtimeState;
     private JumpHandler handler;
 
     @BeforeEach
     void setUp() {
-        RuntimeState.setEnabled(true);
-        RuntimeState.setProfile(JumpProfile.SMART);
+        runtimeState = new RuntimeState(true, JumpProfile.SMART);
         input = new TickDrivenJumpInput();
-        handler = new JumpHandler(input);
+        handler = new JumpHandler(input, runtimeState);
     }
 
     @Test

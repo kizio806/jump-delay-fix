@@ -70,7 +70,7 @@ public final class JumpDelayFixEngine {
     }
 
     public synchronized void init(JumpInput input, ToggleFeedback feedback, Path configDirectory) {
-        this.jumpHandler = new JumpHandler(Objects.requireNonNull(input, "input"));
+        this.jumpHandler = new JumpHandler(Objects.requireNonNull(input, "input"), this.runtimeState);
         this.toggleFeedback = Objects.requireNonNull(feedback, "feedback");
 
         registerShutdownHookIfNeeded();

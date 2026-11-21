@@ -104,6 +104,35 @@ tasks.register('verifySemverVersion') {
         if (!(versionText ==~ semverPattern)) {
             throw new GradleException("Version '${versionText}' is not valid SemVer.")
         }
+
+        if (versionText.contains('+')) {
+            def parts = versionText.split('\\+')
+            def metadata = parts[1]
+            if (!metadata.startsWith('mc')) {
+                throw new GradleException("Build metadata '${metadata}' must follow '+mc<RANGE>' format.")
+            }
+        }
+    }
+}
+
+tasks.register('verifyReleaseArtifacts') {
+    group = 'verification'
+    description = 'Validates that Fabric and NeoForge jars exist with standard release naming.'
+    dependsOn(':fabric:assemble', ':neoforge:assemble')
+    doLast {
+        def baseVersion = resolvedModVersion.split('\\+')[0]
+        def mcMetadata = resolvedModVersion.contains('+') ? resolvedModVersion.split('\\+')[1] : "mc${minecraft_version}"
+        def artifactBaseName = findProperty('artifact_base_name') ?: 'jump-delay-fix'
+
+        def fabricJar = file("fabric/build/libs/${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar")
+        def neoJar = file("neoforge/build/libs/${artifactBaseName}-${baseVersion}-${mcMetadata}-neoforge.jar")
+
+        if (!fabricJar.exists()) {
+            throw new GradleException("Expected Fabric release artifact does not exist: ${fabricJar}")
+        }
+        if (!neoJar.exists()) {
+            throw new GradleException("Expected NeoForge release artifact does not exist: ${neoJar}")
+        }
     }
 }
 
@@ -233,6 +262,7 @@ tasks.register('publishReadyCheck') {
             'validateStructure',
             'verifySemverVersion',
             'verifyMinecraftVersionMatrix',
+            'verifyReleaseArtifacts',
             ':common:check',
             ':fabric:test',
             ':fabric:verifyRuntimeDependencyCompatibility',

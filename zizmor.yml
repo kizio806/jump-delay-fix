@@ -13,3 +13,10 @@ rules:
       - ci.yml
       - release.yml
       - sonarcloud.yml
+  artipacked:
+    ignore:
+      - ci.yml
+      - release.yml
+      - sonarcloud.yml
+      - codeql.yml
+      - wiki-sync.yml

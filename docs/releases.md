@@ -1,127 +1,169 @@
-# Release Management & Publishing Standards
+# Release Management & Versioning Standards
 
-This document defines the release lifecycle, multi-loader packaging invariants, platform publishing standards, and incident prevention rules for the **Jump Delay Fix** project.
-
----
-
-## 1. Golden Packaging Invariant (Universal Rule)
-
-Every active release line produces **EXACTLY TWO production JARs** built via `./gradlew buildAll`:
-1. **EXACTLY ONE Fabric JAR** (e.g. `jumpdelayfix-fabric-<base_mc>-<version>.jar`)
-2. **EXACTLY ONE NeoForge JAR** (e.g. `jumpdelayfix-neoforge-<base_mc>-<version>.jar`)
-
-### Cross-Version Range Rules
-For release lines supporting multiple Minecraft patch versions (e.g., `1.21.9 – 1.21.11` on `support/1.21.9-1.21.11` or `26.1 – 26.1.2` on `support/26.1.x`):
-- **Single Unified JAR Per Loader:** A single JAR covers the entire patch line. Never build or distribute multiple separate single-version JARs per patch.
-- **Internal Range Alignment (`fabric.mod.json`):**
-  - `minecraft`: declared with `fabric_minecraft_version_range` covering the full range (e.g. `>=1.21.9 <1.21.12` or `>=26.1 <26.2`).
-  - `fabric-api`: declared minimum version must match the lowest supported game version in the range (e.g. `>=0.134.1` for 1.21.9 baseline).
-- **Internal Range Alignment (`neoforge.mods.toml`):**
-  - `minecraft`: declared with `minecraft_version_range` covering the full range (e.g. `[1.21.9,1.21.12)` or `[26.1,26.2)`).
-  - `neoforge`: declared with `neoforge_loader_range` covering all corresponding loader releases (e.g. `[21.9,21.12)`).
+This document defines the authoritative versioning architecture, multi-branch release lifecycle, multi-loader packaging invariants, platform publishing standards, and validation rules for **Jump Delay Fix**.
 
 ---
 
-## 2. Platform Publishing Invariants (Modrinth & CurseForge)
+## 1. Authoritative Versioning Policy
 
-Every release must publish **EXACTLY TWO separate entries** on Modrinth and CurseForge:
-1. **`Jump Delay Fix <version> for Fabric`**
-   - Version ID / Number: `<version>-fabric` (e.g. `1.1.2-fabric`, `1.4.2-fabric`)
-   - Loaders: `fabric` ONLY
-   - Game Versions: all versions supported by the release line (e.g. `1.21.9`, `1.21.10`, `1.21.11`)
-   - File: Single Fabric JAR
-2. **`Jump Delay Fix <version> for NeoForge`**
-   - Version ID / Number: `<version>-neoforge` (e.g. `1.1.2-neoforge`, `1.4.2-neoforge`)
-   - Loaders: `neoforge` ONLY
-   - Game Versions: all versions supported by the release line (e.g. `1.21.9`, `1.21.10`, `1.21.11`)
-   - File: Single NeoForge JAR
+Jump Delay Fix follows an engineering-grade versioning policy based on [Semantic Versioning 2.0.0](https://semver.org/) combined with SemVer build metadata for Minecraft compatibility lines.
 
-### ⚠️ Prohibited Publishing Anti-Patterns
-- **NEVER combine Fabric and NeoForge into a single Modrinth or CurseForge release entry.** Mod launchers (Prism Launcher, Modrinth App, CurseForge App) fail or pick the wrong loader JAR when multiple loaders are bundled into a single release entry.
-- **NEVER create multiple release entries per patch version** (e.g. `1.1.2-1.21.9`, `1.1.2-1.21.10`, `1.1.2-1.21.11`). It causes launcher confusion, clutters user updates, and fragments download statistics.
-- **NEVER declare external platform game versions that are wider than internal metadata constraints.** If Modrinth lists `1.21.9, 1.21.10, 1.21.11`, the JAR's `fabric.mod.json` MUST accept `>=1.21.9`.
+### Version Format
 
----
-
-## 3. Incident Post-Mortem & Case Study: Modrinth 1.1.1 Metadata Mismatch
-
-### What Happened in 1.1.1?
-When version `1.1.1` was tagged and released:
-1. In `gradle.properties`, `fabric_minecraft_version_range` was set to `>=1.21.11 <1.21.12` and `fabric_api_version` was `0.141.6+1.21.11`.
-2. This happened because a faulty Gradle verification task (`verifyRuntimeDependencyCompatibility`) inspected the build-time Maven artifact of Fabric API (`fabric-api:0.141.6+1.21.11`) and failed if its internal metadata did not declare older Minecraft versions. To pass `./gradlew publishReadyCheck`, `fabric_minecraft_version_range` was incorrectly restricted to 1.21.11 only.
-3. However, on Modrinth, the version entry `1.1.1-fabric` was created with `game_versions: ['1.21.9', '1.21.10', '1.21.11']`.
-4. **User Impact:** Players on Minecraft 1.21.9 and 1.21.10 downloaded `jumpdelayfix-fabric-1.21.11-1.1.1.jar`. Upon launching Minecraft, Fabric Loader halted startup with an error:
-   `Incompatible mod set: jumpdelayfix requires minecraft >=1.21.11 <1.21.12, but only 1.21.9 is installed.`
-5. **How It Was Remedied:**
-   - On Modrinth web UI: in `1.1.1-fabric`, uncheck `1.21.9` and `1.21.10` so players on older patches are not served broken 1.1.1.
-   - For `1.1.2+`: `fabric_minecraft_version_range` was restored to `>=1.21.9 <1.21.12`, `fabric_api_min_version=0.134.1` was added to `fabric.mod.json`, and `verifyRuntimeDependencyCompatibility` was corrected to validate against the compile target `minecraft_version`.
-
----
-
-## 4. Release Preparation & Execution
-
-### 1. Probe Candidate Versions
-Run compatibility probe before changing published metadata to determine which versions are safe to target.
-
-```bash
-./scripts/probe-minecraft-versions.sh \
-  --versions "1.21.9,1.21.10,1.21.11"
+```text
+MAJOR.MINOR.PATCH+mc<MINECRAFT_RANGE>
 ```
 
-### 2. Update Version Metadata
-Use the helper script to set the new version details in `gradle.properties`:
+Examples:
+- `2.0.0+mc26.3.x` (active on `main`)
+- `2.0.0+mc26.2.x` (active on `support/26.2.x`)
+- `2.0.0+mc26.1.x` (active on `support/26.1.x`)
+- `2.0.0+mc1.21.9-1.21.11` (active on `support/1.21.9-1.21.11`)
 
-```bash
-./scripts/set-minecraft-version.sh \
-  --base-minecraft <minecraft_version> \
-  --supported-versions "<supported_versions>" \
-  --mod-version <mod_version>
+### Increment Semantics
+
+- **MAJOR (`X.0.0`)**: Incremented when introducing breaking changes affecting users, public APIs, configuration persistence schemas, or public integration contracts.
+- **MINOR (`x.Y.0`)**: Incremented when introducing backward-compatible new functionality, new features, or platform capabilities.
+- **PATCH (`x.y.Z`)**: Incremented for backward-compatible bug fixes, performance optimizations, security hardening, and maintenance updates.
+
+*Note:* Minecraft version changes or internal refactoring alone do **NOT** alter the base `MAJOR.MINOR.PATCH` sequence. Minecraft compatibility is captured exclusively in the `+mc<RANGE>` metadata suffix.
+
+---
+
+## 2. Critical Global Synchronization Rule
+
+The defining principle of this versioning architecture is **global base version synchronization**:
+
+> **Every active support branch must use the exact same base project version.**
+
+```text
+main:                    2.0.0+mc26.3.x
+support/26.2.x:          2.0.0+mc26.2.x
+support/26.1.x:          2.0.0+mc26.1.x
+support/1.21.9-1.21.11:  2.0.0+mc1.21.9-1.21.11
 ```
 
-### 3. Verify
-Ensure the project builds cleanly and satisfies all gates:
+### Backport and Parity Mandate
 
-```bash
-./gradlew --no-daemon --stacktrace clean buildAll strictCheck publishReadyCheck
+1. When a new feature, bug fix, or security update is introduced on `main`, the change must be adapted and backported across all active support branches (`support/26.2.x`, `support/26.1.x`, `support/1.21.9-1.21.11`).
+2. When a version increment occurs (e.g., from `2.0.0` to `2.0.1` or `2.1.0`), the increment is applied to **all** active branches in lockstep.
+3. **Never** independently increment the base version on a single branch.
+4. **Never** publish a higher base version for one active branch while leaving another active branch on an older base version.
+5. If a platform-specific API difference prevents equivalent implementation on an older Minecraft line, stop and document the technical limitation rather than silently creating version divergence.
+
+---
+
+## 3. Branching Strategy & Lifecycle
+
+The repository maintains dedicated long-term branches corresponding to distinct Minecraft compatibility lines:
+
+| Branch | Minecraft Line | Status | Maintenance Policy |
+| :--- | :--- | :--- | :--- |
+| `main` | Minecraft 26.3.x (26.3+) | **Active (Primary)** | Receives all new features, core architecture updates, and fixes. |
+| `support/26.2.x` | Minecraft 26.2.x | **Active Support** | Synchronized features, backported bug fixes, and security updates. |
+| `support/26.1.x` | Minecraft 26.1.x (26.1–26.1.2) | **Active Support** | Synchronized features, backported bug fixes, and security updates. |
+| `support/1.21.9-1.21.11` | Minecraft 1.21.9–1.21.11 | **Active Support** | Synchronized features, backported bug fixes, and security updates. |
+
+### End-of-Life (EOL) Policy
+
+- A Minecraft compatibility line remains supported as long as it has meaningful community adoption or until upstream toolchains deprecate essential dependencies.
+- Retiring a support branch requires explicit deprecation announcement in `CHANGELOG.md` and `ROADMAP.md`.
+- Historical tags and releases for retired lines are preserved indefinitely and are never deleted or rewritten.
+
+---
+
+## 4. Production Artifacts & Naming Standard
+
+Every active Minecraft compatibility line produces **EXACTLY TWO production artifacts**:
+1. **Fabric JAR**: `jump-delay-fix-<BASE_VERSION>-<MC_METADATA>-fabric.jar`
+2. **NeoForge JAR**: `jump-delay-fix-<BASE_VERSION>-<MC_METADATA>-neoforge.jar`
+
+Examples on `main`:
+- `jump-delay-fix-2.0.0-mc26.3.x-fabric.jar`
+- `jump-delay-fix-2.0.0-mc26.3.x-neoforge.jar`
+
+Examples on `support/1.21.9-1.21.11`:
+- `jump-delay-fix-2.0.0-mc1.21.9-1.21.11-fabric.jar`
+- `jump-delay-fix-2.0.0-mc1.21.9-1.21.11-neoforge.jar`
+
+### Multi-Version JAR Invariant
+A single JAR covers its entire compatibility range:
+- **Fabric (`fabric.mod.json`)**: Declares `fabric_minecraft_version_range` covering all patch versions in the line (e.g. `>=26.3 <26.4` or `>=1.21.9 <1.21.12`).
+- **NeoForge (`neoforge.mods.toml`)**: Declares `minecraft_version_range` covering all patch versions in the line (e.g. `[26.3,26.4)` or `[1.21.9,1.21.12)`).
+
+---
+
+## 5. Git Tags and GitHub Releases
+
+Every Minecraft compatibility line is released independently, pointing to the exact commit on its respective branch.
+
+### Git Tag Convention
+
+```text
+v<BASE_VERSION>+mc<MINECRAFT_RANGE>
 ```
 
-### 4. Prepare Changelog
-Update `CHANGELOG.md` with user-visible changes for the new `<mod_version>`.
-That section becomes the release body for both GitHub Releases, Modrinth, and CurseForge.
-For the complete list of verified combinations and artifact checksums, refer to [compatibility-matrix.md](compatibility-matrix.md).
+Examples:
+- `v2.0.0+mc26.3.x`
+- `v2.0.0+mc26.2.x`
+- `v2.0.0+mc26.1.x`
+- `v2.0.0+mc1.21.9-1.21.11`
 
-### 5. One-Command Release Procedure
-To perform the release safely, use the included release script:
+### GitHub Release Title Convention
+
+```text
+v<BASE_VERSION> — Minecraft <MINECRAFT_RANGE>
+```
+
+Examples:
+- `v2.0.0 — Minecraft 26.3.x`
+- `v2.0.0 — Minecraft 26.2.x`
+- `v2.0.0 — Minecraft 26.1.x`
+- `v2.0.0 — Minecraft 1.21.9–1.21.11`
+
+Each GitHub Release contains **only** the artifacts built for its compatibility line:
+- 1 Fabric JAR
+- 1 NeoForge JAR
+- Associated SHA-256 checksums (`FABRIC-SHA256SUMS.txt`, `NEOFORGE-SHA256SUMS.txt`)
+
+---
+
+## 6. Modrinth & Platform Publishing Conventions
+
+To prevent launcher confusion (e.g. Prism Launcher, Modrinth App) and preserve clean update channels:
+
+1. **Independent Loader Entries**: Every release publishes separate entries for Fabric and NeoForge.
+   - Fabric Version ID: `<BASE_VERSION>+mc<MINECRAFT_RANGE>.fabric` (e.g. `2.0.0+mc26.3.x.fabric`)
+   - NeoForge Version ID: `<BASE_VERSION>+mc<MINECRAFT_RANGE>.neoforge` (e.g. `2.0.0+mc26.3.x.neoforge`)
+2. **Platform Game Versions**: The published version lists all Minecraft patch versions verified by the line (e.g. `['1.21.9', '1.21.10', '1.21.11']`).
+3. **Prohibited Patterns**:
+   - Never combine Fabric and NeoForge into a single release entry.
+   - Never publish redundant single-patch duplicate JARs.
+   - Never publish external platform metadata that exceeds the internal constraints in `fabric.mod.json` or `neoforge.mods.toml`.
+
+---
+
+## 7. Automated Validation & Safety Gates
+
+Continuous integration enforces release readiness and prevents accidental divergence:
 
 ```bash
-# 1. First run dry-run verification
+# 1. Run full verification gates and build artifacts
+./gradlew strictCheck publishReadyCheck buildAll
+
+# 2. Test release readiness in dry-run mode
 ./scripts/release.sh --dry-run
-
-# 2. When ready, publish the release with one command:
-./scripts/release.sh --publish
 ```
 
-The script automatically:
-1. Validates source hygiene, structure, and semver compliance.
-2. Executes strict compilation and pre-publish verification gates.
-3. Builds release artifacts for all supported loaders (1 Fabric JAR + 1 NeoForge JAR).
-4. Verifies artifact existence and file sizes.
-5. Creates the release commit (`chore(release): v<mod_version>`) and annotated tag (`v<mod_version>`).
-6. Pushes the branch and tag to GitHub.
+The verification pipeline automatically enforces:
+- SemVer compliance with mandatory `+mc<RANGE>` metadata (`verifySemverVersion`).
+- Multi-version matrix consistency across loader ranges (`verifyMinecraftVersionMatrix`).
+- Deterministic production artifact naming and existence (`verifyReleaseArtifacts`).
+- Bytecode inspection and client/server safety contracts (`FabricMetadataContractTest`, `verifyDedicatedServerSafe`).
+- Source hygiene, comment standards, and spotless formatting (`validateSourceHygiene`, `spotlessCheck`).
 
----
+### Explicit Release Trigger
 
-## 5. Automated Delivery Workflow
-
-Pushing the release tag triggers `.github/workflows/release.yml`, which handles the entire deployment process automatically:
-
-- Clean environment build and verification (`./gradlew clean buildAll strictCheck`)
-- Release notes generation from `CHANGELOG.md`
-- SHA-256 checksum generation for both production JARs
-- GitHub Release publishing with Fabric and NeoForge JARs
-- Modrinth publishing:
-  - Step 1: `Jump Delay Fix <version> for Fabric` (`<version>-fabric`, loader: `fabric`)
-  - Step 2: `Jump Delay Fix <version> for NeoForge` (`<version>-neoforge`, loader: `neoforge`)
-- CurseForge publishing:
-  - Step 1: Fabric release (`loaders: fabric`)
-  - Step 2: NeoForge release (`loaders: neoforge`)
+Releases are **never** triggered by normal pushes to branches. Publication occurs exclusively through:
+1. Pushing an annotated Git tag matching `v*+mc*`.
+2. Manual workflow execution via GitHub Actions `workflow_dispatch`.

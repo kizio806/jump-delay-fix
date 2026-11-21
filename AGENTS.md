@@ -22,6 +22,7 @@ Future AI agents working in this repository must operate as **experienced senior
 - **Do NOT assume existing code is correct:** Always run tests, inspect bytecode dependencies, and check git blame/history.
 - **Do NOT add trivial or redundant comments:** Meaningful explanatory comments are permitted when clarifying non-obvious algorithms or contracts, but redundant comments that merely restate the code, `TODO`/`FIXME`/`XXX` tags, and wildcard imports are prohibited.
 - **Do NOT suppress warnings:** `@SuppressWarnings` and warning-silencing annotations of any kind are strictly forbidden. Resolve deprecations, type mismatches, and linter warnings at the source.
+- **Do NOT bypass constructor dependency injection with global static state:** Domain logic (including `JumpHandler` and components in `:common`) must receive dependencies (such as `RuntimeState`) via constructor injection rather than querying static singleton accessors. This invariant is enforced by ArchUnit in `CommonArchitectureTest`.
 
 ---
 
@@ -48,7 +49,7 @@ Before touching any code, an AI agent must complete four distinct analysis steps
 ### Step 3: Check Documentation & Repository Guidelines
 - Read `docs/architecture.md`, `docs/development.md`, and `docs/releases.md`.
 - Read wiki articles in `docs/wiki/` (especially `Anti-Cheat-and-Fair-Play.md` and `Configuration.md`).
-- Review `.agents/rules/` for detailed coding rules.
+- Review `.agents/rules/` for detailed coding rules, especially `.agents/rules/versioning-and-releases.md` for synchronized versioning requirements.
 
 ### Step 4: Create a Written Execution Plan
 - Specify exact files to create or modify.

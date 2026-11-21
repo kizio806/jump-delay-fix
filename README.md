@@ -79,14 +79,14 @@ Jump Delay Fix is engineered with strict adherence to fair-play and server proto
 
 ## 📦 Supported Versions & Platforms
 
-We maintain dedicated branches and published releases for every major modern Minecraft release:
+We maintain dedicated branches and published releases for every major modern Minecraft release, governed by our synchronized [Release Management & Versioning Policy](docs/releases.md):
 
 | Minecraft Line | Version Tag | Supported Game Versions | Mod Loaders | Java Baseline | Git Branch |
 | :--- | :---: | :--- | :--- | :---: | :--- |
-| **26.3** *(Latest)* | `v1.4.2` | **26.3** | Fabric 0.18.4+ (Fabric API 0.160.6+)<br>NeoForge 26.3.0.1-beta+ | **Java 25** | [`main`](https://github.com/kizio806/jump-delay-fix) |
-| **26.2** | `v1.3.2` | **26.2** | Fabric 0.18.4+ (Fabric API 0.159.0+)<br>NeoForge 26.2.0.79+ | **Java 25** | [`support/26.2.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.2.x) |
-| **26.1** | `v1.2.2` | **26.1**, **26.1.1**, **26.1.2** | Fabric 0.18.4+ (Fabric API 0.155.2+)<br>NeoForge 26.1.2.103+ | **Java 25** | [`support/26.1.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.1.x) |
-| **1.21** | `v1.1.2` | **1.21.9**, **1.21.10**, **1.21.11** | Fabric 0.18.4+ (Fabric API 0.134.1+ / 0.138.4+ / 0.141.6+)<br>NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | **Java 21** | [`support/1.21.9-1.21.11`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.9-1.21.11) |
+| **26.3** *(Latest)* | `v2.0.0+mc26.3.x` | **26.3** | Fabric 0.18.4+ (Fabric API 0.160.6+)<br>NeoForge 26.3.0.1-beta+ | **Java 25** | [`main`](https://github.com/kizio806/jump-delay-fix) |
+| **26.2** | `v2.0.0+mc26.2.x` | **26.2** | Fabric 0.18.4+ (Fabric API 0.159.0+)<br>NeoForge 26.2.0.79+ | **Java 25** | [`support/26.2.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.2.x) |
+| **26.1** | `v2.0.0+mc26.1.x` | **26.1**, **26.1.1**, **26.1.2** | Fabric 0.18.4+ (Fabric API 0.155.2+)<br>NeoForge 26.1.2.103+ | **Java 25** | [`support/26.1.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.1.x) |
+| **1.21** | `v2.0.0+mc1.21.9-1.21.11` | **1.21.9**, **1.21.10**, **1.21.11** | Fabric 0.18.4+ (Fabric API 0.134.1+ / 0.138.4+ / 0.141.6+)<br>NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | **Java 21** | [`support/1.21.9-1.21.11`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.9-1.21.11) |
 
 > 📖 **Full Compatibility & Checksums Matrix:** See [docs/compatibility-matrix.md](docs/compatibility-matrix.md) for detailed verification results across all 16 loader-Minecraft combinations.
 
@@ -98,12 +98,12 @@ We maintain dedicated branches and published releases for every major modern Min
 1. Install [Fabric Loader](https://fabricmc.net/) for your target Minecraft version.
 2. Download and place the matching [Fabric API](https://modrinth.com/mod/fabric-api) into your `.minecraft/mods` folder.
 3. *(Optional)* Install [ModMenu](https://modrinth.com/mod/modmenu) to access the settings GUI from the mods list.
-4. Download `jumpdelayfix-fabric-<mc>-<version>.jar` from [Modrinth](https://modrinth.com/mod/jump-delay-fix) or [GitHub Releases](https://github.com/kizio806/jump-delay-fix/releases).
+4. Download `jump-delay-fix-<base>-<mc_range>-fabric.jar` from [Modrinth](https://modrinth.com/mod/jump-delay-fix) or [GitHub Releases](https://github.com/kizio806/jump-delay-fix/releases).
 5. Place the JAR into `.minecraft/mods` and launch Minecraft.
 
 ### NeoForge
 1. Install [NeoForge](https://neoforged.net/) for your target Minecraft version.
-2. Download `jumpdelayfix-neoforge-<mc>-<version>.jar` from [Modrinth](https://modrinth.com/mod/jump-delay-fix) or [GitHub Releases](https://github.com/kizio806/jump-delay-fix/releases).
+2. Download `jump-delay-fix-<base>-<mc_range>-neoforge.jar` from [Modrinth](https://modrinth.com/mod/jump-delay-fix) or [GitHub Releases](https://github.com/kizio806/jump-delay-fix/releases).
 3. Place the JAR into `.minecraft/mods` and launch Minecraft.
 
 ---
@@ -168,6 +168,13 @@ For in-depth guides and developer documentation, visit our wiki and reference do
   - [Modrinth Publishing Guide](docs/modrinth.md)
   - [Troubleshooting & FAQ](docs/troubleshooting.md)
   - [Changelog](CHANGELOG.md)
+
+- **Governance & Policy:**
+  - [Contribution Guidelines](CONTRIBUTING.md)
+  - [Code of Conduct](CODE_OF_CONDUCT.md)
+  - [Support & Channels](SUPPORT.md)
+  - [Project Roadmap](ROADMAP.md)
+  - [Security Policy](SECURITY.md)
 
 ---
 
