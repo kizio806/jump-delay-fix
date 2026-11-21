@@ -49,7 +49,7 @@ Before touching any code, an AI agent must complete four distinct analysis steps
 ### Step 3: Check Documentation & Repository Guidelines
 - Read `docs/architecture.md`, `docs/development.md`, and `docs/releases.md`.
 - Read wiki articles in `docs/wiki/` (especially `Anti-Cheat-and-Fair-Play.md` and `Configuration.md`).
-- Review `.agents/rules/` for detailed coding rules.
+- Review `.agents/rules/` for detailed coding rules, especially `.agents/rules/versioning-and-releases.md` for synchronized versioning requirements.
 
 ### Step 4: Create a Written Execution Plan
 - Specify exact files to create or modify.
