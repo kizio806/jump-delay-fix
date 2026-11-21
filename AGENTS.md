@@ -22,6 +22,7 @@ Future AI agents working in this repository must operate as **experienced senior
 - **Do NOT assume existing code is correct:** Always run tests, inspect bytecode dependencies, and check git blame/history.
 - **Do NOT add trivial or redundant comments:** Meaningful explanatory comments are permitted when clarifying non-obvious algorithms or contracts, but redundant comments that merely restate the code, `TODO`/`FIXME`/`XXX` tags, and wildcard imports are prohibited.
 - **Do NOT suppress warnings:** `@SuppressWarnings` and warning-silencing annotations of any kind are strictly forbidden. Resolve deprecations, type mismatches, and linter warnings at the source.
+- **Do NOT bypass constructor dependency injection with global static state:** Domain logic (including `JumpHandler` and components in `:common`) must receive dependencies (such as `RuntimeState`) via constructor injection rather than querying static singleton accessors. This invariant is enforced by ArchUnit in `CommonArchitectureTest`.
 
 ---
 

@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class JumpHandlerTest {
 
     private FakeJumpInput input;
+    private RuntimeState runtimeState;
     private JumpHandler handler;
 
     @BeforeEach
     void setUp() {
-        RuntimeState.setEnabled(true);
-        RuntimeState.setProfile(JumpProfile.SMART);
+        runtimeState = new RuntimeState(true, JumpProfile.SMART);
         input = new FakeJumpInput();
-        handler = new JumpHandler(input);
+        handler = new JumpHandler(input, runtimeState);
     }
 
     @Test
@@ -35,13 +35,34 @@ class JumpHandlerTest {
 
     @Test
     void shouldNotJumpWhenDisabled() {
-        RuntimeState.setEnabled(false);
+        runtimeState.setStateEnabled(false);
         input.jumpPressed = true;
         input.onGround = true;
 
         handler.tick();
 
         assertEquals(0, input.jumpCalls);
+    }
+
+    @Test
+    void shouldRespectInjectedRuntimeStateIndependentlyOfGlobalState() {
+        RuntimeState isolatedState = new RuntimeState(true, JumpProfile.COMPETITIVE);
+        FakeJumpInput isolatedInput = new FakeJumpInput();
+        JumpHandler isolatedHandler = new JumpHandler(isolatedInput, isolatedState);
+
+        RuntimeState.setEnabled(false);
+        RuntimeState.setProfile(JumpProfile.STABLE);
+
+        isolatedInput.jumpPressed = true;
+        isolatedInput.onGround = true;
+
+        isolatedHandler.tick();
+
+        assertEquals(1, isolatedInput.jumpCalls, "Isolated handler must use injected enabled state");
+
+        isolatedState.setStateEnabled(false);
+        isolatedHandler.tick();
+        assertEquals(1, isolatedInput.jumpCalls, "Isolated handler must honor injected disabled state");
     }
 
     @Test
