@@ -91,14 +91,9 @@ Run the isolated candidate probe to verify compilation and dependency resolution
 ```
 
 ### 6. Build Release Artifacts
-- For single-line branches:
-  ```bash
-  ./gradlew clean buildAll
-  ```
-- For multi-artifact lines (e.g. 1.21.9–1.21.11):
-  ```bash
-  ./scripts/build-all-versions.sh
-  ```
+```bash
+./gradlew clean buildAll
+```
 
 ### 7. Inspect Built JARs and Checksums
 Directly inspect the ZIP archive contents to guarantee clean production packaging:
@@ -135,6 +130,14 @@ Run the entire validation gauntlet:
 - Update `README.md` and `docs/wiki/Installation-and-Compatibility.md`.
 - Update `.github/workflows/release.yml` if new versioned publication steps are needed.
 - Document any user-visible changes in `CHANGELOG.md`.
+
+## Running the Game Client in Development
+
+To launch a debug Minecraft client instance directly from Gradle:
+- **Fabric:** `./gradlew :fabric:runClient`
+- **NeoForge:** `./gradlew :neoforge:runClient`
+
+Both tasks assemble the local mod JARs, configure an isolated sandbox run directory (`run/`), and start the Minecraft client with hot reloading and debug logging enabled.
 
 ## Documentation Style
 

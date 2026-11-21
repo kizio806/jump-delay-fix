@@ -1,5 +1,7 @@
 package com.kizio.jumpdelayfix.architecture;
 
+import com.kizio.jumpdelayfix.state.RuntimeState;
+import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
@@ -19,6 +21,26 @@ class CommonArchitectureTest {
                 .dependOnClassesThat()
                 .resideInAnyPackage("net.fabricmc..", "net.neoforged..")
                 .because("Common module must remain strictly loader-agnostic");
+
+        rule.check(COMMON_CLASSES);
+    }
+
+    @Test
+    void jumpPackageMustNotCallStaticMethodsOnRuntimeState() {
+        ArchRule rule = noClasses()
+                .that()
+                .resideInAPackage("..jump..")
+                .and()
+                .haveSimpleNameNotEndingWith("Test")
+                .should()
+                .callMethodWhere(DescribedPredicate.describe(
+                        "calls static method on RuntimeState",
+                        call -> call.getTargetOwner().isEquivalentTo(RuntimeState.class)
+                                && (call.getTarget().getName().equals("isEnabled")
+                                        || call.getTarget().getName().equals("getProfile")
+                                        || call.getTarget().getName().equals("toggle")
+                                        || call.getTarget().getName().equals("setEnabled"))))
+                .because("JumpHandler must use injected RuntimeState instance instead of static methods");
 
         rule.check(COMMON_CLASSES);
     }

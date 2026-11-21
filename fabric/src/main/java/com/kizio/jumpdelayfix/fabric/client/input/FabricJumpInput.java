@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.entity.effect.StatusEffects;
 
 import java.util.Locale;
 
@@ -55,7 +56,7 @@ public final class FabricJumpInput implements JumpInput {
         if (player == null || !player.isAlive() || player.isSleeping()
                 || player.hasVehicle() || player.isGliding()
                 || player.getAbilities().flying || player.isTouchingWater() || player.isSwimming()
-                || player.isCrawling()) {
+                || player.isCrawling() || player.hasStatusEffect(StatusEffects.LEVITATION)) {
             lastPlayerId = -1;
             return false;
         }

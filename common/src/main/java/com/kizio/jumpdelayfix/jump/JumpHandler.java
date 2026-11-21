@@ -7,7 +7,7 @@ import com.kizio.jumpdelayfix.state.RuntimeState;
 import java.util.Objects;
 public final class JumpHandler {
 
-    private static final JumpHandler NO_OP = new JumpHandler(NoOpJumpInput.INSTANCE);
+    private static final JumpHandler NO_OP = new JumpHandler(NoOpJumpInput.INSTANCE, RuntimeState.defaultInstance());
     private static final int JUMP_INPUT_BUFFER_TICKS = 3;
     private static final int JUMP_NO_LIFT_TIMEOUT_TICKS = 3;
     private static final int JUMP_LANDING_TIMEOUT_TICKS = 20;
@@ -15,6 +15,7 @@ public final class JumpHandler {
     private static final double JUMP_SUCCESS_MIN_HEIGHT_DELTA = 0.005D;
 
     private final JumpInput input;
+    private final RuntimeState runtimeState;
     private int groundedTicks;
     private int ticksSinceLastJumpAttempt;
     private int bufferedJumpTicks;
@@ -33,14 +34,20 @@ public final class JumpHandler {
     private double jumpStartY = Double.NaN;
 
     public JumpHandler(JumpInput input) {
+        this(input, RuntimeState.defaultInstance());
+    }
+
+    public JumpHandler(JumpInput input, RuntimeState runtimeState) {
         this.input = Objects.requireNonNull(input, "input");
+        this.runtimeState = Objects.requireNonNull(runtimeState, "runtimeState");
     }
 
     public static JumpHandler noOp() {
         return NO_OP;
     }
+
     public void tick() {
-        if (!RuntimeState.isEnabled() || !input.isPlayerValid()) {
+        if (!runtimeState.isStateEnabled() || !input.isPlayerValid()) {
             resetTransientState();
             return;
         }
@@ -68,7 +75,7 @@ public final class JumpHandler {
             return;
         }
 
-        JumpProfile profile = RuntimeState.getProfile();
+        JumpProfile profile = runtimeState.stateProfile();
         int requiredGroundedTicks = Math.max(
                 1,
                 input.requiredGroundedTicksBeforeJump()
@@ -151,7 +158,7 @@ public final class JumpHandler {
         clearPendingJumpResult();
         confirmedJumpCount++;
 
-        JumpProfile profile = RuntimeState.getProfile();
+        JumpProfile profile = runtimeState.stateProfile();
         successfulJumpStreak++;
         if (adaptivePenaltyTicks > 0 && successfulJumpStreak >= profile.successfulJumpsToReducePenalty()) {
             adaptivePenaltyTicks--;
@@ -164,7 +171,7 @@ public final class JumpHandler {
         successfulJumpStreak = 0;
         rejectedJumpCount++;
 
-        JumpProfile profile = RuntimeState.getProfile();
+        JumpProfile profile = runtimeState.stateProfile();
         adaptivePenaltyTicks = Math.min(profile.maxAdaptivePenaltyTicks(), adaptivePenaltyTicks + 1);
     }
 
