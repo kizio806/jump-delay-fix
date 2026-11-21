@@ -50,11 +50,7 @@ subprojects {
 
     sonar {
         properties {
-            if (project.name == 'common') {
-                property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
-            } else {
-                property 'sonar.coverage.exclusions', '**/*'
-            }
+            property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
         }
     }
 
@@ -71,9 +67,7 @@ subprojects {
 
     tasks.withType(Test).configureEach {
         useJUnitPlatform()
-        if (project.name == 'common') {
-            finalizedBy('jacocoTestReport')
-        }
+        finalizedBy('jacocoTestReport')
     }
 
     tasks.withType(JacocoReport).configureEach {

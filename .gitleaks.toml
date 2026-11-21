@@ -1,0 +1,15 @@
+title = "Jump Delay Fix Gitleaks Configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist for build directories, test fixtures, and secret environment variable expansions"
+paths = [
+    '''(^|/)build/''',
+    '''(^|/)\.gradle/''',
+]
+regexTarget = "match"
+regexes = [
+    '''\$\{SONAR_TOKEN\}''',
+]
