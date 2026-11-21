@@ -20,13 +20,11 @@ public final class RuntimeState {
     }
 
     public static boolean toggle() {
-        while (true) {
-            boolean current = ENABLED.get();
-            boolean next = !current;
-            if (ENABLED.compareAndSet(current, next)) {
-                return next;
-            }
-        }
+        boolean current;
+        do {
+            current = ENABLED.get();
+        } while (!ENABLED.compareAndSet(current, !current));
+        return !current;
     }
 
     public static void setEnabled(boolean enabled) {

@@ -45,7 +45,10 @@ public final class NeoForgeClient {
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientLogout);
         NeoForge.EVENT_BUS.addListener(NeoForgeClient::onClientPlayerClone);
-        NeoForge.EVENT_BUS.addListener((GameShuttingDownEvent event) -> JumpDelayFix.flushPendingConfiguration());
+        NeoForge.EVENT_BUS.addListener((GameShuttingDownEvent event) -> {
+            JumpDelayFix.flushPendingConfiguration();
+            JumpDelayFix.shutdown();
+        });
         initialized = true;
     }
 

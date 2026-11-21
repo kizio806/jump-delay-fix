@@ -1,4 +1,4 @@
-package com.kizio.jumpdelayfix;
+package com.kizio.jumpdelayfix.config;
 
 import com.kizio.jumpdelayfix.model.JumpProfile;
 import org.junit.jupiter.api.Test;
@@ -69,5 +69,12 @@ class ConfigManagerTest {
         manager.setPendingSaveForTests(failed);
 
         assertDoesNotThrow(manager::flushNow);
+    }
+
+    @Test
+    void shouldShutdownCleanly() {
+        ConfigManager manager = new ConfigManager();
+        manager.load(tempDir);
+        assertDoesNotThrow(manager::shutdown);
     }
 }
