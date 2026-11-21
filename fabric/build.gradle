@@ -256,6 +256,14 @@ tasks.named('sourcesJar') {
     archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources.jar"
 }
 
+tasks.matching { it.name == 'remapJar' }.configureEach {
+    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar"
+}
+
+tasks.matching { it.name == 'remapSourcesJar' }.configureEach {
+    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources.jar"
+}
+
 tasks.named('sourcesJar') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
