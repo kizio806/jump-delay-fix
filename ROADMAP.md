@@ -19,7 +19,8 @@ This roadmap outlines key milestones, active development tracks, and future visi
 - [ ] **Dynamic Sensitivity Profiles:** Configurable delay thresholds based on player status (e.g. customized bunny-hop timings for Parkour vs Survival).
 - [ ] **ModMenu & NeoForge Config Screen Polish:** Enhanced tooltips, instant keybinding rebinding feedback, and live reset testing.
 
-### Phase 3: Minecraft Modernization Track (v1.4.0)
+### Phase 3: Minecraft Modernization & Synchronized Architecture (v2.0.0)
+- [x] **Unified Global Versioning Standard:** Synchronized SemVer `2.0.0` architecture with `+mc<RANGE>` build metadata across all active branches.
 - [ ] **Next Major Minecraft Release Migration:** Swift porting to upstream snapshot releases via automated mapping pipelines.
 - [ ] **Headless GameTest Matrix:** In-engine automated headless player movement tests verifying tick-perfect jump timing across both Fabric and NeoForge.
 - [ ] **Automated Semantic Changelogs:** Git cliff or conventional changelog automation hooked into release pipelines.

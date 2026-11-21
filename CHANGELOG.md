@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- **Unified Global Versioning Standard**: Migrated versioning architecture to synchronized Semantic Versioning with Minecraft compatibility build metadata (`2.0.0+mc1.21.9-1.21.11`).
+- **Synchronized Support Branch Parity**: All active compatibility lines (`main`, `support/26.2.x`, `support/26.1.x`, `support/1.21.9-1.21.11`) now share the global base version `2.0.0`.
+- **Deterministic Release Artifact Naming**: Standardized multi-loader release JAR outputs to `jump-delay-fix-<BASE_VERSION>-<MC_METADATA>-fabric.jar` and `jump-delay-fix-<BASE_VERSION>-<MC_METADATA>-neoforge.jar`.
+- **Zero Loader Duplication**: Extracted shared client classes (`StatusMessages`, `ClientJumpInput`, `SettingsScreen`) to `common/src/client/java`, compiling the shared client sources directly into Fabric and NeoForge loader artifacts without redundant duplication.
+- **Quality Gates & Metrics Transparency**: Removed `sonar.cpd.exclusions` from build configuration and SonarCloud analysis, ensuring honest duplication tracking across loaders. Applied JaCoCo test reporting across all subprojects.
+- **CI/CD Security Hardening**: Pinned all GitHub Actions across all workflow definitions (`ci.yml`, `codeql.yml`, `release.yml`, `sonarcloud.yml`, `wiki-sync.yml`, `labeler.yml`) to immutable full commit SHAs.
+
 ## 1.1.2
 
 ### Added
