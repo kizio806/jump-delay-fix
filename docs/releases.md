@@ -67,7 +67,7 @@ The repository maintains dedicated long-term branches corresponding to distinct 
 ### End-of-Life (EOL) Policy
 
 - A Minecraft compatibility line remains supported as long as it has meaningful community adoption or until upstream toolchains deprecate essential dependencies.
-- Retiring a support branch requires explicit deprecation announcement in `CHANGELOG.md` and `ROADMAP.md`.
+- Retiring a support branch requires explicit deprecation announcement in `CHANGELOG.md`.
 - Historical tags and releases for retired lines are preserved indefinitely and are never deleted or rewritten.
 
 ---

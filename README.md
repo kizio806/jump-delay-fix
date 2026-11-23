@@ -173,7 +173,6 @@ For in-depth guides and developer documentation, visit our wiki and reference do
   - [Contribution Guidelines](CONTRIBUTING.md)
   - [Code of Conduct](CODE_OF_CONDUCT.md)
   - [Support & Channels](SUPPORT.md)
-  - [Project Roadmap](ROADMAP.md)
   - [Security Policy](SECURITY.md)
 
 ---
