@@ -188,6 +188,48 @@ MINECRAFT_RANGE=""
 resolve_known_version_defaults() {
   local mc="$1"
   case "$mc" in
+    1.21|1.21.0)
+      [ -z "$YARN" ] && YARN="1.21+build.9"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.102.1+1.21"
+      [ -z "$NEOFORGE" ] && NEOFORGE="21.0.167"
+      [ -z "$MODMENU" ] && MODMENU="11.0.3"
+      ;;
+    1.21.1)
+      [ -z "$YARN" ] && YARN="1.21.1+build.3"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.106.1+1.21.1"
+      [ -z "$NEOFORGE" ] && NEOFORGE="21.1.267"
+      [ -z "$MODMENU" ] && MODMENU="11.0.3"
+      ;;
+    1.21.3)
+      [ -z "$YARN" ] && YARN="1.21.3+build.2"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.114.1+1.21.3"
+      [ -z "$NEOFORGE" ] && NEOFORGE="21.3.100"
+      [ -z "$MODMENU" ] && MODMENU="12.0.1"
+      ;;
+    1.21.4)
+      [ -z "$YARN" ] && YARN="1.21.4+build.8"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.119.4+1.21.4"
+      [ -z "$NEOFORGE" ] && NEOFORGE="21.4.161"
+      [ -z "$MODMENU" ] && MODMENU="13.0.3"
+      ;;
+    1.21.5)
+      [ -z "$YARN" ] && YARN="1.21.5+build.1"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.128.2+1.21.5"
+      [ -z "$NEOFORGE" ] && NEOFORGE="21.5.101"
+      [ -z "$MODMENU" ] && MODMENU="15.0.0"
+      ;;
+    1.21.7)
+      [ -z "$YARN" ] && YARN="1.21.7+build.8"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.129.0+1.21.7"
+      [ -z "$NEOFORGE" ] && NEOFORGE="21.7.25-beta"
+      [ -z "$MODMENU" ] && MODMENU="15.0.0"
+      ;;
+    1.21.8)
+      [ -z "$YARN" ] && YARN="1.21.8+build.1"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.136.1+1.21.8"
+      [ -z "$NEOFORGE" ] && NEOFORGE="21.8.57"
+      [ -z "$MODMENU" ] && MODMENU="15.0.2"
+      ;;
     1.21.9)
       [ -z "$YARN" ] && YARN="1.21.9+build.1"
       [ -z "$FABRIC_API" ] && FABRIC_API="0.134.1+1.21.9"
@@ -389,7 +431,9 @@ if [ -z "$NEOFORGE_LOADER_RANGE" ]; then
     NEOFORGE_MIN="${NEOFORGE_SUPPORTED_VERSIONS[0]}"
     NEOFORGE_MAX="${NEOFORGE_SUPPORTED_VERSIONS[${#NEOFORGE_SUPPORTED_VERSIONS[@]}-1]}"
     min_patch=$(echo "$NEOFORGE_MIN" | cut -d'.' -f3)
+    min_patch="${min_patch:-0}"
     max_patch=$(echo "$NEOFORGE_MAX" | cut -d'.' -f3)
+    max_patch="${max_patch:-0}"
     next_max_patch=$((max_patch + 1))
     NEOFORGE_LOADER_RANGE="[21.${min_patch},21.${next_max_patch})"
   fi
@@ -405,6 +449,14 @@ set_prop "neoforge_game_versions" "$NEOFORGE_SUPPORTED_JOINED" "$PROPS_FILE"
 set_prop "modrinth_game_versions" "$MODRINTH_SUPPORTED_JOINED" "$PROPS_FILE"
 set_prop "fabric_minecraft_version_range" "$FABRIC_RANGE" "$PROPS_FILE"
 set_prop "minecraft_version_range" "$MINECRAFT_RANGE" "$PROPS_FILE"
+
+if grep -q "^minecraft_release_range=" "$PROPS_FILE"; then
+  if [ "$FABRIC_MIN" = "$FABRIC_MAX" ]; then
+    set_prop "minecraft_release_range" "$FABRIC_MIN" "$PROPS_FILE"
+  else
+    set_prop "minecraft_release_range" "${FABRIC_MIN}-${FABRIC_MAX}" "$PROPS_FILE"
+  fi
+fi
 
 if [ -n "$MOD_VERSION" ]; then
   set_prop "mod_version" "$MOD_VERSION" "$PROPS_FILE"

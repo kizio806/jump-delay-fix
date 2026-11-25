@@ -18,6 +18,7 @@ fabric_game_versions=26.3
 neoforge_game_versions=26.3
 modrinth_game_versions=26.3
 minecraft_version_range=[26.3,26.4)
+minecraft_release_range=26.3.x
 mod_version=1.4.1
 PROPS
 }
@@ -170,5 +171,37 @@ assert_contains "$TMP_PROPS" "fabric_minecraft_version_range=>=1.21.9 <1.21.12"
 assert_contains "$TMP_PROPS" "minecraft_version_range=\[1.21.9,1.21.12)"
 assert_contains "$TMP_PROPS" "neoforge_loader_range=\[21.9,21.12)"
 echo "PASS: 1.21 multi-version range calculation (1.21.9 to 1.21.11)"
+
+# Test 11: 1.21.8 automatic defaults resolution
+reset_temp_props
+PROPS_FILE="$TMP_PROPS" "$SET_SCRIPT" \
+  --base-minecraft 1.21.8 \
+  --supported-versions 1.21.8 >/dev/null
+
+assert_contains "$TMP_PROPS" "minecraft_version=1.21.8"
+assert_contains "$TMP_PROPS" "yarn_mappings=1.21.8+build.1"
+assert_contains "$TMP_PROPS" "fabric_api_version=0.136.1+1.21.8"
+assert_contains "$TMP_PROPS" "modmenu_version=15.0.2"
+assert_contains "$TMP_PROPS" "neoforge_version=21.8.57"
+assert_contains "$TMP_PROPS" "fabric_minecraft_version_range=>=1.21.8 <1.21.9"
+assert_contains "$TMP_PROPS" "minecraft_version_range=\[1.21.8,1.21.9)"
+assert_contains "$TMP_PROPS" "neoforge_loader_range=\[21.8,21.9)"
+echo "PASS: 1.21.8 automatic defaults resolution"
+
+# Test 12: 1.21 multi-version range calculation (1.21.0 to 1.21.8)
+reset_temp_props
+PROPS_FILE="$TMP_PROPS" "$SET_SCRIPT" \
+  --base-minecraft 1.21.8 \
+  --supported-versions "1.21.0,1.21.1,1.21.2,1.21.3,1.21.4,1.21.5,1.21.6,1.21.7,1.21.8" >/dev/null
+
+assert_contains "$TMP_PROPS" "minecraft_version=1.21.8"
+assert_contains "$TMP_PROPS" "fabric_game_versions=1.21.0,1.21.1,1.21.2,1.21.3,1.21.4,1.21.5,1.21.6,1.21.7,1.21.8"
+assert_contains "$TMP_PROPS" "neoforge_game_versions=1.21.0,1.21.1,1.21.2,1.21.3,1.21.4,1.21.5,1.21.6,1.21.7,1.21.8"
+assert_contains "$TMP_PROPS" "modrinth_game_versions=1.21.0,1.21.1,1.21.2,1.21.3,1.21.4,1.21.5,1.21.6,1.21.7,1.21.8"
+assert_contains "$TMP_PROPS" "fabric_minecraft_version_range=>=1.21.0 <1.21.9"
+assert_contains "$TMP_PROPS" "minecraft_version_range=\[1.21.0,1.21.9)"
+assert_contains "$TMP_PROPS" "neoforge_loader_range=\[21.0,21.9)"
+assert_contains "$TMP_PROPS" "minecraft_release_range=1.21.0-1.21.8"
+echo "PASS: 1.21 multi-version range calculation (1.21.0 to 1.21.8)"
 
 echo "=== All version script tests passed successfully ==="

@@ -55,6 +55,9 @@ echo "Target Minecraft Version: $MINECRAFT_VERSION"
 TAG_NAME="v${MOD_VERSION}"
 
 case "$BRANCH" in
+    support/1.21.0-1.21.8)
+        EXPECTED_MC_RANGE="mc1.21.0-1.21.8"
+        ;;
     support/1.21.9-1.21.11)
         EXPECTED_MC_RANGE="mc1.21.9-1.21.11"
         ;;
