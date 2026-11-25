@@ -87,6 +87,7 @@ We maintain dedicated branches and published releases for every major modern Min
 | **26.2** | `v2.0.0+mc26.2.x` | **26.2** | Fabric 0.18.4+ (Fabric API 0.159.0+)<br>NeoForge 26.2.0.79+ | **Java 25** | [`support/26.2.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.2.x) |
 | **26.1** | `v2.0.0+mc26.1.x` | **26.1**, **26.1.1**, **26.1.2** | Fabric 0.18.4+ (Fabric API 0.155.2+)<br>NeoForge 26.1.2.103+ | **Java 25** | [`support/26.1.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.1.x) |
 | **1.21** | `v2.0.0+mc1.21.9-1.21.11` | **1.21.9**, **1.21.10**, **1.21.11** | Fabric 0.18.4+ (Fabric API 0.134.1+ / 0.138.4+ / 0.141.6+)<br>NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | **Java 21** | [`support/1.21.9-1.21.11`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.9-1.21.11) |
+| **1.21** | `v2.0.0+mc1.21.0-1.21.8` | **1.21.0** – **1.21.8** (all 9 versions) | Fabric 0.18.4+ (Fabric API 0.100.8+)<br>NeoForge 21.0.167+ (through 21.8.57) | **Java 21** | [`support/1.21.0-1.21.8`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.0-1.21.8) |
 
 > 📖 **Full Compatibility & Checksums Matrix:** See [docs/compatibility-matrix.md](docs/compatibility-matrix.md) for detailed verification results across all 16 loader-Minecraft combinations.
 

@@ -1,18 +1,17 @@
 # Installation and Compatibility Guide
 
-This guide provides full instructions for installing Jump Delay Fix on Fabric and NeoForge across Minecraft **1.21.x** (`1.21.9`, `1.21.10`, `1.21.11`).
+This guide provides full instructions for installing Jump Delay Fix on Fabric and NeoForge across the entire Minecraft **1.21.x** series (`1.21.0` through `1.21.11`).
 
 ---
 
 ## 📦 Compatibility & Version Matrix
 
-Jump Delay Fix provides dedicated versioned artifacts for each supported Minecraft 1.21 patch release across both loaders:
+Jump Delay Fix provides dedicated versioned artifacts for the 1.21.x series across both loaders:
 
 | Minecraft Version | Release Line | Mod Version | Supported Loaders | Loader Requirements | Java Runtime |
 | :--- | :---: | :---: | :--- | :--- | :---: |
-| **1.21.9** | `support/1.21.9-1.21.11` | **`1.1.2`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API `0.134.1+1.21.9`)<br>NeoForge >= 21.9.16-beta | **Java 21** |
-| **1.21.10** | `support/1.21.9-1.21.11` | **`1.1.2`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API `0.138.4+1.21.10`)<br>NeoForge >= 21.10.64 | **Java 21** |
-| **1.21.11** | `support/1.21.9-1.21.11` | **`1.1.2`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API `0.141.6+1.21.11`)<br>NeoForge >= 21.11.48 | **Java 21** |
+| **1.21.0 – 1.21.8** | `support/1.21.0-1.21.8` | **`2.0.0`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API >= 0.100.8)<br>NeoForge 21.0.167 – 21.8.57 (`[21.0, 21.9)`) | **Java 21** |
+| **1.21.9 – 1.21.11** | `support/1.21.9-1.21.11` | **`2.0.0`** | **Fabric**<br>**NeoForge** | Fabric Loader >= 0.18.4 (Fabric API >= 0.134.1)<br>NeoForge 21.9.16 – 21.11.48 (`[21.9, 21.12)`) | **Java 21** |
 
 > 🔗 For the complete technical compatibility matrix and artifact checksums, see [docs/compatibility-matrix.md](https://github.com/kizio806/jump-delay-fix/blob/main/docs/compatibility-matrix.md).
 
