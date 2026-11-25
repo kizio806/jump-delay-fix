@@ -30,14 +30,15 @@ jump-delay-fix/
 
 ## 🌿 Multi-Branch Maintenance Strategy
 
-We maintain four active long-term branches corresponding to distinct Minecraft API generations:
+We maintain dedicated long-term branches corresponding to distinct Minecraft API generations:
 
 | Branch | Minecraft Line | Mod Version | Java Baseline | Key Dependency Targets |
 | :--- | :--- | :---: | :---: | :--- |
-| **`main`** | **26.3** | `1.4.x` | **Java 25** | Fabric Loader 0.18.4+, NeoForge 26.3.0.1-beta+ |
-| **`support/26.2.x`** | **26.2** | `1.3.x` | **Java 25** | Fabric API 0.159.0+, NeoForge 26.2.0.79+ |
-| **`support/26.1.x`** | **26.1.x** | `1.2.x` | **Java 25** | Fabric API 0.155.2+, NeoForge 26.1.2.103+ |
-| **`support/1.21.9-1.21.11`** | **1.21.x** | `1.1.x` | **Java 21** | Fabric API 0.141.3+, NeoForge 21.9.16 / 21.10.64 / 21.11.48 |
+| **`main`** | **26.3** | `2.0.0` | **Java 25** | Fabric Loader 0.18.4+, NeoForge 26.3.0.1-beta+ |
+| **`support/26.2.x`** | **26.2** | `2.0.0` | **Java 25** | Fabric API 0.159.0+, NeoForge 26.2.0.79+ |
+| **`support/26.1.x`** | **26.1.x** | `2.0.0` | **Java 25** | Fabric API 0.155.2+, NeoForge 26.1.2.103+ |
+| **`support/1.21.9-1.21.11`** | **1.21.9–1.21.11** | `2.0.0` | **Java 21** | Fabric API 0.134.1+, NeoForge 21.9.16 – 21.11.48 |
+| **`support/1.21.0-1.21.8`** | **1.21.0–1.21.8** | `2.0.0` | **Java 21** | Fabric API 0.100.8+, NeoForge 21.0.167 – 21.8.57 |
 
 > ⚠️ **Strict Porting Rule:** Never perform blind cherry-picks across branches. Minecraft API, mappings, and loader APIs diverge across lines. Always backport or forward-port with version-specific adaptation.
 
