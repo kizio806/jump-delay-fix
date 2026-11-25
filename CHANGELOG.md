@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0+mc1.21.0-1.21.8
+
+### Added
+- **Unified Minecraft 1.21.0–1.21.8 Support**: Complete, unified support for Minecraft versions 1.21.0, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7, and 1.21.8 across both Fabric and NeoForge loaders.
+- **Universal Single-JAR Architecture**: Exactly one Fabric JAR (`jump-delay-fix-2.0.0-mc1.21.0-1.21.8-fabric.jar`) and one NeoForge JAR (`jump-delay-fix-2.0.0-mc1.21.0-1.21.8-neoforge.jar`) support all 9 Minecraft versions seamlessly via broad compatibility ranges (`fabric_minecraft_version_range=>=1.21.0 <1.21.9`, `minecraft_version_range=[1.21.0,1.21.9)`, `neoforge_loader_range=[21.0,21.9)`).
+- **Synchronized Global 2.0.0 Standard**: Shares the unified SemVer 2.0.0 architecture, zero-overhead input polling, pure-Java common module, and robust multiplayer anti-cheat heuristics with `main` and all active support lines.
+- **Cross-Version Loader Adaptation**:
+  - Keybinding registration using `String` categories (`category.jumpdelayfix`) matching the pre-1.21.9 Mojang API contract.
+  - NeoForge environment detection utilizing `FMLEnvironment.dist == Dist.CLIENT` across NeoForge 21.0 through 21.8.
+  - Fabric player state queries compiled against Yarn 1.21.8 (`isGliding`) and validated against Fabric intermediary (`method_6128()Z`) for 100% binary compatibility across 1.21.0 through 1.21.8 runtimes.
+
+### Technical & Compatibility Boundaries
+- **Minecraft 1.21.8 vs 1.21.9 Boundary Justification**:
+  - In Minecraft 1.21.9 ("The Copper Age"), Mojang introduced `KeyBinding.Category` (Fabric) and `KeyMapping.Category` (NeoForge), replacing `String category` parameters in keymapping constructors. JARs compiled against 1.21.9+ crash on 1.21.8 and earlier with `NoSuchMethodError` / `NoSuchFieldError`.
+  - In NeoForge 21.9+, `FMLEnvironment.getDist()` was introduced and replaced public direct access to `FMLEnvironment.dist`. JARs referencing `getDist()` fail on NeoForge 21.0–21.8.
+  - Therefore, `1.21.0–1.21.8` forms a distinct, unified binary compatibility boundary separate from `1.21.9–1.21.11`.
+- **Yarn Mapping Evolution**: In Yarn mappings, `method_6128` was named `isFallFlying` in 1.21.0–1.21.1 and renamed to `isGliding` in 1.21.2+. Because Fabric remapping targets the immutable intermediary method descriptor `method_6128()Z`, compiling with Yarn 1.21.8 produces bytecode that executes identically across all 1.21.0–1.21.8 clients.
+
+### Compatibility
+- Minecraft: 1.21.0, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7, 1.21.8 (Both Fabric and NeoForge)
+- Fabric: Loader `>=0.18.4`, Fabric API `>=0.100.8`
+- NeoForge: Loader `[21.0, 21.9)` (tested on 21.0.167, 21.1.267, 21.3.100, 21.4.161, 21.5.101, 21.7.25-beta, 21.8.57)
+- Java: 21
+
 ## [Unreleased]
 
 ### Changed
