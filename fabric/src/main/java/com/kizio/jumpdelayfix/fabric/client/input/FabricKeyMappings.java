@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -16,9 +15,7 @@ public final class FabricKeyMappings {
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
-    private static final KeyBinding.Category KEY_CATEGORY = KeyBinding.Category.create(
-            Identifier.of(Constants.MOD_ID, "jumpdelayfix")
-    );
+    private static final String KEY_CATEGORY = "category.jumpdelayfix";
     private static KeyBinding toggleKey;
     private static KeyBinding profileKey;
     private static KeyBinding configKey;

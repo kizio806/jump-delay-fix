@@ -35,7 +35,7 @@ class FabricMetadataContractTest {
             assertTrue(bytecode.contains("isSwimming"));
             assertTrue(bytecode.contains("isCrawling"));
             assertTrue(bytecode.contains("hasVehicle"));
-            assertTrue(bytecode.contains("isGliding"));
+            assertTrue(bytecode.contains("isFallFlying") || bytecode.contains("isGliding"));
         }
     }
 
