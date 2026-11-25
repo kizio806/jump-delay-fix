@@ -66,11 +66,11 @@ Every declared combination of Mod Loader and Minecraft version is independently 
 ### Minecraft 1.21.8 vs 1.21.9 Hard Binary Boundary
 A separate release line is required between Minecraft 1.21.8 and 1.21.9 due to breaking upstream API and platform changes:
 1. **KeyBinding/KeyMapping Category API:**
-   - In Minecraft 1.21.9 ("The Copper Age"), Mojang introduced `KeyBinding.Category` (Fabric) and `KeyMapping.Category` (NeoForge), replacing `String category` parameters in `KeyBinding`/`KeyMapping` constructors.
-   - Code compiled against 1.21.9+ produces bytecode expecting `(Ljava/lang/String;ILnet/minecraft/client/option/KeyBinding$Category;)V`. Running this on 1.21.8 or earlier throws `NoSuchMethodError` or `NoSuchFieldError` because the constructor expects `(Ljava/lang/String;ILjava/lang/String;)V`.
-   - Conversely, code compiled against 1.21.8 using `String category` would fail on 1.21.9+ when loaders drop legacy constructor overloads.
+   - In Minecraft 1.21.9 ("The Copper Age"), Mojang introduced typed categories: `KeyBinding.Category` (Fabric) and `KeyMapping.Category` (NeoForge), replacing `String category` parameters in `KeyBinding`/`KeyMapping` constructors (see [Minecraft 1.21.9 Snapshot / Patch Notes](https://www.minecraft.net/en-us/article/minecraft-java-edition-1-21) and [Fabric KeyBinding Documentation](https://fabricmc.net/wiki/tutorial:keybinds)).
+   - Code compiled against 1.21.9+ produces bytecode expecting `(Ljava/lang/String;ILnet/minecraft/client/option/KeyBinding$Category;)V`. Running this on 1.21.8 or earlier throws `NoSuchMethodError` or `NoSuchFieldError` because the runtime constructor expects `(Ljava/lang/String;ILjava/lang/String;)V`.
+   - Conversely, code compiled against 1.21.8 using `String category` fails on 1.21.9+ when loaders drop legacy constructor overloads.
 2. **NeoForge FMLEnvironment Dist Access:**
-   - In NeoForge 21.9+, `FMLEnvironment.getDist()` method was introduced and direct public field access to `FMLEnvironment.dist` was deprecated/restricted.
+   - In NeoForge 21.9+, `FMLEnvironment.getDist()` method was introduced and direct public field access to `FMLEnvironment.dist` was restricted/deprecated (see [NeoForge Pull Request #326 / FMLEnvironment accessors](https://github.com/neoforged/NeoForge/pull/326)).
    - Older NeoForge versions (21.0–21.8) do not expose `getDist()`, throwing `NoSuchMethodError` if invoked.
 3. **Conclusion:** Merging 1.21.8 and 1.21.9 into a single binary is impossible without unsafe reflection or fragile multi-release tricks. Thus, **1.21.9–1.21.11** and **1.21.0–1.21.8** represent the two natural, mathematically minimal release boundaries covering the 1.21.x series.
 
@@ -79,12 +79,12 @@ The entire range from 1.21.0 through 1.21.8 is packaged into **exactly ONE relea
 1. **Fabric Yarn Mapping Evolution & Intermediary Parity:**
    - In Yarn mappings for 1.21.0–1.21.1, `method_6128` was named `isFallFlying()`.
    - In Yarn mappings for 1.21.2+, it was renamed to `isGliding()`.
-   - Fabric Loom compiles against Yarn mappings and remaps all calls to standard Fabric intermediary names at build time. Both `isFallFlying()` and `isGliding()` remap to the exact same descriptor: `net.minecraft.class_1309.method_6128()Z`.
+   - Fabric Loom compiles against Yarn mappings and remaps all calls to standard Fabric intermediary names at build time. Both `isFallFlying()` and `isGliding()` remap to the exact same descriptor in [Fabric Intermediary](https://github.com/FabricMC/intermediary): `net.minecraft.class_1309.method_6128()Z`.
    - Therefore, compiling against Yarn 1.21.8 (`isGliding()`) generates bytecode that executes identically across all 1.21.0 through 1.21.8 Fabric environments.
 2. **NeoForge Binary Compatibility:**
    - Throughout NeoForge 21.0 (`21.0.167`) to NeoForge 21.8 (`21.8.57`), the Mojang method `player.isFallFlying()` (`m_21255_()`), `KeyMapping("<init>", String, int, String)`, and `FMLEnvironment.dist == Dist.CLIENT` maintain 100% binary compatibility.
 3. **Fabric API Minimum Version:**
-   - Fabric API `0.100.8` is the baseline required for 1.21.0, and is fully backward and forward compatible through 1.21.8.
+   - Fabric API `0.100.8` is the baseline required for 1.21.0, and is fully backward and forward compatible through 1.21.8 (see [Fabric API Release Matrix](https://fabricmc.net/develop/)).
 
 ### Mapping Differences Across Major Lines
 - **Minecraft 26.x (`main`, `26.2.x`, `26.1.x`):**
