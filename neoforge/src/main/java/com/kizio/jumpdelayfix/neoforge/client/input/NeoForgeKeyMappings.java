@@ -13,7 +13,7 @@ public final class NeoForgeKeyMappings {
     private static final int DEFAULT_TOGGLE_KEY = GLFW.GLFW_KEY_J;
     private static final int DEFAULT_PROFILE_KEY = GLFW.GLFW_KEY_H;
     private static final int DEFAULT_CONFIG_KEY = GLFW.GLFW_KEY_O;
-    private static final KeyMapping.Category KEY_CATEGORY = KeyMapping.Category.MISC;
+    private static final String KEY_CATEGORY = "category.jumpdelayfix";
 
     private static final KeyMapping TOGGLE_KEY = new KeyMapping(
             "key.jumpdelayfix.toggle",
