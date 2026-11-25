@@ -39,3 +39,4 @@ Active bugfixes and patch releases are supported across our multi-version branch
 - **Minecraft 26.2:** `support/26.2.x` branch
 - **Minecraft 26.1.x:** `support/26.1.x` branch
 - **Minecraft 1.21.9–1.21.11:** `support/1.21.9-1.21.11` branch
+- **Minecraft 1.21.0–1.21.8:** `support/1.21.0-1.21.8` branch

@@ -6,7 +6,6 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 MODE="dry-run"
-ALLOW_EXISTING_TAG="false"
 
 for arg in "$@"; do
     case "$arg" in
@@ -16,12 +15,9 @@ for arg in "$@"; do
         --dry-run)
             MODE="dry-run"
             ;;
-        --allow-existing-tag)
-            ALLOW_EXISTING_TAG="true"
-            ;;
         *)
             echo "Unknown argument: $arg"
-            echo "Usage: $0 [--dry-run | --publish] [--allow-existing-tag]"
+            echo "Usage: $0 [--dry-run | --publish]"
             exit 1
             ;;
     esac
@@ -59,6 +55,9 @@ echo "Target Minecraft Version: $MINECRAFT_VERSION"
 TAG_NAME="v${MOD_VERSION}"
 
 case "$BRANCH" in
+    support/1.21.0-1.21.8)
+        EXPECTED_MC_RANGE="mc1.21.0-1.21.8"
+        ;;
     support/1.21.9-1.21.11)
         EXPECTED_MC_RANGE="mc1.21.9-1.21.11"
         ;;
@@ -91,21 +90,17 @@ if ! grep -q -E "^## (\[?${MOD_VERSION}\]?|\[Unreleased\])" CHANGELOG.md; then
     exit 1
 fi
 
-if [[ "$ALLOW_EXISTING_TAG" != "true" ]]; then
-    if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-        echo "Error: Local git tag '$TAG_NAME' already exists."
+if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+    echo "Error: Local git tag '$TAG_NAME' already exists."
+    exit 1
+fi
+
+if git remote get-url origin >/dev/null 2>&1; then
+    REMOTE_TAG_CHECK=$(git ls-remote --tags origin "refs/tags/${TAG_NAME}" || true)
+    if [[ -n "$REMOTE_TAG_CHECK" ]]; then
+        echo "Error: Remote tag '$TAG_NAME' already exists on origin."
         exit 1
     fi
-
-    if git remote get-url origin >/dev/null 2>&1; then
-        REMOTE_TAG_CHECK=$(git ls-remote --tags origin "refs/tags/${TAG_NAME}" || true)
-        if [[ -n "$REMOTE_TAG_CHECK" ]]; then
-            echo "Error: Remote tag '$TAG_NAME' already exists on origin."
-            exit 1
-        fi
-    fi
-else
-    echo "Notice: Allowing release preparation with existing tag '$TAG_NAME'."
 fi
 
 if [[ "$MODE" == "publish" ]]; then
@@ -125,10 +120,10 @@ echo "--- 2. Running strict verification and pre-publish gates ---"
 echo "--- 3. Building release artifacts ---"
 ./gradlew --no-daemon buildAll
 
+echo "--- 4. Verifying built artifacts ---"
 FABRIC_JAR="fabric/build/libs/${ARTIFACT_BASE_NAME}-${BASE_VERSION}-${MC_METADATA}-fabric.jar"
 NEOFORGE_JAR="neoforge/build/libs/${ARTIFACT_BASE_NAME}-${BASE_VERSION}-${MC_METADATA}-neoforge.jar"
 
-echo "--- 4. Verifying built artifacts ---"
 if [[ ! -f "$FABRIC_JAR" ]]; then
     echo "Error: Fabric artifact not found: $FABRIC_JAR"
     exit 1
@@ -162,11 +157,7 @@ if [[ -n "$(git status --porcelain)" ]]; then
     git commit -m "chore(release): ${TAG_NAME}"
 fi
 
-if [[ "$ALLOW_EXISTING_TAG" == "true" ]] && git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-    echo "Notice: Tag '$TAG_NAME' already exists. Skipping tag creation."
-else
-    git tag -a "$TAG_NAME" -m "Release ${TAG_NAME}"
-fi
+git tag -a "$TAG_NAME" -m "Release ${TAG_NAME}"
 
 echo "--- 6. Pushing branch and tag to origin ---"
 git push origin "$BRANCH" "$TAG_NAME"
