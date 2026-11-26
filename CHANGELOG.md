@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0+mc1.20.2-1.20.4
+
+### Added
+- **Unified Minecraft 1.20.2–1.20.4 Support**: Complete, unified support for Minecraft versions 1.20.2, 1.20.3, and 1.20.4 across both Fabric and NeoForge loaders.
+- **Universal Single-JAR Architecture**: Exactly one Fabric JAR (`jump-delay-fix-2.0.0-mc1.20.2-1.20.4-fabric.jar`) and one NeoForge JAR (`jump-delay-fix-2.0.0-mc1.20.2-1.20.4-neoforge.jar`) support all 3 Minecraft versions seamlessly via broad compatibility ranges (`fabric_minecraft_version_range=>=1.20.2 <1.20.5`, `minecraft_version_range=[1.20.2,1.20.5)`, `neoforge_loader_range=[20.2,20.5)`).
+- **Synchronized Global 2.0.0 Standard**: Shares the unified SemVer 2.0.0 architecture, zero-overhead input polling, pure-Java common module, and robust multiplayer anti-cheat heuristics with `main` and all active support lines.
+- **Cross-Version Loader Adaptation**:
+  - Keybinding registration using `String` categories (`category.jumpdelayfix`) matching the Minecraft 1.20.x API contract.
+  - NeoForge client lifecycle using `TickEvent.ClientTickEvent` (`event.phase == TickEvent.Phase.END`) and `ConfigScreenHandler.ConfigScreenFactory` across NeoForge 20.2 through 20.4.
+  - Java 17 toolchain baseline ensuring full compatibility with launchers and environments targeting Minecraft 1.20.2–1.20.4 without requiring Java 21.
+  - Fabric player state queries compiled against Yarn 1.20.4 (`isFallFlying`) and validated against Fabric intermediary (`method_6128()Z`) for 100% binary compatibility across 1.20.2, 1.20.3, and 1.20.4 runtimes.
+
+### Technical & Compatibility Boundaries
+- **Upper Boundary (1.20.4 vs 1.20.5) Justification**:
+  - **Java 17 vs Java 21**: Minecraft 1.20.2–1.20.4 requires Java 17, while 1.20.5 bumped the engine baseline to Java 21.
+  - **NeoForge Event Model**: NeoForge 20.2–20.4 uses `net.neoforged.neoforge.event.TickEvent.ClientTickEvent` and `net.neoforged.neoforge.client.ConfigScreenHandler`. NeoForge 20.5/20.6 removed `TickEvent` entirely, replacing it with `net.neoforged.neoforge.client.event.ClientTickEvent.Post` and `IConfigScreenFactory`.
+- **Lower Boundary (1.20.2 vs 1.20.1) Justification**:
+  - **NeoForge / Forge Split**: Minecraft 1.20.1 NeoForge was a fork of Forge 47 using `net.minecraftforge.*` packages, `META-INF/mods.toml`, and SRG runtime remapping. NeoForge 20.2 completely rebranded to `net.neoforged.*`, introduced `neoforge.mods.toml`, and switched to official Mojang mappings in production.
+  - **Vanilla `Screen.renderBackground`**: In 1.20.0–1.20.1, `Screen.renderBackground(DrawContext)` took 1 parameter; 1.20.2 expanded the signature to 4 parameters `(DrawContext, int, int, float)`.
+  - Therefore, `1.20.2–1.20.4` forms a distinct, unified binary compatibility boundary separate from `1.20.0–1.20.1` and `1.20.5–1.20.6`.
+
+### Compatibility
+- Minecraft: 1.20.2, 1.20.3, 1.20.4 (Both Fabric and NeoForge)
+- Fabric: Loader `>=0.18.4`, Fabric API `>=0.91.0`
+- NeoForge: Loader `[20.2, 20.5)` (tested on 20.4.253)
+- Java: 17
+
 ## 2.0.0+mc1.20.5-1.20.6
 
 ### Added
