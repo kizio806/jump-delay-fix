@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0+mc1.20.5-1.20.6
+
+### Added
+- **Unified Minecraft 1.20.5–1.20.6 Support**: Complete, unified support for Minecraft versions 1.20.5 and 1.20.6 across both Fabric and NeoForge loaders.
+- **Universal Single-JAR Architecture**: Exactly one Fabric JAR (`jump-delay-fix-2.0.0-mc1.20.5-1.20.6-fabric.jar`) and one NeoForge JAR (`jump-delay-fix-2.0.0-mc1.20.5-1.20.6-neoforge.jar`) support both Minecraft versions seamlessly via broad compatibility ranges (`fabric_minecraft_version_range=>=1.20.5 <1.20.7`, `minecraft_version_range=[1.20.5,1.20.7)`, `neoforge_loader_range=[20.5,20.7)`).
+- **Synchronized Global 2.0.0 Standard**: Shares the unified SemVer 2.0.0 architecture, zero-overhead input polling, pure-Java common module, and robust multiplayer anti-cheat heuristics with `main` and all active support lines.
+- **Cross-Version Loader Adaptation**:
+  - Keybinding registration using `String` categories (`category.jumpdelayfix`) matching the Minecraft 1.20.x API contract.
+  - NeoForge client lifecycle using `ClientTickEvent.Post` and environment detection utilizing `FMLEnvironment.dist == Dist.CLIENT` across NeoForge 20.5 through 20.6.
+  - Fabric player state queries compiled against Yarn 1.20.6 (`isFallFlying`) and validated against Fabric intermediary (`method_6128()Z`) for 100% binary compatibility across 1.20.5 and 1.20.6 runtimes.
+
+### Technical & Compatibility Boundaries
+- **Minecraft 1.20.5/1.20.6 vs 1.20.4 Boundary Justification**:
+  - **Java 21 Runtime Baseline**: Minecraft 1.20.5 introduced Java 21 as a mandatory runtime requirement, breaking bytecode backward compatibility with Java 17 runtimes used by Minecraft 1.20.0–1.20.4.
+  - **NeoForge Event Model**: NeoForge 20.6 replaced legacy `TickEvent.ClientTickEvent` with `net.neoforged.neoforge.client.event.ClientTickEvent.Post`. `ClientTickEvent.Post` does not exist in NeoForge 20.4, making a unified binary spanning 1.20.4 and 1.20.5 impossible without unsafe reflection or multi-release tricks.
+  - **Component Rewrite**: Minecraft 1.20.5 introduced the item component system and internal engine overhauls.
+  - Therefore, `1.20.5–1.20.6` forms a distinct, unified binary compatibility boundary separate from `1.20.2–1.20.4`.
+- **Yarn Mapping Evolution**: In Yarn mappings for 1.20.6, `method_6128` maps to `isFallFlying`. Fabric Loom remaps this to `net.minecraft.class_1309.method_6128()Z`, ensuring identical bytecode execution across 1.20.5 and 1.20.6.
+
+### Compatibility
+- Minecraft: 1.20.5, 1.20.6 (Both Fabric and NeoForge)
+- Fabric: Loader `>=0.18.4`, Fabric API `>=0.97.7`
+- NeoForge: Loader `[20.5, 20.7)` (tested on 20.6.144)
+- Java: 21
+
 ## 2.0.0+mc1.21.0-1.21.8
 
 ### Added
