@@ -54,7 +54,7 @@ public final class FabricJumpInput implements JumpInput {
         MinecraftClient client = MinecraftClient.getInstance();
         ClientPlayerEntity player = client.player;
         if (player == null || !player.isAlive() || player.isSleeping()
-                || player.hasVehicle() || player.isGliding()
+                || player.hasVehicle() || player.isFallFlying()
                 || player.getAbilities().flying || player.isTouchingWater() || player.isSwimming()
                 || player.isCrawling() || player.hasStatusEffect(StatusEffects.LEVITATION)) {
             lastPlayerId = -1;
