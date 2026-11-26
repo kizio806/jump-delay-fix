@@ -204,4 +204,100 @@ assert_contains "$TMP_PROPS" "neoforge_loader_range=\[21.0,21.9)"
 assert_contains "$TMP_PROPS" "minecraft_release_range=1.21.0-1.21.8"
 echo "PASS: 1.21 multi-version range calculation (1.21.0 to 1.21.8)"
 
+# Test 13: 1.20.6 automatic defaults resolution
+reset_temp_props
+PROPS_FILE="$TMP_PROPS" "$SET_SCRIPT" \
+  --base-minecraft 1.20.6 \
+  --supported-versions 1.20.6 >/dev/null
+
+assert_contains "$TMP_PROPS" "minecraft_version=1.20.6"
+assert_contains "$TMP_PROPS" "yarn_mappings=1.20.6+build.3"
+assert_contains "$TMP_PROPS" "fabric_api_version=0.100.8+1.20.6"
+assert_contains "$TMP_PROPS" "modmenu_version=10.0.0"
+assert_contains "$TMP_PROPS" "neoforge_version=20.6.144"
+assert_contains "$TMP_PROPS" "fabric_minecraft_version_range=>=1.20.6 <1.20.7"
+assert_contains "$TMP_PROPS" "minecraft_version_range=\[1.20.6,1.20.7)"
+assert_contains "$TMP_PROPS" "neoforge_loader_range=\[20.6,20.7)"
+echo "PASS: 1.20.6 automatic defaults resolution"
+
+# Test 14: 1.20 multi-version range calculation (1.20.5 to 1.20.6)
+reset_temp_props
+PROPS_FILE="$TMP_PROPS" "$SET_SCRIPT" \
+  --base-minecraft 1.20.6 \
+  --supported-versions "1.20.5,1.20.6" >/dev/null
+
+assert_contains "$TMP_PROPS" "minecraft_version=1.20.6"
+assert_contains "$TMP_PROPS" "fabric_game_versions=1.20.5,1.20.6"
+assert_contains "$TMP_PROPS" "neoforge_game_versions=1.20.5,1.20.6"
+assert_contains "$TMP_PROPS" "modrinth_game_versions=1.20.5,1.20.6"
+assert_contains "$TMP_PROPS" "fabric_minecraft_version_range=>=1.20.5 <1.20.7"
+assert_contains "$TMP_PROPS" "minecraft_version_range=\[1.20.5,1.20.7)"
+assert_contains "$TMP_PROPS" "neoforge_loader_range=\[20.5,20.7)"
+assert_contains "$TMP_PROPS" "minecraft_release_range=1.20.5-1.20.6"
+echo "PASS: 1.20 multi-version range calculation (1.20.5 to 1.20.6)"
+
+# Test 15: 1.20.4 automatic defaults resolution
+reset_temp_props
+PROPS_FILE="$TMP_PROPS" "$SET_SCRIPT" \
+  --base-minecraft 1.20.4 \
+  --supported-versions 1.20.4 >/dev/null
+
+assert_contains "$TMP_PROPS" "minecraft_version=1.20.4"
+assert_contains "$TMP_PROPS" "yarn_mappings=1.20.4+build.3"
+assert_contains "$TMP_PROPS" "fabric_api_version=0.97.3+1.20.4"
+assert_contains "$TMP_PROPS" "modmenu_version=9.0.0"
+assert_contains "$TMP_PROPS" "neoforge_version=20.4.253"
+assert_contains "$TMP_PROPS" "fabric_minecraft_version_range=>=1.20.4 <1.20.5"
+assert_contains "$TMP_PROPS" "minecraft_version_range=\[1.20.4,1.20.5)"
+assert_contains "$TMP_PROPS" "neoforge_loader_range=\[20.4,20.5)"
+echo "PASS: 1.20.4 automatic defaults resolution"
+
+# Test 16: 1.20 multi-version range calculation (1.20.2 to 1.20.4)
+reset_temp_props
+PROPS_FILE="$TMP_PROPS" "$SET_SCRIPT" \
+  --base-minecraft 1.20.4 \
+  --supported-versions "1.20.2,1.20.3,1.20.4" >/dev/null
+
+assert_contains "$TMP_PROPS" "minecraft_version=1.20.4"
+assert_contains "$TMP_PROPS" "fabric_game_versions=1.20.2,1.20.3,1.20.4"
+assert_contains "$TMP_PROPS" "neoforge_game_versions=1.20.2,1.20.3,1.20.4"
+assert_contains "$TMP_PROPS" "modrinth_game_versions=1.20.2,1.20.3,1.20.4"
+assert_contains "$TMP_PROPS" "fabric_minecraft_version_range=>=1.20.2 <1.20.5"
+assert_contains "$TMP_PROPS" "minecraft_version_range=\[1.20.2,1.20.5)"
+assert_contains "$TMP_PROPS" "neoforge_loader_range=\[20.2,20.5)"
+assert_contains "$TMP_PROPS" "minecraft_release_range=1.20.2-1.20.4"
+echo "PASS: 1.20 multi-version range calculation (1.20.2 to 1.20.4)"
+
+# Test 17: 1.20.1 automatic defaults resolution
+reset_temp_props
+PROPS_FILE="$TMP_PROPS" "$SET_SCRIPT" \
+  --base-minecraft 1.20.1 \
+  --supported-versions 1.20.1 >/dev/null
+
+assert_contains "$TMP_PROPS" "minecraft_version=1.20.1"
+assert_contains "$TMP_PROPS" "yarn_mappings=1.20.1+build.10"
+assert_contains "$TMP_PROPS" "fabric_api_version=0.92.2+1.20.1"
+assert_contains "$TMP_PROPS" "modmenu_version=7.2.2"
+assert_contains "$TMP_PROPS" "neoforge_version=1.20.1-47.3.0"
+assert_contains "$TMP_PROPS" "fabric_minecraft_version_range=>=1.20.1 <1.20.2"
+assert_contains "$TMP_PROPS" "minecraft_version_range=\[1.20.1,1.20.2)"
+assert_contains "$TMP_PROPS" "neoforge_loader_range=\[47,48)"
+echo "PASS: 1.20.1 automatic defaults resolution"
+
+# Test 18: 1.20 multi-version range calculation (1.20.0 to 1.20.1)
+reset_temp_props
+PROPS_FILE="$TMP_PROPS" "$SET_SCRIPT" \
+  --base-minecraft 1.20.1 \
+  --supported-versions "1.20.0,1.20.1" >/dev/null
+
+assert_contains "$TMP_PROPS" "minecraft_version=1.20.1"
+assert_contains "$TMP_PROPS" "fabric_game_versions=1.20.0,1.20.1"
+assert_contains "$TMP_PROPS" "neoforge_game_versions=1.20.0,1.20.1"
+assert_contains "$TMP_PROPS" "modrinth_game_versions=1.20.0,1.20.1"
+assert_contains "$TMP_PROPS" "fabric_minecraft_version_range=>=1.20.0 <1.20.2"
+assert_contains "$TMP_PROPS" "minecraft_version_range=\[1.20.0,1.20.2)"
+assert_contains "$TMP_PROPS" "neoforge_loader_range=\[47,48)"
+assert_contains "$TMP_PROPS" "minecraft_release_range=1.20.0-1.20.1"
+echo "PASS: 1.20 multi-version range calculation (1.20.0 to 1.20.1)"
+
 echo "=== All version script tests passed successfully ==="
