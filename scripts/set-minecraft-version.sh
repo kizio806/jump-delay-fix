@@ -191,16 +191,18 @@ resolve_known_version_defaults() {
     1.20|1.20.0)
       [ -z "$YARN" ] && YARN="1.20+build.1"
       [ -z "$FABRIC_API" ] && FABRIC_API="0.83.0+1.20"
-      [ -z "$NEOFORGE" ] && NEOFORGE="1.20.1-47.1.106"
+      [ -z "$NEOFORGE" ] && NEOFORGE="1.20.1-47.3.0"
       [ -z "$MODMENU" ] && MODMENU="7.0.1"
       [ -z "$RESOURCE_PACK_FORMAT" ] && RESOURCE_PACK_FORMAT="15"
+      [ -z "$NEOFORGE_LOADER_RANGE" ] && NEOFORGE_LOADER_RANGE="[47,48)"
       ;;
     1.20.1)
       [ -z "$YARN" ] && YARN="1.20.1+build.10"
       [ -z "$FABRIC_API" ] && FABRIC_API="0.92.2+1.20.1"
-      [ -z "$NEOFORGE" ] && NEOFORGE="1.20.1-47.1.106"
+      [ -z "$NEOFORGE" ] && NEOFORGE="1.20.1-47.3.0"
       [ -z "$MODMENU" ] && MODMENU="7.2.2"
       [ -z "$RESOURCE_PACK_FORMAT" ] && RESOURCE_PACK_FORMAT="15"
+      [ -z "$NEOFORGE_LOADER_RANGE" ] && NEOFORGE_LOADER_RANGE="[47,48)"
       ;;
     1.20.2)
       [ -z "$YARN" ] && YARN="1.20.2+build.4"
