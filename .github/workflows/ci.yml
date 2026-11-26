@@ -58,6 +58,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Setup JDK
@@ -83,6 +84,7 @@ jobs:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ github.repository }}
+          verbose: true
 
   test-fabric:
     name: Build & Test (Fabric)
