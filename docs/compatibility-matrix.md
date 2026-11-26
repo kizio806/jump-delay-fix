@@ -15,6 +15,9 @@ Last verified: **2026-10-27** | Verification toolchain: Gradle 8.14/9.7/9.8, Ope
 | [`support/26.1.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.1.x) | **26.1.x** (26.1 – 26.1.2) | `2.0.0` | Minecraft 26.1.2 | **Java 25** | Unified line artifact per loader | **LTS Support** |
 | [`support/1.21.9-1.21.11`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.9-1.21.11) | **1.21.9 – 1.21.11** | `2.0.0` | Minecraft 1.21.11 | **Java 21** | Unified line artifact per loader | **LTS Support** |
 | [`support/1.21.0-1.21.8`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.0-1.21.8) | **1.21.0 – 1.21.8** | `2.0.0` | Minecraft 1.21.8 | **Java 21** | Unified line artifact per loader | **LTS Support** |
+| [`support/1.20.5-1.20.6`](https://github.com/kizio806/jump-delay-fix/tree/support/1.20.5-1.20.6) | **1.20.5 – 1.20.6** | `2.0.0` | Minecraft 1.20.6 | **Java 21** | Unified line artifact per loader | **LTS Support** |
+| [`support/1.20.2-1.20.4`](https://github.com/kizio806/jump-delay-fix/tree/support/1.20.2-1.20.4) | **1.20.2 – 1.20.4** | `2.0.0` | Minecraft 1.20.4 | **Java 17** | Unified line artifact per loader | **LTS Support** |
+| [`support/1.20.0-1.20.1`](https://github.com/kizio806/jump-delay-fix/tree/support/1.20.0-1.20.1) | **1.20.0 – 1.20.1** | `2.0.0` | Minecraft 1.20.1 | **Java 17** | Unified line artifact per loader | **LTS Support** |
 
 ---
 
@@ -58,10 +61,44 @@ Every declared combination of Mod Loader and Minecraft version is independently 
 | 32 | `support/1.21.0-1.21.8` | **NeoForge** | **1.21.6** | NeoForge `21.6.x`<br>Range `[21.0,21.9)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.21.0-1.21.8-neoforge.jar` | **VERIFIED** |
 | 33 | `support/1.21.0-1.21.8` | **NeoForge** | **1.21.7** | NeoForge `21.7.25-beta+`<br>Range `[21.0,21.9)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.21.0-1.21.8-neoforge.jar` | **VERIFIED** |
 | 34 | `support/1.21.0-1.21.8` | **NeoForge** | **1.21.8** | NeoForge `21.8.57+`<br>Range `[21.0,21.9)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.21.0-1.21.8-neoforge.jar` | **VERIFIED** |
+| 35 | `support/1.20.5-1.20.6` | **Fabric** | **1.20.5** | Fabric API `>=0.97.7`<br>Range `>=1.20.5 <1.20.7` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.5-1.20.6-fabric.jar` | **VERIFIED** |
+| 36 | `support/1.20.5-1.20.6` | **Fabric** | **1.20.6** | Fabric API `>=0.97.7`<br>Range `>=1.20.5 <1.20.7` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.5-1.20.6-fabric.jar` | **VERIFIED** |
+| 37 | `support/1.20.5-1.20.6` | **NeoForge** | **1.20.5** | NeoForge `20.5.21-beta+`<br>Range `[20.5,20.7)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.5-1.20.6-neoforge.jar` | **VERIFIED** |
+| 38 | `support/1.20.5-1.20.6` | **NeoForge** | **1.20.6** | NeoForge `20.6.144`<br>Range `[20.5,20.7)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.5-1.20.6-neoforge.jar` | **VERIFIED** |
+| 39 | `support/1.20.2-1.20.4` | **Fabric** | **1.20.2** | Fabric API `>=0.91.0`<br>Range `>=1.20.2 <1.20.5` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.2-1.20.4-fabric.jar` | **VERIFIED** |
+| 40 | `support/1.20.2-1.20.4` | **Fabric** | **1.20.3** | Fabric API `>=0.91.0`<br>Range `>=1.20.2 <1.20.5` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.2-1.20.4-fabric.jar` | **VERIFIED** |
+| 41 | `support/1.20.2-1.20.4` | **Fabric** | **1.20.4** | Fabric API `>=0.91.0`<br>Range `>=1.20.2 <1.20.5` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.2-1.20.4-fabric.jar` | **VERIFIED** |
+| 42 | `support/1.20.2-1.20.4` | **NeoForge** | **1.20.2** | NeoForge `20.2.86+`<br>Range `[20.2,20.5)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.2-1.20.4-neoforge.jar` | **VERIFIED** |
+| 43 | `support/1.20.2-1.20.4` | **NeoForge** | **1.20.3** | NeoForge `20.3.8-beta+`<br>Range `[20.2,20.5)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.2-1.20.4-neoforge.jar` | **VERIFIED** |
+| 44 | `support/1.20.2-1.20.4` | **NeoForge** | **1.20.4** | NeoForge `20.4.253`<br>Range `[20.2,20.5)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.2-1.20.4-neoforge.jar` | **VERIFIED** |
+| 45 | `support/1.20.0-1.20.1` | **Fabric** | **1.20.0** | Fabric API `>=0.83.0`<br>Range `>=1.20.0 <1.20.2` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.0-1.20.1-fabric.jar` | **VERIFIED** |
+| 46 | `support/1.20.0-1.20.1` | **Fabric** | **1.20.1** | Fabric API `>=0.83.0`<br>Range `>=1.20.0 <1.20.2` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.0-1.20.1-fabric.jar` | **VERIFIED** |
+| 47 | `support/1.20.0-1.20.1` | **NeoForge** | **1.20.0** | NeoForge/Forge `47.x`<br>Range `[47,48)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.0-1.20.1-neoforge.jar` | **VERIFIED** |
+| 48 | `support/1.20.0-1.20.1` | **NeoForge** | **1.20.1** | NeoForge/Forge `47.3.0`<br>Range `[47,48)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.0-1.20.1-neoforge.jar` | **VERIFIED** |
 
 ---
 
 ## 3. Architecture & Technical Boundary Justification
+
+### Minecraft 1.20.2–1.20.4 vs 1.20.0–1.20.1 Hard Platform Split
+A separate release line is required between Minecraft 1.20.1 and 1.20.2 due to fundamental platform divergence:
+1. **Forge to NeoForge Rebrand & Package Split:**
+   - In Minecraft 1.20.0–1.20.1, NeoForge was a transitional fork of Forge 47, using the legacy `net.minecraftforge.*` package namespace, `META-INF/mods.toml` manifest, and SRG runtime remapping.
+   - In Minecraft 1.20.2, NeoForge completely severed ties with the old Forge codebase, adopting `net.neoforged.*`, `META-INF/neoforge.mods.toml`, and native Mojang official runtime mappings. A NeoForge mod targeting 1.20.2+ cannot be loaded by Forge or transitional NeoForge 1.20.1.
+2. **Vanilla `Screen.renderBackground` Signature Change:**
+   - In 1.20.0–1.20.1, `Screen.renderBackground(DrawContext)` took a single parameter. In 1.20.2, Mojang expanded it to 4 parameters `(DrawContext, int, int, float)`.
+3. **Conclusion:** `1.20.2–1.20.4` constitutes a cohesive, unified line spanning all minor revisions of the re-architected NeoForge 20.x runtime prior to the Java 21 engine transition.
+
+### Minecraft 1.20.5/1.20.6 vs 1.20.4 Hard Binary Boundary
+A separate release line is required between Minecraft 1.20.4 and 1.20.5 due to runtime and platform architecture breaks:
+1. **Java Runtime Requirement:**
+   - Minecraft 1.20.5 raised the Java runtime requirement to **Java 21** (class bytecode version 65).
+   - Minecraft 1.20.4 and earlier vanilla installations execute on **Java 17** (class bytecode version 61). Bytecode compiled for Java 21 causes `UnsupportedClassVersionError` on 1.20.4 clients.
+2. **NeoForge Event Model Architecture:**
+   - NeoForge 20.6 replaced legacy `TickEvent.ClientTickEvent` with `net.neoforged.neoforge.client.event.ClientTickEvent.Post`. NeoForge 20.4 lacks `ClientTickEvent.Post`, while NeoForge 20.6 removed `TickEvent`.
+3. **Internal Component Rewrite:**
+   - Minecraft 1.20.5 underwent a major engine rewrite introducing the item component architecture.
+4. **Conclusion:** Unifying 1.20.4 and 1.20.5 into a single binary is impossible without unsafe reflection or fragile multi-release tricks. `1.20.5–1.20.6` constitutes a natural, unified binary compatibility boundary.
 
 ### Minecraft 1.21.8 vs 1.21.9 Hard Binary Boundary
 A separate release line is required between Minecraft 1.21.8 and 1.21.9 due to breaking upstream API and platform changes:
