@@ -11,11 +11,11 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
+import net.neoforged.neoforge.event.TickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +37,8 @@ public final class NeoForgeClient {
 
         LOGGER.info("{} NeoForge client starting", Constants.MOD_NAME);
         modContainer.registerExtensionPoint(
-                IConfigScreenFactory.class,
-                (container, screen) -> new NeoForgeSettingsScreen(screen)
+                ConfigScreenHandler.ConfigScreenFactory.class,
+                () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> new NeoForgeSettingsScreen(screen))
         );
         modEventBus.addListener(NeoForgeKeyMappings::onRegisterKeyMappings);
         modEventBus.addListener(NeoForgeClient::onClientSetup);
@@ -64,7 +64,10 @@ public final class NeoForgeClient {
         });
     }
 
-    private static void onClientTick(ClientTickEvent.Post event) {
+    private static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
         if (!JumpDelayFix.isInitialized()) {
             return;
         }
