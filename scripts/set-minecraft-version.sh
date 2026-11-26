@@ -188,6 +188,41 @@ MINECRAFT_RANGE=""
 resolve_known_version_defaults() {
   local mc="$1"
   case "$mc" in
+    1.20|1.20.0)
+      [ -z "$YARN" ] && YARN="1.20+build.1"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.83.0+1.20"
+      [ -z "$NEOFORGE" ] && NEOFORGE="1.20.1-47.1.106"
+      [ -z "$MODMENU" ] && MODMENU="7.0.1"
+      [ -z "$RESOURCE_PACK_FORMAT" ] && RESOURCE_PACK_FORMAT="15"
+      ;;
+    1.20.1)
+      [ -z "$YARN" ] && YARN="1.20.1+build.10"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.92.2+1.20.1"
+      [ -z "$NEOFORGE" ] && NEOFORGE="1.20.1-47.1.106"
+      [ -z "$MODMENU" ] && MODMENU="7.2.2"
+      [ -z "$RESOURCE_PACK_FORMAT" ] && RESOURCE_PACK_FORMAT="15"
+      ;;
+    1.20.2)
+      [ -z "$YARN" ] && YARN="1.20.2+build.4"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.91.1+1.20.2"
+      [ -z "$NEOFORGE" ] && NEOFORGE="20.2.86"
+      [ -z "$MODMENU" ] && MODMENU="8.0.0"
+      [ -z "$RESOURCE_PACK_FORMAT" ] && RESOURCE_PACK_FORMAT="18"
+      ;;
+    1.20.3)
+      [ -z "$YARN" ] && YARN="1.20.3+build.1"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.91.10+1.20.3"
+      [ -z "$NEOFORGE" ] && NEOFORGE="20.3.8-beta"
+      [ -z "$MODMENU" ] && MODMENU="9.0.0"
+      [ -z "$RESOURCE_PACK_FORMAT" ] && RESOURCE_PACK_FORMAT="22"
+      ;;
+    1.20.4)
+      [ -z "$YARN" ] && YARN="1.20.4+build.3"
+      [ -z "$FABRIC_API" ] && FABRIC_API="0.97.3+1.20.4"
+      [ -z "$NEOFORGE" ] && NEOFORGE="20.4.253"
+      [ -z "$MODMENU" ] && MODMENU="9.0.0"
+      [ -z "$RESOURCE_PACK_FORMAT" ] && RESOURCE_PACK_FORMAT="22"
+      ;;
     1.20.5)
       [ -z "$YARN" ] && YARN="1.20.5+build.1"
       [ -z "$FABRIC_API" ] && FABRIC_API="0.100.8+1.20.6"
