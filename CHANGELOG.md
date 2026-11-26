@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.0.0+mc1.20.0-1.20.1
+
+### Added
+- **Unified Minecraft 1.20.0–1.20.1 Support**: Complete, unified support for Minecraft versions 1.20.0 and 1.20.1 across Fabric and Forge/NeoForge loaders.
+- **Universal Single-JAR Architecture**: Exactly one Fabric JAR (`jump-delay-fix-2.0.0-mc1.20.0-1.20.1-fabric.jar`) and one NeoForge/Forge JAR (`jump-delay-fix-2.0.0-mc1.20.0-1.20.1-neoforge.jar`) support both Minecraft versions seamlessly via broad compatibility ranges (`fabric_minecraft_version_range=>=1.20.0 <1.20.2`, `minecraft_version_range=[1.20.0,1.20.2)`, `neoforge_loader_range=[47,48)`).
+- **Synchronized Global 2.0.0 Standard**: Shares the unified SemVer 2.0.0 architecture, zero-overhead input polling, pure-Java common module, and robust multiplayer anti-cheat heuristics with `main` and all active support lines.
+- **Cross-Version Loader Adaptation**:
+  - Keybinding registration using `String` categories (`category.jumpdelayfix`) matching the Minecraft 1.20.x API contract.
+  - NeoForge/Forge 1.20.1 client lifecycle using `TickEvent.ClientTickEvent` (`event.phase == TickEvent.Phase.END`), `ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, ...)`, and `net.minecraftforge.*` API contracts supported by both MinecraftForge 47.x and NeoForge 1.20.1.
+  - Java 17 toolchain baseline ensuring full compatibility with launchers and environments targeting Minecraft 1.20.0–1.20.1 without requiring Java 21.
+  - Screen rendering adapted to the 1-argument `Screen.renderBackground(DrawContext)` (Fabric) and `Screen.renderBackground(GuiGraphics)` (NeoForge/Forge) signatures.
+
+### Technical & Compatibility Boundaries
+- **Upper Boundary (1.20.1 vs 1.20.2) Justification**:
+  - **Forge to NeoForge Rebrand**: In 1.20.0–1.20.1, NeoForge was a transitional fork of Forge 47 using `net.minecraftforge.*` packages, `META-INF/mods.toml`, and SRG remapping. NeoForge 20.2 completely rebranded to `net.neoforged.*`, introduced `neoforge.mods.toml`, and switched to official Mojang mappings in production.
+  - **Vanilla `Screen.renderBackground`**: In 1.20.0–1.20.1, `Screen.renderBackground` took 1 parameter; 1.20.2 expanded the signature to 4 parameters `(DrawContext, int, int, float)`.
+  - Therefore, `1.20.0–1.20.1` forms a distinct, unified binary compatibility boundary separate from `1.20.2–1.20.4`.
+
+### Compatibility
+- Minecraft: 1.20.0, 1.20.1 (Both Fabric and Forge/NeoForge)
+- Fabric: Loader `>=0.18.4`, Fabric API `>=0.83.0`
+- NeoForge / Forge: Loader `[47, 48)` (Forge 47.3.0 / NeoForge 1.20.1-47.3.0)
+- Java: 17
+
 ## 2.0.0+mc1.20.2-1.20.4
 
 ### Added
