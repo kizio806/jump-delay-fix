@@ -69,7 +69,7 @@ public final class FabricSettingsScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderInGameBackground(context);
+        this.renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
 
         int centerX = this.width / 2;

@@ -2,23 +2,23 @@ package com.kizio.jumpdelayfix.neoforge;
 
 import com.kizio.jumpdelayfix.Constants;
 import com.kizio.jumpdelayfix.neoforge.client.NeoForgeClient;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLEnvironment;
-
-import java.util.Objects;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod(Constants.MOD_ID)
 public final class JumpDelayFixNeoForge {
 
-    public JumpDelayFixNeoForge(IEventBus modEventBus, ModContainer modContainer) {
-        IEventBus bus = Objects.requireNonNull(modEventBus, "modEventBus");
-        Objects.requireNonNull(modContainer, "modContainer");
+    public JumpDelayFixNeoForge() {
+        this(FMLJavaModLoadingContext.get());
+    }
 
+    public JumpDelayFixNeoForge(FMLJavaModLoadingContext context) {
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            NeoForgeClient.init(bus, modContainer);
+            IEventBus bus = (context != null) ? context.getModEventBus() : FMLJavaModLoadingContext.get().getModEventBus();
+            NeoForgeClient.init(bus);
         }
     }
 }

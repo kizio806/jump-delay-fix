@@ -14,17 +14,17 @@ class NeoForgeMetadataContractTest {
 
     @Test
     void shouldDeclareProductionMetadataContract() throws IOException {
-        String metadata = readResource("/META-INF/neoforge.mods.toml");
+        String metadata = readResource("/META-INF/mods.toml");
 
-        assertFalse(metadata.contains("${"), "neoforge.mods.toml still contains unresolved placeholders");
+        assertFalse(metadata.contains("${"), "mods.toml still contains unresolved placeholders");
         assertTrue(metadata.contains("[[mods]]"));
         assertTrue(metadata.contains("modId=\"jumpdelayfix\""));
         assertTrue(metadata.contains("displayTest=\"IGNORE_SERVER_VERSION\""));
         assertTrue(metadata.contains("[[dependencies.jumpdelayfix]]"));
-        assertTrue(metadata.contains("modId=\"neoforge\""));
+        assertTrue(metadata.contains("modId=\"forge\""));
         assertTrue(metadata.contains("modId=\"minecraft\""));
-        assertTrue(metadata.matches("(?s).*modId=\"neoforge\"\\s+mandatory=true\\s+versionRange=\"\\[[0-9]+.*,[0-9]+.*\\)\".*"),
-                "neoforge dependency must have explicitly bounded versionRange");
+        assertTrue(metadata.matches("(?s).*modId=\"forge\"\\s+mandatory=true\\s+versionRange=\"\\[[0-9]+.*,[0-9]+.*\\)\".*"),
+                "forge dependency must have explicitly bounded versionRange");
         assertTrue(metadata.matches("(?s).*modId=\"minecraft\"\\s+mandatory=true\\s+versionRange=\"\\[[0-9]+.*,[0-9]+.*\\)\".*"),
                 "minecraft dependency must have explicitly bounded versionRange");
         assertFalse(metadata.contains("modId=\"jei\""));

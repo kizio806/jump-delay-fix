@@ -14,7 +14,7 @@ description='''${mod_description}'''
 displayTest="IGNORE_SERVER_VERSION"
 
 [[dependencies.${mod_id}]]
-modId="neoforge"
+modId="forge"
 mandatory=true
 versionRange="${neoforge_loader_range}"
 ordering="NONE"

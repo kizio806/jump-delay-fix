@@ -1,5 +1,5 @@
 plugins {
-    id 'net.neoforged.moddev' version "${neoforge_moddev_gradle_version}"
+    id 'net.neoforged.moddev.legacyforge' version "${neoforge_moddev_gradle_version}"
 }
 
 def baseVersion = mod_version.split('\\+')[0]
@@ -17,7 +17,7 @@ sourceSets {
     }
 }
 
-neoForge {
+legacyForge {
     version = "${neoforge_version}"
 
     mods {
@@ -28,7 +28,7 @@ neoForge {
     }
 }
 
-neoForge.addModdingDependenciesTo(sourceSets.test)
+legacyForge.addModdingDependenciesTo(sourceSets.test)
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.11.4')
@@ -55,13 +55,17 @@ def metadataProperties = [
 ]
 
 def commonIconFile = project(':common').layout.projectDirectory.file("src/main/resources/${mod_icon}").asFile
-def productionModsTomlFile = layout.projectDirectory.file('src/main/resources/META-INF/neoforge.mods.toml').asFile
+def productionModsTomlFile = layout.projectDirectory.file('src/main/resources/META-INF/mods.toml').asFile
 
 processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     inputs.properties(metadataProperties)
 
     filesMatching('META-INF/neoforge.mods.toml') {
+        expand(metadataProperties)
+    }
+
+    filesMatching('META-INF/mods.toml') {
         expand(metadataProperties)
     }
 
@@ -103,6 +107,7 @@ tasks.register('verifyDedicatedServerSafe') {
         def disallowedPackages = [
                 'net/minecraft/client',
                 'net/neoforged/neoforge/client',
+                'net/minecraftforge/client',
                 'com/terraformersmc/modmenu',
                 'net/fabricmc/fabric/api/client'
         ]
@@ -140,10 +145,15 @@ tasks.register('verifyDedicatedServerSafe') {
 }
 
 jar {
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-neoforge.jar"
+    archiveClassifier = 'raw'
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_id}" }
     }
+}
+
+tasks.named('reobfJar') {
+    archiveClassifier = ''
+    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-neoforge.jar"
 }
 
 tasks.named('sourcesJar') {
