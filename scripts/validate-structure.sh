@@ -18,7 +18,17 @@ if [[ -n "$EMPTY_DIRS" ]]; then
     exit 1
 fi
 
-COMMON_PLATFORM_IMPORTS=$(rg -n 'import (net\.fabricmc|net\.neoforged)\.' common/src/main/java || true)
+search_code() {
+    local pattern="$1"
+    shift
+    if command -v rg >/dev/null 2>&1; then
+        rg -n "$pattern" "$@" 2>/dev/null || true
+    else
+        grep -rnE "$pattern" "$@" 2>/dev/null || true
+    fi
+}
+
+COMMON_PLATFORM_IMPORTS=$(search_code 'import (net\.fabricmc|net\.neoforged)\.' common/src/main/java)
 
 if [[ -n "$COMMON_PLATFORM_IMPORTS" ]]; then
     echo "Found loader-specific imports in common:"
@@ -26,7 +36,7 @@ if [[ -n "$COMMON_PLATFORM_IMPORTS" ]]; then
     exit 1
 fi
 
-FORBIDDEN_ACCESSORS=$(rg -n '@Accessor|@Invoker' common/src/main/java fabric/src/main/java neoforge/src/main/java || true)
+FORBIDDEN_ACCESSORS=$(search_code '@Accessor|@Invoker' common/src/main/java fabric/src/main/java neoforge/src/main/java)
 
 if [[ -n "$FORBIDDEN_ACCESSORS" ]]; then
     echo "Found forbidden accessor/invoker mixins:"
