@@ -38,7 +38,12 @@ jobs:
         id: jvm
         run: |
           JVM_VER=$(grep '^java_version=' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
-          echo "version=${JVM_VER:-25}" >> "$GITHUB_OUTPUT"
+          if [ -z "$JVM_VER" ] || [ "$JVM_VER" -lt 21 ]; then
+            RUNNER_JVM="21"
+          else
+            RUNNER_JVM="$JVM_VER"
+          fi
+          echo "version=${RUNNER_JVM}" >> "$GITHUB_OUTPUT"
 
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
