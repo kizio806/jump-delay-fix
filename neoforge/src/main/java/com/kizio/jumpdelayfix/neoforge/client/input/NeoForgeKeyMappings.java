@@ -46,26 +46,14 @@ public final class NeoForgeKeyMappings {
     }
 
     public boolean consumeTogglePress() {
-        boolean pressed = false;
-        while (TOGGLE_KEY.consumeClick()) {
-            pressed = true;
-        }
-        return pressed;
+        return TOGGLE_KEY.consumeClick();
     }
 
     public boolean consumeProfileCyclePress() {
-        boolean pressed = false;
-        while (PROFILE_KEY.consumeClick()) {
-            pressed = true;
-        }
-        return pressed;
+        return PROFILE_KEY.consumeClick();
     }
 
     public boolean consumeConfigScreenPress() {
-        boolean pressed = false;
-        while (CONFIG_KEY.consumeClick()) {
-            pressed = true;
-        }
-        return pressed;
+        return CONFIG_KEY.consumeClick();
     }
 }

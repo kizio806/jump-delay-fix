@@ -17,10 +17,19 @@ public final class FabricJumpInput implements JumpInput {
     private int lastPlayerId = -1;
     private ServerInfo lastServerInfo;
     private String cachedServerIdentifier = "multiplayer-unknown";
+    private int cachedLatencyMs = LatencyCompensation.UNKNOWN_LATENCY_MS;
+    private int latencyQueryCooldownTicks = 0;
 
     @Override
     public boolean isJumpPressed() {
         MinecraftClient client = MinecraftClient.getInstance();
+        if (client == null || client.currentScreen != null) {
+            return false;
+        }
+        ClientPlayerEntity player = client.player;
+        if (player != null && player.input != null && player.input.jumping) {
+            return true;
+        }
         return client.options != null
                 && client.options.jumpKey != null
                 && client.options.jumpKey.isPressed();
@@ -52,11 +61,14 @@ public final class FabricJumpInput implements JumpInput {
     @Override
     public boolean isPlayerValid() {
         MinecraftClient client = MinecraftClient.getInstance();
+        if (client == null || client.currentScreen != null) {
+            return false;
+        }
         ClientPlayerEntity player = client.player;
         if (player == null || !player.isAlive() || player.isSleeping()
                 || player.hasVehicle() || player.isFallFlying()
                 || player.getAbilities().flying || player.isTouchingWater() || player.isSwimming()
-                || player.isCrawling() || player.hasStatusEffect(StatusEffects.LEVITATION)) {
+                || player.isCrawling() || player.isClimbing() || player.hasStatusEffect(StatusEffects.LEVITATION)) {
             lastPlayerId = -1;
             return false;
         }
@@ -117,15 +129,24 @@ public final class FabricJumpInput implements JumpInput {
     }
 
     private int getEstimatedLatencyMs(MinecraftClient client) {
+        if (latencyQueryCooldownTicks > 0 && cachedLatencyMs != LatencyCompensation.UNKNOWN_LATENCY_MS) {
+            latencyQueryCooldownTicks--;
+            return cachedLatencyMs;
+        }
+        latencyQueryCooldownTicks = 20;
+
         if (client.player == null || client.getNetworkHandler() == null) {
-            return LatencyCompensation.UNKNOWN_LATENCY_MS;
+            cachedLatencyMs = LatencyCompensation.UNKNOWN_LATENCY_MS;
+            return cachedLatencyMs;
         }
 
         var entry = client.getNetworkHandler().getPlayerListEntry(client.player.getUuid());
         if (entry == null) {
-            return LatencyCompensation.UNKNOWN_LATENCY_MS;
+            cachedLatencyMs = LatencyCompensation.UNKNOWN_LATENCY_MS;
+            return cachedLatencyMs;
         }
 
-        return Math.max(0, entry.getLatency());
+        cachedLatencyMs = Math.max(0, entry.getLatency());
+        return cachedLatencyMs;
     }
 }

@@ -26,10 +26,10 @@ class CommonArchitectureTest {
     }
 
     @Test
-    void jumpPackageMustNotCallStaticMethodsOnRuntimeState() {
+    void coreDomainPackagesMustNotCallStaticMethodsOnRuntimeState() {
         ArchRule rule = noClasses()
                 .that()
-                .resideInAPackage("..jump..")
+                .resideInAnyPackage("..jump..", "..engine..", "..config..")
                 .and()
                 .haveSimpleNameNotEndingWith("Test")
                 .should()
@@ -39,8 +39,11 @@ class CommonArchitectureTest {
                                 && (call.getTarget().getName().equals("isEnabled")
                                         || call.getTarget().getName().equals("getProfile")
                                         || call.getTarget().getName().equals("toggle")
-                                        || call.getTarget().getName().equals("setEnabled"))))
-                .because("JumpHandler must use injected RuntimeState instance instead of static methods");
+                                        || call.getTarget().getName().equals("setEnabled")
+                                        || call.getTarget().getName().equals("setProfile")
+                                        || call.getTarget().getName().equals("cycleProfile")
+                                        || call.getTarget().getName().equals("reset"))))
+                .because("Core domain components must use injected RuntimeState instance instead of static methods");
 
         rule.check(COMMON_CLASSES);
     }
