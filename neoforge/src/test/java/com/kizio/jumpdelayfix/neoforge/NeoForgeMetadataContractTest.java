@@ -23,6 +23,8 @@ class NeoForgeMetadataContractTest {
         assertTrue(metadata.contains("[[dependencies.jumpdelayfix]]"));
         assertTrue(metadata.contains("modId=\"neoforge\""));
         assertTrue(metadata.contains("modId=\"minecraft\""));
+        assertTrue(metadata.contains("side=\"CLIENT\""));
+        assertFalse(metadata.contains("side=\"BOTH\""));
         assertTrue(metadata.matches("(?s).*modId=\"neoforge\"\\s+mandatory=true\\s+versionRange=\"\\[[0-9]+.*,[0-9]+.*\\)\".*"),
                 "neoforge dependency must have explicitly bounded versionRange");
         assertTrue(metadata.matches("(?s).*modId=\"minecraft\"\\s+mandatory=true\\s+versionRange=\"\\[[0-9]+.*,[0-9]+.*\\)\".*"),
@@ -39,6 +41,8 @@ class NeoForgeMetadataContractTest {
         assertTrue(bytecode.contains("isVisuallyCrawling"));
         assertTrue(bytecode.contains("isPassenger"));
         assertTrue(bytecode.contains("isFallFlying"));
+        assertTrue(bytecode.contains("onClimbable"));
+        assertTrue(bytecode.contains("screen"));
     }
 
     private static String readResource(String resourcePath) throws IOException {

@@ -17,6 +17,7 @@ Last verified: **2026-10-27** | Verification toolchain: Gradle 8.14/9.7/9.8, Ope
 | [`support/1.21.0-1.21.8`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.0-1.21.8) | **1.21.0 – 1.21.8** | `2.0.0` | Minecraft 1.21.8 | **Java 21** | Unified line artifact per loader | **LTS Support** |
 | [`support/1.20.5-1.20.6`](https://github.com/kizio806/jump-delay-fix/tree/support/1.20.5-1.20.6) | **1.20.5 – 1.20.6** | `2.0.0` | Minecraft 1.20.6 | **Java 21** | Unified line artifact per loader | **LTS Support** |
 | [`support/1.20.2-1.20.4`](https://github.com/kizio806/jump-delay-fix/tree/support/1.20.2-1.20.4) | **1.20.2 – 1.20.4** | `2.0.0` | Minecraft 1.20.4 | **Java 17** | Unified line artifact per loader | **LTS Support** |
+| [`support/1.20.0-1.20.1`](https://github.com/kizio806/jump-delay-fix/tree/support/1.20.0-1.20.1) | **1.20.0 – 1.20.1** | `2.0.0` | Minecraft 1.20.1 | **Java 17** | Unified line artifact per loader | **LTS Support** |
 
 ---
 
@@ -70,6 +71,10 @@ Every declared combination of Mod Loader and Minecraft version is independently 
 | 42 | `support/1.20.2-1.20.4` | **NeoForge** | **1.20.2** | NeoForge `20.2.86+`<br>Range `[20.2,20.5)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.2-1.20.4-neoforge.jar` | **VERIFIED** |
 | 43 | `support/1.20.2-1.20.4` | **NeoForge** | **1.20.3** | NeoForge `20.3.8-beta+`<br>Range `[20.2,20.5)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.2-1.20.4-neoforge.jar` | **VERIFIED** |
 | 44 | `support/1.20.2-1.20.4` | **NeoForge** | **1.20.4** | NeoForge `20.4.253`<br>Range `[20.2,20.5)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.2-1.20.4-neoforge.jar` | **VERIFIED** |
+| 45 | `support/1.20.0-1.20.1` | **Fabric** | **1.20.0** | Fabric API `>=0.83.0`<br>Range `>=1.20.0 <1.20.2` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.0-1.20.1-fabric.jar` | **VERIFIED** |
+| 46 | `support/1.20.0-1.20.1` | **Fabric** | **1.20.1** | Fabric API `>=0.83.0`<br>Range `>=1.20.0 <1.20.2` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.0-1.20.1-fabric.jar` | **VERIFIED** |
+| 47 | `support/1.20.0-1.20.1` | **NeoForge** | **1.20.0** | NeoForge/Forge `47.x`<br>Range `[47,48)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.0-1.20.1-neoforge.jar` | **VERIFIED** |
+| 48 | `support/1.20.0-1.20.1` | **NeoForge** | **1.20.1** | NeoForge/Forge `47.3.0`<br>Range `[47,48)` | PASS (`-Werror`) | `jump-delay-fix-2.0.0-mc1.20.0-1.20.1-neoforge.jar` | **VERIFIED** |
 
 ---
 

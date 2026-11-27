@@ -19,7 +19,7 @@ public final class ServerAdaptiveStats {
         if (sampleSize > 0) {
             double batchRollbackRate = (double) validRejected / sampleSize;
             smoothedRollbackRate = (smoothedRollbackRate * 0.82D) + (batchRollbackRate * 0.18D);
-        } else {
+        } else if (smoothedRollbackRate > 0.0D) {
             smoothedRollbackRate *= 0.998D;
             if (smoothedRollbackRate < RATE_EPSILON) {
                 smoothedRollbackRate = 0.0D;

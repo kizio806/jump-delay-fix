@@ -12,7 +12,7 @@ import java.util.Objects;
 
 /**
  * Static façade delegating to a default {@link JumpDelayFixEngine} instance.
- * Preserves backwards compatibility for loader entrypoints and Mixins.
+ * Preserves backwards compatibility for loader entrypoints and client tick event listeners.
  */
 public final class JumpDelayFix {
 
