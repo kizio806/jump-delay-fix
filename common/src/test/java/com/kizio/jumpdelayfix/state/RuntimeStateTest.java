@@ -106,4 +106,39 @@ class RuntimeStateTest {
         assertTrue(instance.isStateEnabled());
         assertEquals(JumpProfile.SMART, instance.stateProfile());
     }
+
+    @Test
+    void shouldHandleConcurrentStateTogglesUnderHighContention() throws InterruptedException {
+        RuntimeState instance = new RuntimeState(true, JumpProfile.SMART);
+        int threadCount = 16;
+        int togglesPerThread = 1_000;
+        java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(threadCount);
+        java.util.concurrent.CountDownLatch readyLatch = new java.util.concurrent.CountDownLatch(threadCount);
+        java.util.concurrent.CountDownLatch startLatch = new java.util.concurrent.CountDownLatch(1);
+        java.util.concurrent.CountDownLatch doneLatch = new java.util.concurrent.CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                readyLatch.countDown();
+                try {
+                    startLatch.await();
+                    for (int j = 0; j < togglesPerThread; j++) {
+                        instance.toggleState();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    doneLatch.countDown();
+                }
+            });
+        }
+
+        readyLatch.await();
+        startLatch.countDown();
+        boolean completed = doneLatch.await(5, java.util.concurrent.TimeUnit.SECONDS);
+        executor.shutdownNow();
+
+        assertTrue(completed, "Concurrent toggles must complete within timeout");
+        assertTrue(instance.isStateEnabled(), "An even number of concurrent toggles must preserve the initial state");
+    }
 }
