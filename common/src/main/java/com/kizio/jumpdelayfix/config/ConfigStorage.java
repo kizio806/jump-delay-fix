@@ -110,8 +110,8 @@ public final class ConfigStorage {
         }
     }
 
-    private static JumpProfile parseProfile(String value) {
-        if (value == null) {
+    static JumpProfile parseProfile(String value) {
+        if (value == null || value.isBlank()) {
             return null;
         }
 

@@ -193,9 +193,15 @@ class JumpDelayFixEngineTest {
 
     private static final class LatencyJumpInput implements JumpInput {
         private final int latency;
+        private final String serverId;
 
         private LatencyJumpInput(int latency) {
+            this(latency, "global");
+        }
+
+        private LatencyJumpInput(int latency, String serverId) {
             this.latency = latency;
+            this.serverId = serverId;
         }
 
         @Override
@@ -215,6 +221,11 @@ class JumpDelayFixEngineTest {
         @Override
         public int getLatencyMs() {
             return latency;
+        }
+
+        @Override
+        public String getServerIdentifier() {
+            return serverId;
         }
     }
 
@@ -256,6 +267,73 @@ class JumpDelayFixEngineTest {
         statsMap.put("global", stats);
 
         engine.onClientTick();
+        assertEquals(JumpProfile.COMPETITIVE, engine.getProfile());
+    }
+
+    @Test
+    void shouldStayOnSmartWhenLatencyIsLowButRollbackRateIsElevated() {
+        ConfigManager configManager = new ConfigManager();
+        configManager.load(tempDir);
+        configManager.setAutoProfileSwitch(true);
+
+        Map<String, com.kizio.jumpdelayfix.model.ServerAdaptiveStats> statsMap = new HashMap<>();
+        JumpDelayFixEngine engine = new JumpDelayFixEngine(configManager, statsMap);
+        engine.init(new LatencyJumpInput(20), enabled -> {}, tempDir);
+
+        com.kizio.jumpdelayfix.model.ServerAdaptiveStats stats = new com.kizio.jumpdelayfix.model.ServerAdaptiveStats();
+        // 7 confirmed, 1 rejected -> 0.0225 rollback rate
+        // then 0 confirmed, 1 rejected -> 0.0225 * 0.82 + 1.0 * 0.18 = 0.19845
+        // total attempts = 9 >= 8
+        stats.update(7, 1);
+        stats.update(0, 1);
+        statsMap.put("global", stats);
+        assertTrue(stats.rollbackRate() > 0.08D, "Rollback rate must exceed 0.08");
+        assertTrue(stats.rollbackRate() < 0.30D, "Rollback rate must be below 0.30 for SMART test");
+
+        engine.onClientTick();
+        assertEquals(JumpProfile.SMART, engine.getProfile(),
+                "Engine must stay on SMART despite 20ms latency when rollback rate exceeds competitive limit");
+    }
+
+    @Test
+    void shouldAutoSwitchToStableWhenRollbackRateExceedsThresholdEvenWithLowLatency() {
+        ConfigManager configManager = new ConfigManager();
+        configManager.load(tempDir);
+        configManager.setAutoProfileSwitch(true);
+
+        Map<String, com.kizio.jumpdelayfix.model.ServerAdaptiveStats> statsMap = new HashMap<>();
+        JumpDelayFixEngine engine = new JumpDelayFixEngine(configManager, statsMap);
+        engine.init(new LatencyJumpInput(20), enabled -> {}, tempDir);
+
+        com.kizio.jumpdelayfix.model.ServerAdaptiveStats stats = new com.kizio.jumpdelayfix.model.ServerAdaptiveStats();
+        for (int i = 0; i < 10; i++) {
+            stats.update(0, 1); // 100% rollbacks
+        }
+        statsMap.put("global", stats);
+        assertTrue(stats.rollbackRate() >= 0.30D, "Rollback rate must exceed STABLE threshold");
+
+        engine.onClientTick();
+        assertEquals(JumpProfile.STABLE, engine.getProfile(),
+                "Engine must switch to STABLE when rollback rate is high even on low latency connection");
+    }
+
+    @Test
+    void shouldNormalizeUnnormalizedServerIdentifierAndAvoidRepeatedContextReset() {
+        ConfigManager configManager = new ConfigManager();
+        JumpDelayFixEngine engine = new JumpDelayFixEngine(configManager, new HashMap<>());
+        LatencyJumpInput input = new LatencyJumpInput(50, "  HYPIXEL.NET:25565  ");
+
+        engine.init(input, enabled -> {}, tempDir);
+        configManager.rememberProfile("hypixel.net:25565", JumpProfile.COMPETITIVE);
+        assertEquals("global", engine.getActiveServerId());
+
+        engine.onClientTick();
+        assertEquals("hypixel.net:25565", engine.getActiveServerId());
+        assertEquals(JumpProfile.COMPETITIVE, engine.getProfile());
+
+        // Second tick with same unnormalized string: must not reset state
+        engine.onClientTick();
+        assertEquals("hypixel.net:25565", engine.getActiveServerId());
         assertEquals(JumpProfile.COMPETITIVE, engine.getProfile());
     }
 }
