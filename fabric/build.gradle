@@ -250,24 +250,41 @@ tasks.named('check') {
 }
 
 jar {
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-dev.jar"
+    archiveFileName.set("${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar")
+    archiveClassifier.set('')
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_id}" }
     }
 }
 
 tasks.named('sourcesJar') {
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources-dev.jar"
-}
-
-tasks.matching { it.name == 'remapJar' }.configureEach {
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar"
-}
-
-tasks.matching { it.name == 'remapSourcesJar' }.configureEach {
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources.jar"
-}
-
-tasks.named('sourcesJar') {
+    archiveFileName.set("${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources.jar")
+    archiveClassifier.set('')
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+afterEvaluate {
+    def remapJarTask = tasks.findByName('remapJar')
+    if (remapJarTask != null) {
+        tasks.named('jar') {
+            destinationDirectory.set(layout.buildDirectory.dir('intermediates/libs'))
+            archiveFileName.set("${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-dev.jar")
+        }
+        remapJarTask.configure {
+            archiveFileName.set("${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar")
+            archiveClassifier.set('')
+        }
+    }
+
+    def remapSourcesJarTask = tasks.findByName('remapSourcesJar')
+    if (remapSourcesJarTask != null) {
+        tasks.named('sourcesJar') {
+            destinationDirectory.set(layout.buildDirectory.dir('intermediates/libs'))
+            archiveFileName.set("${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources-dev.jar")
+        }
+        remapSourcesJarTask.configure {
+            archiveFileName.set("${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources.jar")
+            archiveClassifier.set('')
+        }
+    }
 }

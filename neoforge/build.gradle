@@ -207,19 +207,22 @@ tasks.register('verifyDedicatedServerSafe') {
 }
 
 jar {
-    archiveClassifier = 'raw'
+    destinationDirectory.set(layout.buildDirectory.dir('intermediates/libs'))
+    archiveClassifier.set('raw')
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_id}" }
     }
 }
 
 tasks.named('reobfJar') {
-    archiveClassifier = ''
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-neoforge.jar"
+    archiveClassifier.set('')
+    archiveFileName.set("${artifactBaseName}-${baseVersion}-${mcMetadata}-neoforge.jar")
 }
 
 tasks.named('sourcesJar') {
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-neoforge-sources.jar"
+    archiveClassifier.set('')
+    archiveFileName.set("${artifactBaseName}-${baseVersion}-${mcMetadata}-neoforge-sources.jar")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 tasks.named('jacocoTestReport') {
@@ -227,10 +230,7 @@ tasks.named('jacocoTestReport') {
         fileTree(dir: it, include: 'com/kizio/jumpdelayfix/neoforge/**')
     }))
 }
+
 tasks.named('check') {
     dependsOn(tasks.named('validateProductionMetadata'), tasks.named('verifyDedicatedServerSafe'))
-}
-
-tasks.named('sourcesJar') {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
