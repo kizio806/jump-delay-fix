@@ -381,13 +381,84 @@ class JumpHandlerTest {
         assertEquals(-1, handler.getLatencyMs());
     }
 
+    @Test
+    void shouldResetTransientStateWhenPlayerBecomesInvalidWhileEnabled() {
+        input.jumpPressed = true;
+        input.onGround = true;
+        handler.tick();
+        assertEquals(1, input.jumpCalls);
+
+        input.playerValid = false;
+        handler.tick();
+        assertEquals(1, input.jumpCalls, "Handler must return early without jumping when player is invalid");
+    }
+
+    @Test
+    void shouldEnforceJumpAttemptCooldownWhenSufficientlyGrounded() {
+        runtimeState.setStateProfile(JumpProfile.STABLE);
+        input.requiredGroundedTicksBeforeJump = 2;
+        input.jumpPressed = true;
+        input.onGround = true;
+
+        // Ticks 1 to 3: groundedTicks and ticksSinceLastJumpAttempt reach 3 -> jump triggers on tick 3
+        handler.tick();
+        handler.tick();
+        handler.tick();
+        assertEquals(1, input.jumpCalls);
+
+        // Ticks 4, 5, 6: player remains grounded with no lift -> jump is rejected on tick 6
+        // Adaptive penalty increases required ticks from 3 to 4.
+        handler.tick();
+        handler.tick();
+        handler.tick();
+        assertEquals(1, input.jumpCalls);
+        assertEquals(1, handler.getRejectedJumpCount());
+
+        // Tick 7: groundedTicks is 7 (>= 4), but ticksSinceLastJumpAttempt is 3 (< 4).
+        // Must return early via jump attempt cooldown condition.
+        handler.tick();
+        assertEquals(1, input.jumpCalls, "Jump attempt cooldown must prevent immediate jump re-trigger while remaining grounded");
+
+        // Tick 8: ticksSinceLastJumpAttempt reaches 4 (>= 4) -> second jump attempt fires
+        handler.tick();
+        assertEquals(2, input.jumpCalls);
+    }
+
+    @Test
+    void shouldHandleNanCoordinatesGracefullyDuringJumpTracking() {
+        input.jumpPressed = true;
+        input.onGround = true;
+        input.playerY = Double.NaN;
+
+        handler.tick();
+        assertEquals(1, input.jumpCalls);
+
+        input.onGround = false;
+        input.playerY = 65.0D;
+        handler.tick();
+        handler.tick();
+
+        input.onGround = true;
+        input.playerY = Double.NaN;
+        handler.tick();
+
+        assertEquals(1, handler.getConfirmedJumpCount(), "Jump with NaN start coordinates must resolve safely when airborne");
+    }
+
     private static final class FakeJumpInput implements JumpInput {
 
+        private boolean playerValid = true;
         private boolean jumpPressed;
         private boolean onGround;
         private int jumpCalls;
         private int requiredGroundedTicksBeforeJump = 1;
         private double playerY;
+
+        @Override
+        public boolean isPlayerValid() {
+            return playerValid;
+        }
+
         @Override
         public boolean isJumpPressed() {
             return jumpPressed;
