@@ -11,11 +11,6 @@ rules:
   dependabot-cooldown:
     ignore:
       - dependabot.yml
-  hash-pin:
-    ignore:
-      - ci.yml
-      - release.yml
-      - sonarcloud.yml
   artipacked:
     ignore:
       - ci.yml

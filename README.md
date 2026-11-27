@@ -130,7 +130,7 @@ serverProfile.bWluZWNyYWZ0LmV4YW1wbGUuY29t=SMART
 ## 🛠️ Building from Source
 
 ### Prerequisites
-- JDK 25 (for `main`, `support/26.2.x`, `support/26.1.x`) or JDK 21 (for `support/1.21.9-1.21.11`)
+- JDK 25 (for `main`, `support/26.2.x`, `support/26.1.x`), JDK 21 (for `support/1.21.9-1.21.11`, `support/1.21.0-1.21.8`, `support/1.20.5-1.20.6`), or JDK 17 (for `support/1.20.2-1.20.4`, `support/1.20.0-1.20.1`)
 - Git
 
 ### Build Commands
