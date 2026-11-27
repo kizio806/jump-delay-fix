@@ -7,14 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -22,7 +21,11 @@ class FabricMetadataContractTest {
 
     @Test
     void shouldDeclareClientOnlyEnvironmentAndEntrypoint() throws IOException {
-        String metadata = Files.readString(Path.of("build", "resources", "main", "fabric.mod.json"), StandardCharsets.UTF_8);
+        String metadata;
+        try (InputStream stream = getClass().getResourceAsStream("/fabric.mod.json")) {
+            assertNotNull(stream, "Missing fabric.mod.json on test classpath");
+            metadata = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        }
 
         assertFalse(metadata.contains("${"), "fabric.mod.json still contains unresolved placeholders");
         assertTrue(metadata.contains("\"environment\": \"client\""));
@@ -43,10 +46,13 @@ class FabricMetadataContractTest {
             reader.accept(classNode, 0);
 
             Set<String> invokedMethods = new HashSet<>();
+            Set<String> accessedFields = new HashSet<>();
             for (MethodNode method : classNode.methods) {
                 for (AbstractInsnNode insn : method.instructions) {
                     if (insn instanceof MethodInsnNode methodInsn) {
                         invokedMethods.add(methodInsn.name);
+                    } else if (insn instanceof FieldInsnNode fieldInsn) {
+                        accessedFields.add(fieldInsn.name);
                     }
                 }
             }
@@ -56,7 +62,30 @@ class FabricMetadataContractTest {
             assertTrue(invokedMethods.contains("isVisuallyCrawling"));
             assertTrue(invokedMethods.contains("isPassenger"));
             assertTrue(invokedMethods.contains("isFallFlying"));
+            assertTrue(invokedMethods.contains("onClimbable"));
+            assertTrue(invokedMethods.contains("screen"), "ClientJumpInput must check client.gui.screen()");
         }
     }
 
+    @Test
+    void shouldRenderBackgroundInSettingsScreen() throws IOException {
+        try (InputStream stream = getClass().getResourceAsStream("/com/kizio/jumpdelayfix/client/gui/SettingsScreen.class")) {
+            assertNotNull(stream, "Missing SettingsScreen class");
+            ClassReader reader = new ClassReader(stream);
+            ClassNode classNode = new ClassNode();
+            reader.accept(classNode, 0);
+
+            Set<String> invokedMethods = new HashSet<>();
+            for (MethodNode method : classNode.methods) {
+                if (method.name.equals("extractRenderState")) {
+                    for (AbstractInsnNode insn : method.instructions) {
+                        if (insn instanceof MethodInsnNode methodInsn) {
+                            invokedMethods.add(methodInsn.name);
+                        }
+                    }
+                }
+            }
+            assertTrue(invokedMethods.contains("extractBackground"), "SettingsScreen must call extractBackground to prevent bleed-through");
+        }
+    }
 }

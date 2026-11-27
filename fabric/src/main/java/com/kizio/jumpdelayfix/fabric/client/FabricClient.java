@@ -48,14 +48,14 @@ public final class FabricClient {
 
     private static void registerEvents(FabricKeyMappings keyBindings) {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (keyBindings.consumeTogglePress()) {
+            while (keyBindings.consumeTogglePress()) {
                 JumpDelayFix.toggleEnabled();
             }
-            if (keyBindings.consumeProfileCyclePress()) {
+            while (keyBindings.consumeProfileCyclePress()) {
                 StatusMessages.sendProfileStatus(JumpDelayFix.cycleProfile());
             }
             if (keyBindings.consumeConfigScreenPress()) {
-                if (client != null) {
+                if (client != null && (client.gui == null || client.gui.screen() == null)) {
                     client.setScreenAndShow(new FabricSettingsScreen(client.gui.screen()));
                 }
             }

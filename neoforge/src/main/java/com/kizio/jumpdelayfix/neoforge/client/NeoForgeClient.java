@@ -67,15 +67,15 @@ public final class NeoForgeClient {
         }
 
         NeoForgeKeyMappings keyBindings = NeoForgeKeyMappings.getInstance();
-        if (keyBindings.consumeTogglePress()) {
+        while (keyBindings.consumeTogglePress()) {
             JumpDelayFix.toggleEnabled();
         }
-        if (keyBindings.consumeProfileCyclePress()) {
+        while (keyBindings.consumeProfileCyclePress()) {
             StatusMessages.sendProfileStatus(JumpDelayFix.cycleProfile());
         }
         if (keyBindings.consumeConfigScreenPress()) {
             Minecraft client = Minecraft.getInstance();
-            if (client != null) {
+            if (client != null && (client.gui == null || client.gui.screen() == null)) {
                 client.setScreenAndShow(new NeoForgeSettingsScreen(client.gui.screen()));
             }
         }

@@ -24,13 +24,6 @@ public abstract class AbstractKeyMappings {
     public abstract boolean consumeConfigScreenPress();
 
     protected static boolean consumePress(KeyMapping mapping) {
-        if (mapping == null) {
-            return false;
-        }
-        boolean pressed = false;
-        while (mapping.consumeClick()) {
-            pressed = true;
-        }
-        return pressed;
+        return mapping != null && mapping.consumeClick();
     }
 }
