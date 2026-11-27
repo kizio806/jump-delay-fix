@@ -1,34 +1,37 @@
 ## Summary
 
+<!-- Brief summary of what this PR accomplishes and why it is needed. -->
 
+## Type of Change
 
-## Type of change
+- [ ] 🐛 Bug fix (non-breaking change fixing an issue)
+- [ ] ✨ Feature / improvement (non-breaking enhancement)
+- [ ] ♻️ Refactor (code improvement without behavior or API change)
+- [ ] 🏗️ Build / CI (Gradle, GitHub Actions, toolchains)
+- [ ] 📝 Documentation (guides, README, wiki)
 
-- [ ] 🐛 Bug fix
-- [ ] ✨ Feature / improvement
-- [ ] ♻️ Refactor (no behavior change)
-- [ ] 🏗️ Build / CI
-- [ ] 📝 Documentation
+## Related Issues
 
-## Related issues
+<!-- Closes #123, Fixes #456, etc. -->
 
-Closes #
-
-## What changed
+## What Changed
 
 -
 
-## Validation
+## Verification & Commands Run
 
-- [ ] `./gradlew clean buildAll strictCheck` passes locally
-- [ ] Tested on Fabric (client or game test server)
-- [ ] Tested on NeoForge (client or game test server)
-- [ ] Dedicated server safety verified (NeoForge)
+- [ ] `./gradlew spotlessApply` executed to enforce project code style
+- [ ] `./gradlew test` passes locally (unit, integration, and ArchUnit tests)
+- [ ] `./gradlew strictCheck` passes locally (source hygiene, matrix, SemVer, metadata)
+- [ ] `./gradlew buildAll` builds both Fabric and NeoForge production JARs
 
-## Checklist
+## Contributor Checklist
 
-- [ ] `CHANGELOG.md` updated for user-visible changes
-- [ ] No `TODO` / `FIXME` / wildcard imports added to source
-- [ ] Metadata (`fabric.mod.json`, `neoforge.mods.toml`) is consistent with `gradle.properties`
-- [ ] Multi-version ranges (`fabric_game_versions`, `neoforge_game_versions`, `modrinth_game_versions`) remain valid
-- [ ] No client-only classes referenced from common or dedicated-server code
+- [ ] Behavioral changes are covered by meaningful tests in `common/src/test` (no fake coverage tests)
+- [ ] User-visible changes are documented in `CHANGELOG.md`
+- [ ] No public API breaks introduced in `:common`
+- [ ] Supported Minecraft version matrix and ranges in `gradle.properties` remain untouched (unless approved port)
+- [ ] No `@SuppressWarnings` or wildcard imports added (enforced by `validateSourceHygiene`)
+- [ ] No `TODO`, `FIXME`, or `XXX` markers left in Java source files
+- [ ] `:common` remains 100% loader-agnostic and free of `net.minecraft` classes
+- [ ] Dedicated server safety verified (no client-only packages referenced from common or server code)
