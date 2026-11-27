@@ -37,12 +37,16 @@ class ConfigManagerTest {
         ConfigManager manager = new ConfigManager();
         manager.load(tempDir);
 
-        assertEquals(JumpProfile.SMART, manager.resolveProfile("server-x"));
+        assertEquals(JumpProfile.SMART, manager.resolveProfile("server-x"),
+                "Unknown server must resolve to SMART as the default profile");
         manager.rememberProfile("server-x", JumpProfile.COMPETITIVE);
-        assertEquals(JumpProfile.COMPETITIVE, manager.resolveProfile("server-x"));
+        assertEquals(JumpProfile.COMPETITIVE, manager.resolveProfile("server-x"),
+                "Remembered profile must be returned for the same server");
 
-        manager.flushIfDue();
         manager.flushNow();
+        ConfigStorage.LoadedConfig persisted = ConfigStorage.load(tempDir.resolve("jumpdelayfix.properties"));
+        assertEquals(JumpProfile.COMPETITIVE, persisted.serverProfiles().get("server-x"),
+                "flushNow must write the remembered profile to disk");
     }
 
     @Test
@@ -55,8 +59,10 @@ class ConfigManagerTest {
 
         manager.resetToDefaults();
 
-        assertTrue(manager.autoProfileSwitch());
-        assertEquals(JumpProfile.SMART, manager.resolveProfile("server-y"));
+        assertTrue(manager.autoProfileSwitch(),
+                "autoProfileSwitch must revert to true after resetToDefaults()");
+        assertEquals(JumpProfile.SMART, manager.resolveProfile("server-y"),
+                "Previously remembered server profile must be cleared after resetToDefaults()");
     }
 
     @Test
