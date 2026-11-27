@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JumpDelayFixTest {
@@ -280,6 +281,23 @@ class JumpDelayFixTest {
         input.serverId = null;
         JumpDelayFix.onClientTick();
         assertEquals(JumpProfile.COMPETITIVE, JumpDelayFix.getProfile());
+    }
+
+    @Test
+    void shouldExposeEngineAndComponentLifecycle() {
+        assertNotNull(JumpDelayFix.getEngine());
+        assertFalse(JumpDelayFix.isInitialized());
+
+        JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP, tempDir);
+
+        assertTrue(JumpDelayFix.isInitialized());
+        assertNotNull(JumpDelayFix.getConfigManager());
+        assertNotNull(JumpDelayFix.getJumpHandler());
+
+        JumpDelayFix.shutdown();
+        assertTrue(JumpDelayFix.isInitialized());
+        JumpDelayFix.resetForTests();
+        assertFalse(JumpDelayFix.isInitialized());
     }
 
     private static void runTicks(AdaptiveJumpInput input, int count) {
