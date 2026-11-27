@@ -145,8 +145,10 @@ class ConfigStorageTest {
     @Test
     void shouldFallbackToDefaultsWhenLoadFailsWithIoException() {
         ConfigStorage.LoadedConfig loaded = ConfigStorage.load(tempDir);
-        assertTrue(loaded.config().autoProfileSwitch());
-        assertTrue(loaded.serverProfiles().isEmpty());
+        assertTrue(loaded.config().autoProfileSwitch(),
+                "autoProfileSwitch must default to true when file is a directory (IO failure)");
+        assertTrue(loaded.serverProfiles().isEmpty(),
+                "serverProfiles must be empty when load fails");
     }
 
     @Test
@@ -163,8 +165,36 @@ class ConfigStorageTest {
         );
 
         ConfigStorage.LoadedConfig loadedConfig = ConfigStorage.load(configFile);
-        assertEquals(2, loadedConfig.serverProfiles().size());
+        assertEquals(2, loadedConfig.serverProfiles().size(),
+                "Both legacy (dot-containing and colon-containing) server IDs must be loaded");
         assertEquals(JumpProfile.COMPETITIVE, loadedConfig.serverProfiles().get("mc.hypixel.net"));
         assertEquals(JumpProfile.STABLE, loadedConfig.serverProfiles().get("play.example.com:25565"));
+    }
+
+    @Test
+    void serverIdRoundTripMustPreserveArbitraryCharacters() {
+        Path configFile = tempDir.resolve("roundtrip.properties");
+        String serverId = "my-server.example.com:25565";
+
+        ConfigStorage.save(configFile, RuntimeConfig.defaults(), Map.of(serverId, JumpProfile.STABLE));
+        ConfigStorage.LoadedConfig loaded = ConfigStorage.load(configFile);
+
+        assertEquals(1, loaded.serverProfiles().size(),
+                "Server ID with dots and colons must survive a save/load round-trip");
+        assertEquals(JumpProfile.STABLE, loaded.serverProfiles().get(serverId),
+                "Profile must match after round-tripping a server ID containing special characters");
+    }
+
+    @Test
+    void shouldPreserveAutoSwitchFalseAfterSaveAndLoad() {
+        Path configFile = tempDir.resolve("autoswitch.properties");
+        RuntimeConfig config = RuntimeConfig.defaults();
+        config.setAutoProfileSwitch(false);
+
+        ConfigStorage.save(configFile, config, Map.of());
+        ConfigStorage.LoadedConfig loaded = ConfigStorage.load(configFile);
+
+        assertFalse(loaded.config().autoProfileSwitch(),
+                "autoProfileSwitch=false must survive a save/load round-trip");
     }
 }
