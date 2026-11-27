@@ -133,21 +133,31 @@ serverProfile.bWluZWNyYWZ0LmV4YW1wbGUuY29t=SMART
 - JDK 25 (for `main`, `support/26.2.x`, `support/26.1.x`), JDK 21 (for `support/1.21.9-1.21.11`, `support/1.21.0-1.21.8`, `support/1.20.5-1.20.6`), or JDK 17 (for `support/1.20.2-1.20.4`, `support/1.20.0-1.20.1`)
 - Git
 
-### Build Commands
+### Build & Verification Commands
 ```bash
 # Clone the repository
 git clone https://github.com/kizio806/jump-delay-fix.git
 cd jump-delay-fix
 
-# Compile and package release JARs for all loaders
-./gradlew --no-daemon clean buildAll
+# Auto-format source code to project style conventions
+./gradlew --no-daemon spotlessApply
 
-# Run test suite & code contracts
+# Run test suite & ArchUnit architecture contracts
 ./gradlew --no-daemon test
 
-# Run strict release qualification gates
-./gradlew --no-daemon strictCheck publishReadyCheck
+# Run strict release qualification gates (hygiene, metadata, matrix, server safety)
+./gradlew --no-daemon strictCheck
+
+# Compile and package production JARs for all loaders
+./gradlew --no-daemon buildAll
 ```
+
+| Command | Purpose |
+| :--- | :--- |
+| `./gradlew spotlessApply` | Formats all Java source files and build scripts to Spotless standards (4 spaces, Unix newlines, clean imports). |
+| `./gradlew test` | Executes unit, integration, and ArchUnit architecture boundary tests across all subprojects. |
+| `./gradlew strictCheck` | Comprehensive release-readiness quality gate verifying source hygiene (zero TODOs/suppressions/wildcards), matrix parity, SemVer, metadata contracts, and dedicated-server safety. |
+| `./gradlew buildAll` | Assembles both production release JARs and sources JARs for Fabric and NeoForge. |
 
 ---
 
