@@ -117,31 +117,44 @@ class JumpHandlerTest {
     }
 
     @Test
-    void shouldIncreaseSafetyAfterRejectedJumpAndRetry() {
+    void shouldRecordRejectionAndIncreasePenaltyWhenJumpProducesNoLift() {
         input.jumpPressed = true;
         input.onGround = true;
         input.playerY = 64.0D;
 
+        // Tick 1: jump fires. Ticks 2-4: awaitingJumpResult with no lift.
+        // On tick 4 (JUMP_NO_LIFT_TIMEOUT_TICKS=3 expired), rejection is recorded.
+        // Tick 5: cooldown expires, second jump fires.
         handler.tick();
         handler.tick();
         handler.tick();
         handler.tick();
         handler.tick();
 
-        assertEquals(2, input.jumpCalls);
+        assertEquals(1, handler.getRejectedJumpCount(),
+                "One rejection must be recorded when jump produces no lift within the timeout");
+        assertEquals(1, handler.getAdaptivePenaltyTicks(),
+                "adaptivePenaltyTicks must increase by 1 after first rejection");
+        assertEquals(2, input.jumpCalls,
+                "Second jump must fire after the adaptive penalty cooldown expires");
     }
 
     @Test
-    void shouldNotSpamJumpWhileAwaitingServerResult() {
+    void shouldNotFireSecondJumpWhileAwaitingJumpResultFromServer() {
         input.jumpPressed = true;
         input.onGround = true;
         input.playerY = 64.0D;
 
+        // Tick 1: jump fires, awaitingJumpResult = true.
+        // Ticks 2-3: still awaiting; no-lift timeout has not expired yet (needs 3 ticks).
         handler.tick();
         handler.tick();
         handler.tick();
 
-        assertEquals(1, input.jumpCalls);
+        assertEquals(1, input.jumpCalls,
+                "Jump must not be re-triggered while awaitingJumpResult is true");
+        assertEquals(0, handler.getRejectedJumpCount(),
+                "No rejection must be recorded while the no-lift timeout has not yet expired");
     }
 
     @Test
