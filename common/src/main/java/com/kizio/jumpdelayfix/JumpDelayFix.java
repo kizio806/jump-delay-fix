@@ -8,7 +8,6 @@ import com.kizio.jumpdelayfix.jump.JumpHandler;
 import com.kizio.jumpdelayfix.model.JumpProfile;
 
 import java.nio.file.Path;
-import java.util.Objects;
 
 /**
  * Static façade delegating to a default {@link JumpDelayFixEngine} instance.
