@@ -41,7 +41,6 @@ public final class JumpDelayFixEngine {
     private ToggleFeedback toggleFeedback = ToggleFeedback.NO_OP;
     private boolean initialized;
     private Thread shutdownHook;
-    private boolean shutdownHookRegistered;
     private String activeServerId = DEFAULT_SERVER_ID;
     private ServerAdaptiveStats activeServerStats;
     private int lastConfirmedJumps;
@@ -280,11 +279,7 @@ public final class JumpDelayFixEngine {
             return;
         }
 
-        ServerAdaptiveStats stats = activeServerStats;
-        if (stats == null) {
-            return;
-        }
-
+        ServerAdaptiveStats stats = getOrCreateActiveServerStats();
         int attempts = stats.confirmedJumps() + stats.rejectedJumps();
         if (attempts < AUTO_SWITCH_MIN_ATTEMPTS) {
             return;
@@ -338,7 +333,7 @@ public final class JumpDelayFixEngine {
     }
 
     private void registerShutdownHookIfNeeded() {
-        if (shutdownHookRegistered) {
+        if (shutdownHook != null) {
             return;
         }
 
@@ -353,7 +348,6 @@ public final class JumpDelayFixEngine {
         try {
             Runtime.getRuntime().addShutdownHook(hook);
             shutdownHook = hook;
-            shutdownHookRegistered = true;
         } catch (IllegalStateException exception) {
             LOGGER.debug("Skipping shutdown hook registration because JVM is shutting down");
         } catch (SecurityException exception) {
@@ -362,7 +356,7 @@ public final class JumpDelayFixEngine {
     }
 
     private void unregisterShutdownHook() {
-        if (!shutdownHookRegistered || shutdownHook == null) {
+        if (shutdownHook == null) {
             return;
         }
         try {
@@ -373,7 +367,6 @@ public final class JumpDelayFixEngine {
             LOGGER.warn("Unable to unregister configuration flush shutdown hook", exception);
         } finally {
             shutdownHook = null;
-            shutdownHookRegistered = false;
         }
     }
 
