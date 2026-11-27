@@ -37,12 +37,12 @@ sonar {
         property 'sonar.projectKey', 'kizio806_jump-delay-fix'
         property 'sonar.organization', 'kizio806'
         property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.coverage.exclusions', 'fabric/**,neoforge/**'
     }
 }
 
 ext.sharedVersions = [
-        minecraft: providers.gradleProperty('minecraft_version').get(),
-        mappings : providers.gradleProperty('yarn_mappings').get()
+        minecraft: providers.gradleProperty('minecraft_version').get()
 ]
 
 subprojects {
@@ -51,7 +51,11 @@ subprojects {
 
     sonar {
         properties {
-            property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
+            if (project.name == 'common') {
+                property 'sonar.coverage.jacoco.xmlReportPaths', "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
+            } else {
+                property 'sonar.coverage.exclusions', '**/*'
+            }
         }
     }
 
@@ -138,16 +142,16 @@ tasks.register('verifyReleaseArtifacts') {
 }
 
 def parseMinecraftVersion = { String versionText ->
-    def matcher = (versionText =~ /^(\d+)\.(\d+)\.(\d+)$/)
+    def matcher = (versionText =~ /^(\d+)\.(\d+)(?:\.(\d+))?$/)
     if (!matcher.matches()) {
-        throw new GradleException("Invalid Minecraft version '${versionText}'. Expected format: MAJOR.MINOR.PATCH")
+        throw new GradleException("Invalid Minecraft version '${versionText}'. Expected format: MAJOR.MINOR.PATCH or MAJOR.MINOR")
     }
 
     return [
             text : versionText,
             major: matcher.group(1).toInteger(),
             minor: matcher.group(2).toInteger(),
-            patch: matcher.group(3).toInteger()
+            patch: matcher.group(3) ? matcher.group(3).toInteger() : 0
     ]
 }
 
@@ -238,7 +242,7 @@ tasks.register('verifyMinecraftVersionMatrix') {
 
         def fabricRange = fabric_minecraft_version_range.toString().trim()
         def expectedFabricLowerBound = ">=" + minFabricVersion.text
-        def expectedFabricUpperBound = "<" + incrementPatch(maxFabricVersion)
+        def expectedFabricUpperBound = "<${baseVersion.major}.${baseVersion.minor + 1}"
         if (!fabricRange.contains(expectedFabricLowerBound) || !fabricRange.contains(expectedFabricUpperBound)) {
             throw new GradleException(
                     "fabric_minecraft_version_range '${fabricRange}' must include " +
@@ -247,14 +251,10 @@ tasks.register('verifyMinecraftVersionMatrix') {
         }
 
         def neoRange = minecraft_version_range.toString().trim()
-        def minNeoVersion = neoforgeSupported.first()
-        def maxNeoVersion = neoforgeSupported.last()
-        def expectedPatchNeoRange = "[${minNeoVersion.text},${incrementPatch(maxNeoVersion)})"
-        def expectedMinorNeoRange = "[${baseVersion.major}.${baseVersion.minor},${baseVersion.major}.${baseVersion.minor + 1})"
-
-        if (neoRange != expectedPatchNeoRange && neoRange != expectedMinorNeoRange) {
+        def expectedNeoRange = "[${baseVersion.major}.${baseVersion.minor},${baseVersion.major}.${baseVersion.minor + 1})"
+        if (neoRange != expectedNeoRange) {
             throw new GradleException(
-                    "minecraft_version_range must equal '${expectedPatchNeoRange}' or '${expectedMinorNeoRange}', got '${neoRange}'."
+                    "minecraft_version_range must equal '${expectedNeoRange}' for one-line support, got '${neoRange}'."
             )
         }
     }
