@@ -160,15 +160,29 @@ class ConfigStorageTest {
                 autoProfileSwitch=true
                 serverProfile.mc.hypixel.net=COMPETITIVE
                 serverProfile.play.example.com\\:25565=STABLE
+                serverProfile.localhost\\:25565=SMART
                 """,
                 StandardCharsets.UTF_8
         );
 
         ConfigStorage.LoadedConfig loadedConfig = ConfigStorage.load(configFile);
-        assertEquals(2, loadedConfig.serverProfiles().size(),
-                "Both legacy (dot-containing and colon-containing) server IDs must be loaded");
+        assertEquals(3, loadedConfig.serverProfiles().size(),
+                "Legacy server IDs with dots, colons, or colon-only must be loaded correctly");
         assertEquals(JumpProfile.COMPETITIVE, loadedConfig.serverProfiles().get("mc.hypixel.net"));
         assertEquals(JumpProfile.STABLE, loadedConfig.serverProfiles().get("play.example.com:25565"));
+        assertEquals(JumpProfile.SMART, loadedConfig.serverProfiles().get("localhost:25565"));
+    }
+
+    @Test
+    void shouldParseProfileGracefully() {
+        assertEquals(JumpProfile.COMPETITIVE, ConfigStorage.parseProfile("COMPETITIVE"));
+        assertEquals(JumpProfile.SMART, ConfigStorage.parseProfile("SMART"));
+        assertEquals(JumpProfile.STABLE, ConfigStorage.parseProfile("STABLE"));
+
+        org.junit.jupiter.api.Assertions.assertNull(ConfigStorage.parseProfile(null));
+        org.junit.jupiter.api.Assertions.assertNull(ConfigStorage.parseProfile(""));
+        org.junit.jupiter.api.Assertions.assertNull(ConfigStorage.parseProfile("   "));
+        org.junit.jupiter.api.Assertions.assertNull(ConfigStorage.parseProfile("UNKNOWN_PROFILE"));
     }
 
     @Test
