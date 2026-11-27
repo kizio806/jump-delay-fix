@@ -27,10 +27,21 @@ jobs:
       with:
         persist-credentials: false
 
+    - name: Read Java version
+      id: jvm
+      run: |
+        JVM_VER=$(grep '^java_version=' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
+        if [ -z "$JVM_VER" ] || [ "$JVM_VER" -lt 17 ]; then
+          RUNNER_JVM="21"
+        else
+          RUNNER_JVM="$JVM_VER"
+        fi
+        echo "version=${RUNNER_JVM}" >> "$GITHUB_OUTPUT"
+
     - name: Set up Java
       uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
       with:
-        java-version: '25'
+        java-version: ${{ steps.jvm.outputs.version }}
         distribution: 'temurin'
         cache: 'gradle'
 
