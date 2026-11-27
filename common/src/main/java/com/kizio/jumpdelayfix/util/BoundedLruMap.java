@@ -7,6 +7,8 @@ import java.util.Map;
  * Thread-unsafe bounded LRU map implementation based on {@link LinkedHashMap}.
  */
 public final class BoundedLruMap {
+    private static final int INITIAL_CAPACITY = 16;
+    private static final float LOAD_FACTOR = 0.75F;
 
     private BoundedLruMap() {
     }
@@ -23,7 +25,7 @@ public final class BoundedLruMap {
         if (maxCapacity <= 0) {
             throw new IllegalArgumentException("maxCapacity must be positive: " + maxCapacity);
         }
-        return new LinkedHashMap<>(16, 0.75F, true) {
+        return new LinkedHashMap<>(INITIAL_CAPACITY, LOAD_FACTOR, true) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
                 return size() > maxCapacity;
