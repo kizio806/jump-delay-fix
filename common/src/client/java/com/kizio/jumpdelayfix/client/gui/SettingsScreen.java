@@ -65,6 +65,7 @@ public class SettingsScreen extends Screen {
 
     @Override
     public void extractRenderState(net.minecraft.client.gui.GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+        this.extractBackground(extractor, mouseX, mouseY, partialTick);
         super.extractRenderState(extractor, mouseX, mouseY, partialTick);
 
         int centerX = this.width / 2;

@@ -2,9 +2,9 @@
 slf4j = "2.0.20"
 gson = "2.15.0"
 junit = "6.1.3"
-archunit = "1.4.1"
-spotless = "8.10.4"
-sonarqube = "7.5.0.8588"
+archunit = "1.5.1"
+spotless = "8.11.0"
+sonarqube = "7.6.0.18749"
 
 [libraries]
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }

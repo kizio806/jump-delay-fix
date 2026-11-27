@@ -6,6 +6,17 @@ plugins {
     id 'net.fabricmc.fabric-loom' version "${loom_version}"
 }
 
+repositories {
+    maven {
+        name = 'MavenCentralLWJGL'
+        url = 'https://repo.maven.apache.org/maven2/'
+    }
+    maven {
+        name = 'Mojang'
+        url = 'https://libraries.minecraft.net/'
+    }
+}
+
 def baseVersion = mod_version.split('\\+')[0]
 def mcMetadata = mod_version.contains('+') ? mod_version.split('\\+')[1] : "mc${minecraft_version}"
 def artifactBaseName = findProperty('artifact_base_name') ?: 'jump-delay-fix'
@@ -29,10 +40,11 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     compileOnly "com.terraformersmc:modmenu:${modmenu_version}"
     runtimeOnly "com.terraformersmc:modmenu:${modmenu_version}"
+    testCompileOnly "com.terraformersmc:modmenu:${modmenu_version}"
 
-    testImplementation platform('org.junit:junit-bom:5.11.4')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation platform(libs.junit.bom)
+    testImplementation libs.junit.jupiter
+    testRuntimeOnly libs.junit.platform.launcher
 }
 
 loom {
@@ -213,7 +225,7 @@ tasks.register('verifyRuntimeDependencyCompatibility') {
             def compatibilityConfig = configurations.detachedConfiguration(dependencies.create(notation))
             compatibilityConfig.transitive = false
 
-            def artifact = compatibilityConfig.resolvedConfiguration.resolvedArtifacts.first()
+            def artifact = compatibilityConfig.incoming.artifacts.artifacts.first()
             def metadata = readFabricModMetadata(artifact.file)
             if (metadata == null) {
                 throw new GradleException("Missing fabric.mod.json in resolved dependency ${artifact.moduleVersion.id}")
@@ -241,6 +253,12 @@ tasks.register('verifyRuntimeDependencyCompatibility') {
     }
 }
 
+tasks.named('jacocoTestReport') {
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, include: 'com/kizio/jumpdelayfix/fabric/**')
+    }))
+}
+
 tasks.named('check') {
     dependsOn(tasks.named('verifyRuntimeDependencyCompatibility'), tasks.named('validateProductionMetadata'))
 }
@@ -249,6 +267,12 @@ jar {
     archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar"
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_id}" }
+    }
+}
+
+afterEvaluate {
+    if (tasks.findByName('remapJar') != null) {
+        jar.archiveClassifier.set('dev')
     }
 }
 

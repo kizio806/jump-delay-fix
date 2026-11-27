@@ -20,6 +20,9 @@ Examples:
 - `2.0.0+mc26.1.x` (active on `support/26.1.x`)
 - `2.0.0+mc1.21.9-1.21.11` (active on `support/1.21.9-1.21.11`)
 - `2.0.0+mc1.21.0-1.21.8` (active on `support/1.21.0-1.21.8`)
+- `2.0.0+mc1.20.5-1.20.6` (active on `support/1.20.5-1.20.6`)
+- `2.0.0+mc1.20.2-1.20.4` (active on `support/1.20.2-1.20.4`)
+- `2.0.0+mc1.20.0-1.20.1` (active on `support/1.20.0-1.20.1`)
 
 ### Increment Semantics
 
@@ -43,6 +46,9 @@ support/26.2.x:          2.0.0+mc26.2.x
 support/26.1.x:          2.0.0+mc26.1.x
 support/1.21.9-1.21.11:  2.0.0+mc1.21.9-1.21.11
 support/1.21.0-1.21.8:   2.0.0+mc1.21.0-1.21.8
+support/1.20.5-1.20.6:   2.0.0+mc1.20.5-1.20.6
+support/1.20.2-1.20.4:   2.0.0+mc1.20.2-1.20.4
+support/1.20.0-1.20.1:   2.0.0+mc1.20.0-1.20.1
 ```
 
 ### Backport and Parity Mandate
@@ -66,6 +72,9 @@ The repository maintains dedicated long-term branches corresponding to distinct 
 | `support/26.1.x` | Minecraft 26.1.x (26.1–26.1.2) | **Active Support** | Synchronized features, backported bug fixes, and security updates. |
 | `support/1.21.9-1.21.11` | Minecraft 1.21.9–1.21.11 | **Active Support** | Synchronized features, backported bug fixes, and security updates. |
 | `support/1.21.0-1.21.8` | Minecraft 1.21.0–1.21.8 | **Active Support** | Synchronized features, backported bug fixes, and security updates. |
+| `support/1.20.5-1.20.6` | Minecraft 1.20.5–1.20.6 | **LTS Support** | Synchronized features, backported bug fixes, and security updates. |
+| `support/1.20.2-1.20.4` | Minecraft 1.20.2–1.20.4 | **LTS Support** | Synchronized features, backported bug fixes, and security updates. |
+| `support/1.20.0-1.20.1` | Minecraft 1.20.0–1.20.1 | **LTS Support** | Synchronized features, backported bug fixes, and security updates. |
 
 ### End-of-Life (EOL) Policy
 
@@ -116,6 +125,9 @@ Examples:
 - `v2.0.0+mc26.1.x`
 - `v2.0.0+mc1.21.9-1.21.11`
 - `v2.0.0+mc1.21.0-1.21.8`
+- `v2.0.0+mc1.20.5-1.20.6`
+- `v2.0.0+mc1.20.2-1.20.4`
+- `v2.0.0+mc1.20.0-1.20.1`
 
 ### GitHub Release Title Convention
 

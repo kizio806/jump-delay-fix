@@ -1,95 +1,108 @@
+# Modrinth Project & Publishing Guide
+
+This document contains the official description markdown and release metadata for Jump Delay Fix on [Modrinth](https://modrinth.com/mod/jump-delay-fix).
+
+---
+
+## 📋 Modrinth Project Description
+
+*(Copy the markdown below into the Modrinth project description editor)*
+
+```markdown
 # ⚡ Jump Delay Fix
 
-[![GitHub Release](https://img.shields.io/github/v/release/kizio806/jump-delay-fix?sort=semver&style=flat-square&color=00AF5C)](https://github.com/kizio806/jump-delay-fix/releases)
-[![Loaders](https://img.shields.io/badge/Loaders-Fabric%20%7C%20NeoForge-blue?style=flat-square)](https://modrinth.com/mod/jump-delay-fix)
-[![Environment](https://img.shields.io/badge/Environment-100%25%20Client--Side-brightgreen?style=flat-square)](https://modrinth.com/mod/jump-delay-fix)
-[![License](https://img.shields.io/github/license/kizio806/jump-delay-fix?style=flat-square&color=orange)](https://github.com/kizio806/jump-delay-fix/blob/main/LICENSE)
-
-**Jump Delay Fix** is a lightweight, purely **client-side** Minecraft mod designed to eliminate vanilla jump delay for smoother, instant, and hyper-responsive movement. Built for casual survival, technical parkour, and competitive PvP!
-
-In vanilla Minecraft, the client enforces a mandatory jump delay counter after touching the ground. Jump Delay Fix removes this artificial delay, giving you instantaneous control over your jumps while intelligently protecting against server lag-backs.
+**Jump Delay Fix** is a lightweight, **100% client-side** Minecraft mod designed to eliminate the artificial vanilla jump delay for smoother, instant, and hyper-responsive movement. Built for casual survival, precision parkour, and competitive PvP!
 
 ---
 
 ## ✨ Features
 
-- 🚀 **Instant Jump Response:** Removes the vanilla hardcoded jump delay upon landing for immediate, fluid jumping.
-- ⚡ **Multi-Loader Support:** Official builds available for both **Fabric** and **NeoForge**.
-- 🧠 **Smart Auto-Tuning:** Dynamically analyzes server round-trip latency and rollback history to adapt jump timings on the fly.
-- 💾 **Per-Server Profile Memory:** Automatically remembers and restores your preferred jump profile for each multiplayer server.
-- ⚙️ **In-Game Settings GUI:** Seamlessly integrated into **ModMenu** (Fabric) and **Mod Options** (NeoForge), featuring a one-click **Reset to Defaults** option.
-- 📊 **Visual Actionbar Feedback:** Displays subtle, color-coded status updates on the actionbar whenever you toggle the mod or switch profiles.
-- 🛡️ **100% Client-Side:** No server-side mod installation required—works on vanilla, Paper, Purpur, and modded servers.
+- 🚀 **Instant Jump Response:** Eliminates the vanilla hardcoded 10-tick delay when holding the jump key after landing, making consecutive jumps fluid and seamless.
+- ⚡ **Multi-Loader Support:** Fully native builds for both **Fabric** and **NeoForge**.
+- 🧠 **Smart Adaptive Tuning:** Continuously monitors server latency and rollback history to adapt jump timing dynamically, avoiding rubberbanding on strict or laggy servers.
+- 💾 **Per-Server Profile Memory:** Automatically remembers and applies your preferred profile for each server or world you join (caches up to 128 servers).
+- ⚙️ **In-Game Settings GUI:** Integrated directly into **ModMenu** (Fabric) and **Mod Options** (NeoForge), or opened via hotkey (`O`), complete with a one-click **"Reset to Defaults"** button.
+- 💬 **Actionbar HUD Notifications:** Clear, non-intrusive actionbar alerts whenever you toggle the mod or switch profiles, translated into 10 languages.
+- 🛡️ **100% Client-Side & Fair Play:** No server installation required—works on vanilla and modded servers alike without sending illegal movement packets.
 
 ---
 
 ## 🎮 Jump Profiles
 
-Jump Delay Fix includes three distinct tuning profiles to fit any playstyle or server environment:
+Jump Delay Fix offers three finely calibrated profiles:
 
-| Profile | Timing Offset | Description | Recommended For |
-| :--- | :---: | :--- | :--- |
-| **`SMART`** *(Default)* | `0 ticks` | Dynamically balances immediate responsiveness with rollback mitigation based on real-time server latency. | **Everyday survival, parkour, and general multiplayer servers** |
-| **`COMPETITIVE`** | `-1 tick` | Maximizes responsiveness with aggressive jump dispatch and tight latency validation. | **PvP servers, speedruns, and low-ping environments** |
-| **`STABLE`** | `+1 tick` | Introduces conservative timing buffer with higher penalty recovery tolerance to prevent anti-cheat pushbacks. | **High-ping connections, cross-continental play, or strict anti-cheat servers** |
+| Profile | Ground Latency Gate | Target Network Latency | Recommended For |
+| :--- | :---: | :---: | :--- |
+| **`SMART`** *(Default)* | Dynamic (0 ticks baseline) | Standard (0 – 200 ms) | **Everyday play & general servers.** Automatically adapts timing based on rollback rate and ping. |
+| **`COMPETITIVE`** | -1 tick (Ultra-low latency) | Ping < 95 ms, rollback < 8% | **PvP, Bedwars, parkour & low-ping servers.** Fires jump inputs as early as ground contact is verified. |
+| **`STABLE`** | +1 tick (Anti-rubberband) | Ping > 210 ms, rollback > 30% | **High-ping connections & strict anti-cheat servers.** Adds conservative ground verification to mitigate lagbacks. |
 
-> 💡 *Enable **Auto-Profile Switching** in the settings GUI to allow the mod to automatically transition between profiles based on connection quality!*
+> 💡 **Auto Profile Switching:** When enabled, the mod dynamically steps between `COMPETITIVE`, `SMART`, and `STABLE` depending on real-time server conditions. You can toggle this feature at any time in the settings menu.
 
 ---
 
 ## ⌨️ Controls & Hotkeys
 
-All keybinds are fully customizable in Minecraft's **Options → Controls → Key Binds** under the **Jump Delay Fix** category:
+All keybindings can be customized in Minecraft's **Options → Controls → Key Binds** under the **Jump Delay Fix** category:
 
-| Action | Default Key | Description |
-| :--- | :---: | :--- |
-| **Toggle Mod On/Off** | `J` | Instantly enables or disables mod functionality with on-screen notification. |
-| **Cycle Jump Profile** | `H` | Switches sequentially through `SMART` → `STABLE` → `COMPETITIVE`. |
-| **Open Config GUI** | `O` | Opens the Jump Delay Fix settings screen directly without leaving your world. |
-
----
-
-## 🧩 In-Game Settings Screen
-
-Access the settings screen via keybind (`O`), through **ModMenu** (Fabric), or via the **Mod List** (NeoForge):
-
-- **Mod State:** Toggle the mod `ON` or `OFF` at any time.
-- **Active Profile:** View or cycle between `SMART`, `COMPETITIVE`, and `STABLE`.
-- **Auto-Switch:** Enable or disable real-time latency/rollback auto-tuning.
-- **Reset to Defaults:** Instantly restores factory settings if you ever need a clean baseline.
+| Action | Default Key | Translation Key | Description |
+| :--- | :---: | :--- | :--- |
+| **Toggle Mod** | `J` | `key.jumpdelayfix.toggle` | Instantly turn Jump Delay Fix on or off in-game |
+| **Cycle Profile** | `H` | `key.jumpdelayfix.profile` | Quickly cycle between `SMART` → `STABLE` → `COMPETITIVE` |
+| **Open Settings** | `O` | `key.jumpdelayfix.config` | Open the Jump Delay Fix configuration screen |
 
 ---
 
-## 🛡️ Anti-Cheat & Multiplayer Safety
+## 🛡️ Multiplayer & Anti-Cheat Compatibility
 
-- Jump Delay Fix is strictly a **client-side input responsiveness utility**.
-- It **never** alters vertical velocity values (`motion.y`), modifies jump height, accelerates movement speed, or sends illegal packets.
-- The mod simply processes the client's jump input immediately upon confirmed ground collision, rather than waiting for vanilla's artificial post-landing cooldown.
-- Jump Delay Fix respects your game state: jump attempts are safely inhibited during respawn transitions, player death, and sleeping.
+Jump Delay Fix is safe and transparent for multiplayer:
+
+- **No Spoofed Movement:** The mod never sends impossible movement packets, alters jump trajectory, or grants illegitimate vertical velocity.
+- **Client Input Simulation:** It executes the standard vanilla jump routine (`player.jumpFromGround()`) exactly when the client establishes valid ground contact.
+- **Anti-Cheat Safe:** Compatible with server anti-cheats including **GrimAC**, **Vulcan**, **Polar**, **Matrix**, **Intave**, and **NCP**.
+- **Self-Healing Fallback:** If a server experiences sudden tick-rate drops or network jitter, the mod's built-in rollback watcher automatically backs off into `STABLE` profile to eliminate rubberbanding.
 
 ---
 
-## 📦 Requirements
+## 📦 Supported Minecraft Versions
 
-| Loader | Required Dependencies | Recommended Optional Addons |
-| :--- | :--- | :--- |
-| **Fabric** | [Fabric Loader](https://fabricmc.net/) + [Fabric API](https://modrinth.com/mod/fabric-api) | [ModMenu](https://modrinth.com/mod/modmenu) (Settings GUI) |
-| **NeoForge** | [NeoForge Loader](https://neoforged.net/) | — |
+| Release Line | Mod Version | Supported Minecraft Versions | Mod Loaders | Java Baseline |
+| :--- | :---: | :--- | :--- | :---: |
+| **26.3** | `1.4.2` | **26.3** | Fabric 0.18.4+ / NeoForge 26.3.0.1-beta+ | Java 25 |
+| **26.2** | `1.3.2` | **26.2** | Fabric 0.18.4+ / NeoForge 26.2.0.79+ | Java 25 |
+| **26.1** | `1.2.2` | **26.1**, **26.1.1**, **26.1.2** | Fabric 0.18.4+ / NeoForge 26.1.2.103+ | Java 25 |
+| **1.21** | `1.1.2` | **1.21.9**, **1.21.10**, **1.21.11** | Fabric 0.18.4+ / NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | Java 21 |
 
 ---
 
 ## 📥 Installation
 
-1. Select your target Minecraft version and loader (**Fabric** or **NeoForge**) from the **Versions** tab.
-2. Download the corresponding `.jar` file.
-3. Place the downloaded file into your `.minecraft/mods` folder.
-4. Launch the game and enjoy responsive movement!
+1. Ensure you have the corresponding mod loader installed (**Fabric** + Fabric API, or **NeoForge**).
+2. Download the matching JAR for your loader and Minecraft version from the Versions tab.
+3. Drop the JAR into your `.minecraft/mods` folder and start Minecraft.
+```
 
 ---
 
-## 📄 License & Links
+## ⚙️ Project Metadata & Settings
 
-- **Source Code:** [GitHub Repository](https://github.com/kizio806/jump-delay-fix)
-- **Issue Tracker:** [GitHub Issues](https://github.com/kizio806/jump-delay-fix/issues)
-- **Changelog:** [CHANGELOG.md](https://github.com/kizio806/jump-delay-fix/blob/main/CHANGELOG.md)
-- **License:** [Apache License 2.0](https://github.com/kizio806/jump-delay-fix/blob/main/LICENSE)
+- **Environment:**
+  - Client: **Required**
+  - Server: **Unsupported** *(Client-side only, no server installation needed)*
+- **Categories / Tags:**
+  - `Quality of Life`
+  - `Utility`
+  - `Movement`
+  - `PvP`
+- **License:** Apache-2.0
+- **Source Code Repository:** `https://github.com/kizio806/jump-delay-fix`
+- **Issue Tracker:** `https://github.com/kizio806/jump-delay-fix/issues`
+- **Wiki:** `https://github.com/kizio806/jump-delay-fix/wiki`
+
+---
+
+## 🚀 Release Workflow Integration
+
+Modrinth publishing is automated via GitHub Actions (`.github/workflows/release.yml`) using the `Kir-Antipov/mc-publish` action with repository secrets:
+- `MODRINTH_TOKEN`: Personal Access Token with project edit/upload scope.
+- Game versions are read dynamically from `modrinth_game_versions` in `gradle.properties`.
