@@ -166,4 +166,96 @@ class JumpDelayFixEngineTest {
 
         assertEquals(JumpProfile.SMART, configManager.resolveProfile("global"));
     }
+
+    @Test
+    void shouldHandleDoubleInitializationAndIdempotentShutdown() {
+        ConfigManager configManager = new ConfigManager();
+        JumpDelayFixEngine engine = new JumpDelayFixEngine(configManager, new HashMap<>());
+
+        StubJumpInput input = new StubJumpInput();
+        engine.init(input, enabled -> {}, tempDir);
+        assertTrue(engine.isInitialized());
+
+        // Second init should register safely and return early at shutdown hook check
+        engine.init(input, enabled -> {}, tempDir);
+        assertTrue(engine.isInitialized());
+
+        engine.shutdown();
+        assertTrue(engine.isInitialized());
+
+        // Second shutdown must be a safe no-op
+        engine.shutdown();
+        assertTrue(engine.isInitialized());
+
+        engine.resetForTests();
+        assertFalse(engine.isInitialized());
+    }
+
+    private static final class LatencyJumpInput implements JumpInput {
+        private final int latency;
+
+        private LatencyJumpInput(int latency) {
+            this.latency = latency;
+        }
+
+        @Override
+        public boolean isJumpPressed() {
+            return false;
+        }
+
+        @Override
+        public boolean isPlayerOnGround() {
+            return true;
+        }
+
+        @Override
+        public void jump() {
+        }
+
+        @Override
+        public int getLatencyMs() {
+            return latency;
+        }
+    }
+
+    @Test
+    void shouldFallbackToSmartProfileWhenLatencyIsUnknownOrNegative() {
+        ConfigManager configManager = new ConfigManager();
+        configManager.load(tempDir);
+        configManager.setAutoProfileSwitch(true);
+
+        Map<String, com.kizio.jumpdelayfix.model.ServerAdaptiveStats> statsMap = new HashMap<>();
+        JumpDelayFixEngine engine = new JumpDelayFixEngine(configManager, statsMap);
+        engine.init(new LatencyJumpInput(-1), enabled -> {}, tempDir);
+
+        com.kizio.jumpdelayfix.model.ServerAdaptiveStats stats = new com.kizio.jumpdelayfix.model.ServerAdaptiveStats();
+        for (int i = 0; i < 10; i++) {
+            stats.update(1, 0); // 10 confirmed jumps, 0 rollbacks
+        }
+        statsMap.put("global", stats);
+
+        engine.onClientTick();
+        // Since latency is -1 (unknown), it must fall back to SMART rather than COMPETITIVE
+        assertEquals(JumpProfile.SMART, engine.getProfile());
+    }
+
+    @Test
+    void shouldAutoSwitchToCompetitiveWhenLatencyIsLowAndRollbackIsZero() {
+        ConfigManager configManager = new ConfigManager();
+        configManager.load(tempDir);
+        configManager.setAutoProfileSwitch(true);
+
+        Map<String, com.kizio.jumpdelayfix.model.ServerAdaptiveStats> statsMap = new HashMap<>();
+        JumpDelayFixEngine engine = new JumpDelayFixEngine(configManager, statsMap);
+        engine.init(new LatencyJumpInput(20), enabled -> {}, tempDir);
+
+        com.kizio.jumpdelayfix.model.ServerAdaptiveStats stats = new com.kizio.jumpdelayfix.model.ServerAdaptiveStats();
+        for (int i = 0; i < 10; i++) {
+            stats.update(1, 0); // 10 confirmed jumps, 0 rollbacks
+        }
+        statsMap.put("global", stats);
+
+        engine.onClientTick();
+        assertEquals(JumpProfile.COMPETITIVE, engine.getProfile());
+    }
 }

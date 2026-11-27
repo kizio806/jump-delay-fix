@@ -91,4 +91,22 @@ class ConfigManagerTest {
         assertDoesNotThrow(manager2::flushNow);
         manager2.shutdown();
     }
+
+    @Test
+    void shouldPersistAsyncWhenDebounceCooldownExpiresInFlushIfDue() {
+        ConfigManager manager = new ConfigManager();
+        manager.load(tempDir);
+        manager.rememberProfile("debounce-server", JumpProfile.COMPETITIVE);
+
+        for (int i = 0; i < 20; i++) {
+            manager.flushIfDue();
+        }
+
+        manager.flushIfDue();
+        manager.flushIfDue();
+        manager.shutdown();
+
+        ConfigStorage.LoadedConfig loaded = ConfigStorage.load(tempDir.resolve("jumpdelayfix.properties"));
+        assertEquals(JumpProfile.COMPETITIVE, loaded.serverProfiles().get("debounce-server"));
+    }
 }
