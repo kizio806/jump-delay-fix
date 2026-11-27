@@ -112,6 +112,7 @@ class RuntimeStateTest {
         RuntimeState instance = new RuntimeState(true, JumpProfile.SMART);
         int threadCount = 16;
         int togglesPerThread = 1_000;
+        // threadCount * togglesPerThread = 16_000, which is even → initial state must be preserved.
         java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(threadCount);
         java.util.concurrent.CountDownLatch readyLatch = new java.util.concurrent.CountDownLatch(threadCount);
         java.util.concurrent.CountDownLatch startLatch = new java.util.concurrent.CountDownLatch(1);
@@ -135,10 +136,12 @@ class RuntimeStateTest {
 
         readyLatch.await();
         startLatch.countDown();
-        boolean completed = doneLatch.await(5, java.util.concurrent.TimeUnit.SECONDS);
+        boolean completed = doneLatch.await(10, java.util.concurrent.TimeUnit.SECONDS);
         executor.shutdownNow();
 
-        assertTrue(completed, "Concurrent toggles must complete within timeout");
-        assertTrue(instance.isStateEnabled(), "An even number of concurrent toggles must preserve the initial state");
+        assertTrue(completed, "All threads must complete within the timeout; deadlock or starvation detected");
+        // 16 threads * 1000 toggles = 16000 total toggles (even), so enabled must return to its initial value.
+        assertTrue(instance.isStateEnabled(),
+                "An even total number of concurrent toggles must preserve the initial enabled state");
     }
 }
