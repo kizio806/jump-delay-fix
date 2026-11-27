@@ -31,7 +31,7 @@ jobs:
       id: jvm
       run: |
         JVM_VER=$(grep '^java_version=' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
-        if [ -z "$JVM_VER" ] || [ "$JVM_VER" -lt 17 ]; then
+        if [ -z "$JVM_VER" ] || [ "$JVM_VER" -lt 21 ]; then
           RUNNER_JVM="21"
         else
           RUNNER_JVM="$JVM_VER"

@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -46,13 +45,10 @@ class FabricMetadataContractTest {
             reader.accept(classNode, 0);
 
             Set<String> invokedMethods = new HashSet<>();
-            Set<String> accessedFields = new HashSet<>();
             for (MethodNode method : classNode.methods) {
                 for (AbstractInsnNode insn : method.instructions) {
                     if (insn instanceof MethodInsnNode methodInsn) {
                         invokedMethods.add(methodInsn.name);
-                    } else if (insn instanceof FieldInsnNode fieldInsn) {
-                        accessedFields.add(fieldInsn.name);
                     }
                 }
             }
