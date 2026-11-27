@@ -1,6 +1,6 @@
 plugins {
-    id 'com.diffplug.spotless' version '7.0.2'
-    id 'org.sonarqube' version '7.5.0.8588'
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.sonarqube)
     id 'jacoco'
 }
 
@@ -38,7 +38,6 @@ sonar {
         property 'sonar.organization', 'kizio806'
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.coverage.exclusions', '**/fabric/**,**/fabric/**/*,**/neoforge/**,**/neoforge/**/*,fabric/**,fabric/**/*,neoforge/**,neoforge/**/*,**/client/**,**/client/**/*'
-        property 'sonar.cpd.exclusions', '**/fabric/**,**/fabric/**/*,**/neoforge/**,**/neoforge/**/*,fabric/**,fabric/**/*,neoforge/**,neoforge/**/*,**/client/**,**/client/**/*'
     }
 }
 

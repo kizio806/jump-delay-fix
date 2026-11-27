@@ -21,7 +21,8 @@ public final class NeoForgeJumpInput implements JumpInput {
     @Override
     public boolean isJumpPressed() {
         Minecraft client = Minecraft.getInstance();
-        return client.options != null
+        return client.screen == null
+                && client.options != null
                 && client.options.keyJump != null
                 && client.options.keyJump.isDown();
     }
@@ -30,7 +31,7 @@ public final class NeoForgeJumpInput implements JumpInput {
     public boolean isPlayerOnGround() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client.player;
-        return player != null && player.onGround();
+        return player != null && player.onGround() && !player.onClimbable();
     }
 
     @Override
@@ -56,7 +57,8 @@ public final class NeoForgeJumpInput implements JumpInput {
         if (player == null || !player.isAlive() || player.isSleeping()
                 || player.isPassenger() || player.isFallFlying()
                 || player.getAbilities().flying || player.isInWater() || player.isSwimming()
-                || player.isVisuallyCrawling() || player.hasEffect(MobEffects.LEVITATION)) {
+                || player.isVisuallyCrawling() || player.onClimbable()
+                || player.hasEffect(MobEffects.LEVITATION)) {
             lastPlayerId = -1;
             return false;
         }
