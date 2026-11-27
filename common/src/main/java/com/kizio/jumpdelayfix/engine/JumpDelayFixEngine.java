@@ -43,6 +43,7 @@ public final class JumpDelayFixEngine {
     private Thread shutdownHook;
     private boolean shutdownHookRegistered;
     private String activeServerId = DEFAULT_SERVER_ID;
+    private ServerAdaptiveStats activeServerStats;
     private int lastConfirmedJumps;
     private int lastRejectedJumps;
     private int profileSwitchCooldownTicks;
@@ -78,6 +79,7 @@ public final class JumpDelayFixEngine {
 
         serverStats.clear();
         activeServerId = DEFAULT_SERVER_ID;
+        activeServerStats = null;
         runtimeState.setStateEnabled(true);
         runtimeState.setStateProfile(resolveProfileForServer(activeServerId));
 
@@ -167,9 +169,10 @@ public final class JumpDelayFixEngine {
     public synchronized void resetToDefaults() {
         configManager.resetToDefaults();
         serverStats.clear();
+        activeServerStats = null;
         activeServerId = normalizeServerId(jumpHandler.getServerIdentifier());
-        RuntimeState.setEnabled(true);
-        RuntimeState.setProfile(resolveProfileForServer(activeServerId));
+        runtimeState.setStateEnabled(true);
+        runtimeState.setStateProfile(resolveProfileForServer(activeServerId));
         lastConfirmedJumps = jumpHandler.getConfirmedJumpCount();
         lastRejectedJumps = jumpHandler.getRejectedJumpCount();
         profileSwitchCooldownTicks = 0;
@@ -201,11 +204,12 @@ public final class JumpDelayFixEngine {
     public synchronized void onClientDisconnect() {
         configManager.flushNow();
         activeServerId = DEFAULT_SERVER_ID;
+        activeServerStats = null;
         jumpHandler.resetTransientState();
         lastConfirmedJumps = jumpHandler.getConfirmedJumpCount();
         lastRejectedJumps = jumpHandler.getRejectedJumpCount();
         profileSwitchCooldownTicks = 0;
-        RuntimeState.setProfile(resolveProfileForServer(activeServerId));
+        runtimeState.setStateProfile(resolveProfileForServer(activeServerId));
     }
 
     public synchronized void shutdown() {
@@ -243,10 +247,18 @@ public final class JumpDelayFixEngine {
         }
 
         activeServerId = serverId;
+        activeServerStats = null;
         jumpHandler.resetTransientState();
         runtimeState.setStateProfile(resolveProfileForServer(activeServerId));
         lastConfirmedJumps = jumpHandler.getConfirmedJumpCount();
         lastRejectedJumps = jumpHandler.getRejectedJumpCount();
+    }
+
+    private ServerAdaptiveStats getOrCreateActiveServerStats() {
+        if (activeServerStats == null) {
+            activeServerStats = serverStats.computeIfAbsent(activeServerId, ignored -> new ServerAdaptiveStats());
+        }
+        return activeServerStats;
     }
 
     private void updateServerStats() {
@@ -259,7 +271,7 @@ public final class JumpDelayFixEngine {
         lastConfirmedJumps = confirmed;
         lastRejectedJumps = rejected;
 
-        ServerAdaptiveStats stats = serverStats.computeIfAbsent(activeServerId, ignored -> new ServerAdaptiveStats());
+        ServerAdaptiveStats stats = getOrCreateActiveServerStats();
         stats.update(confirmedDelta, rejectedDelta);
     }
 
@@ -268,7 +280,7 @@ public final class JumpDelayFixEngine {
             return;
         }
 
-        ServerAdaptiveStats stats = serverStats.get(activeServerId);
+        ServerAdaptiveStats stats = activeServerStats;
         if (stats == null) {
             return;
         }
@@ -285,7 +297,6 @@ public final class JumpDelayFixEngine {
         }
 
         runtimeState.setStateProfile(targetProfile);
-        rememberProfileForActiveServer(targetProfile);
         profileSwitchCooldownTicks = AUTO_SWITCH_COOLDOWN_TICKS;
 
         LOGGER.debug(
@@ -372,6 +383,7 @@ public final class JumpDelayFixEngine {
         toggleFeedback = ToggleFeedback.NO_OP;
         configManager.resetForTests();
         serverStats.clear();
+        activeServerStats = null;
         activeServerId = DEFAULT_SERVER_ID;
         lastConfirmedJumps = 0;
         lastRejectedJumps = 0;

@@ -4,11 +4,11 @@ import com.kizio.jumpdelayfix.model.JumpProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -25,8 +25,8 @@ public final class ConfigStorage {
     private static final String KEY_SERVER_PROFILE_PREFIX = "serverProfile.";
 
     private ConfigStorage() {
-
     }
+
     public static LoadedConfig load(Path filePath) {
         Objects.requireNonNull(filePath, "filePath");
 
@@ -38,8 +38,8 @@ public final class ConfigStorage {
         }
 
         Properties properties = new Properties();
-        try (InputStream input = Files.newInputStream(filePath)) {
-            properties.load(input);
+        try (BufferedReader reader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8)) {
+            properties.load(reader);
         } catch (IOException exception) {
             LOGGER.warn("Failed to load config from {}. Falling back to defaults.", filePath, exception);
             return new LoadedConfig(config, profiles);
@@ -66,6 +66,7 @@ public final class ConfigStorage {
 
         return new LoadedConfig(config, profiles);
     }
+
     public static void save(Path filePath, RuntimeConfig config, Map<String, JumpProfile> serverProfiles) {
         Objects.requireNonNull(filePath, "filePath");
         Objects.requireNonNull(config, "config");
@@ -88,8 +89,8 @@ public final class ConfigStorage {
             Path targetDirectory = parent != null ? parent : Path.of(".");
             Path temporaryFile = Files.createTempFile(targetDirectory, "jumpdelayfix-", ".properties.tmp");
             try {
-                try (OutputStream output = Files.newOutputStream(temporaryFile)) {
-                    properties.store(output, "JumpDelayFix configuration");
+                try (BufferedWriter writer = Files.newBufferedWriter(temporaryFile, StandardCharsets.UTF_8)) {
+                    properties.store(writer, "JumpDelayFix configuration");
                 }
                 try {
                     Files.move(
@@ -105,10 +106,10 @@ public final class ConfigStorage {
                 Files.deleteIfExists(temporaryFile);
             }
         } catch (IOException exception) {
-
             LOGGER.warn("Failed to persist config to {}. Runtime state remains active.", filePath, exception);
         }
     }
+
     private static JumpProfile parseProfile(String value) {
         if (value == null) {
             return null;
@@ -126,6 +127,12 @@ public final class ConfigStorage {
     }
 
     private static String decodeServerId(String encodedServerId) {
+        if (encodedServerId == null || encodedServerId.isBlank()) {
+            return null;
+        }
+        if (encodedServerId.contains(".") || encodedServerId.contains(":")) {
+            return encodedServerId;
+        }
         try {
             byte[] decoded = Base64.getUrlDecoder().decode(encodedServerId);
             return new String(decoded, StandardCharsets.UTF_8);
@@ -133,6 +140,7 @@ public final class ConfigStorage {
             return null;
         }
     }
+
     public record LoadedConfig(RuntimeConfig config, Map<String, JumpProfile> serverProfiles) {
     }
 }

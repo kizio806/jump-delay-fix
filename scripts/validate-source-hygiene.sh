@@ -7,6 +7,7 @@ cd "$ROOT_DIR"
 
 SOURCE_DIRS=(
     "common/src/main/java"
+    "common/src/client/java"
     "common/src/test/java"
     "fabric/src/main/java"
     "fabric/src/test/java"
