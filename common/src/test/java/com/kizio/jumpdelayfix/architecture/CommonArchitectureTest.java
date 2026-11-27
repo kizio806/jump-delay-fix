@@ -47,4 +47,17 @@ class CommonArchitectureTest {
 
         rule.check(COMMON_CLASSES);
     }
+
+    @Test
+    void coreDomainMustNotDependOnMinecraftClasses() {
+        ArchRule rule = noClasses()
+                .that()
+                .resideInAnyPackage("..jump..", "..engine..", "..config..", "..model..", "..state..", "..input..")
+                .should()
+                .dependOnClassesThat()
+                .resideInAnyPackage("net.minecraft..")
+                .because("Core domain in common must remain strictly Minecraft-free");
+
+        rule.check(COMMON_CLASSES);
+    }
 }
