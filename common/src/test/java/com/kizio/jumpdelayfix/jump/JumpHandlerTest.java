@@ -20,8 +20,7 @@ class JumpHandlerTest {
 
     @BeforeEach
     void setUp() {
-        RuntimeState.setEnabled(true);
-        RuntimeState.setProfile(JumpProfile.SMART);
+        RuntimeState.reset();
         runtimeState = new RuntimeState(true, JumpProfile.SMART);
         input = new FakeJumpInput();
         handler = new JumpHandler(input, runtimeState);
@@ -205,7 +204,7 @@ class JumpHandlerTest {
 
     @Test
     void shouldNotAdvanceSuccessfulJumpStreakOrReducePenaltyOnInconclusiveTimeout() {
-        RuntimeState.setProfile(JumpProfile.SMART);
+        runtimeState.setStateProfile(JumpProfile.SMART);
         input.jumpPressed = true;
         input.onGround = true;
         handler.tick();
@@ -319,7 +318,7 @@ class JumpHandlerTest {
 
     @Test
     void shouldJumpImmediatelyOnLandingWhenSingleGroundedTickRequired() {
-        RuntimeState.setProfile(JumpProfile.COMPETITIVE);
+        runtimeState.setStateProfile(JumpProfile.COMPETITIVE);
         input.requiredGroundedTicksBeforeJump = 1;
 
         input.jumpPressed = true;
@@ -346,7 +345,7 @@ class JumpHandlerTest {
 
     @Test
     void shouldWaitExtraGroundedTickWhenTwoGroundedTicksRequired() {
-        RuntimeState.setProfile(JumpProfile.SMART);
+        runtimeState.setStateProfile(JumpProfile.SMART);
         input.requiredGroundedTicksBeforeJump = 2;
 
         input.jumpPressed = true;

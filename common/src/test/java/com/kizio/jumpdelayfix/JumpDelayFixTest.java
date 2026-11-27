@@ -28,6 +28,22 @@ class JumpDelayFixTest {
     @AfterEach
     void tearDown() {
         JumpDelayFix.resetForTests();
+        deleteDirectoryIfExists(Path.of("config"));
+    }
+
+    private static void deleteDirectoryIfExists(Path dir) {
+        if (!Files.exists(dir)) {
+            return;
+        }
+        try (var stream = Files.walk(dir)) {
+            stream.sorted((a, b) -> b.compareTo(a)).forEach(p -> {
+                try {
+                    Files.deleteIfExists(p);
+                } catch (IOException ignored) {
+                }
+            });
+        } catch (IOException ignored) {
+        }
     }
 
     @Test
@@ -231,8 +247,14 @@ class JumpDelayFixTest {
 
     @Test
     void shouldInitializeWithDefaultConfigDirectory() {
-        assertDoesNotThrow(() -> JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP));
-        assertTrue(JumpDelayFix.isEnabled());
+        Path defaultConfigDir = Path.of("config");
+        try {
+            assertDoesNotThrow(() -> JumpDelayFix.init(new NoOpJumpInput(), ToggleFeedback.NO_OP));
+            assertTrue(JumpDelayFix.isEnabled());
+        } finally {
+            JumpDelayFix.resetForTests();
+            deleteDirectoryIfExists(defaultConfigDir);
+        }
     }
 
     @Test

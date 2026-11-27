@@ -3,13 +3,14 @@ package com.kizio.jumpdelayfix.state;
 import com.kizio.jumpdelayfix.model.JumpProfile;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class RuntimeState {
 
     private static final RuntimeState DEFAULT_INSTANCE = new RuntimeState();
 
-    private final AtomicReference<Boolean> enabled;
+    private final AtomicBoolean enabled;
     private final AtomicReference<JumpProfile> profile;
 
     public RuntimeState() {
@@ -17,7 +18,7 @@ public final class RuntimeState {
     }
 
     public RuntimeState(boolean initialEnabled, JumpProfile initialProfile) {
-        this.enabled = new AtomicReference<>(initialEnabled);
+        this.enabled = new AtomicBoolean(initialEnabled);
         this.profile = new AtomicReference<>(Objects.requireNonNull(initialProfile, "initialProfile"));
     }
 
@@ -26,11 +27,17 @@ public final class RuntimeState {
     }
 
     public boolean isStateEnabled() {
-        return Boolean.TRUE.equals(enabled.get());
+        return enabled.get();
     }
 
     public boolean toggleState() {
-        return Boolean.TRUE.equals(enabled.updateAndGet(current -> !Boolean.TRUE.equals(current)));
+        boolean prev;
+        boolean next;
+        do {
+            prev = enabled.get();
+            next = !prev;
+        } while (!enabled.compareAndSet(prev, next));
+        return next;
     }
 
     public void setStateEnabled(boolean isEnabled) {
@@ -50,7 +57,7 @@ public final class RuntimeState {
     }
 
     public void resetState() {
-        enabled.set(Boolean.TRUE);
+        enabled.set(true);
         profile.set(JumpProfile.SMART);
     }
 

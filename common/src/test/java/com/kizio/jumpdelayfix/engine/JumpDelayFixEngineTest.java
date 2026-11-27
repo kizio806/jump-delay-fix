@@ -9,6 +9,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -104,10 +105,13 @@ class JumpDelayFixEngineTest {
 
     @Test
     void shouldSupportIsolatedRuntimeStateInjection() {
+        com.kizio.jumpdelayfix.state.RuntimeState.reset();
         com.kizio.jumpdelayfix.state.RuntimeState isolatedState =
                 new com.kizio.jumpdelayfix.state.RuntimeState(false, JumpProfile.COMPETITIVE);
+        ConfigManager configManager = new ConfigManager();
+        configManager.load(tempDir);
         JumpDelayFixEngine engine =
-                new JumpDelayFixEngine(new ConfigManager(), new HashMap<>(), isolatedState);
+                new JumpDelayFixEngine(configManager, new HashMap<>(), isolatedState);
 
         assertEquals(isolatedState, engine.getRuntimeState());
         assertFalse(engine.isEnabled());
@@ -117,5 +121,49 @@ class JumpDelayFixEngineTest {
         assertTrue(isolatedState.isStateEnabled());
         assertEquals(JumpProfile.SMART, engine.cycleProfile());
         assertEquals(JumpProfile.SMART, isolatedState.stateProfile());
+
+        // onClientDisconnect must update isolatedState and not DEFAULT_INSTANCE
+        isolatedState.setStateProfile(JumpProfile.COMPETITIVE);
+        com.kizio.jumpdelayfix.state.RuntimeState.setProfile(JumpProfile.STABLE);
+        engine.onClientDisconnect();
+        assertEquals(JumpProfile.SMART, isolatedState.stateProfile());
+        assertEquals(JumpProfile.STABLE, com.kizio.jumpdelayfix.state.RuntimeState.getProfile());
+
+        // resetToDefaults must update isolatedState and not DEFAULT_INSTANCE
+        isolatedState.setStateEnabled(false);
+        isolatedState.setStateProfile(JumpProfile.COMPETITIVE);
+        com.kizio.jumpdelayfix.state.RuntimeState.setEnabled(false);
+        com.kizio.jumpdelayfix.state.RuntimeState.setProfile(JumpProfile.STABLE);
+        engine.resetToDefaults();
+        assertTrue(isolatedState.isStateEnabled());
+        assertEquals(JumpProfile.SMART, isolatedState.stateProfile());
+        assertFalse(com.kizio.jumpdelayfix.state.RuntimeState.isEnabled());
+        assertEquals(JumpProfile.STABLE, com.kizio.jumpdelayfix.state.RuntimeState.getProfile());
+
+        com.kizio.jumpdelayfix.state.RuntimeState.reset();
+    }
+
+    @Test
+    void shouldNotPersistConfigDuringAutoProfileSwitch() {
+        ConfigManager configManager = new ConfigManager();
+        configManager.load(tempDir);
+        configManager.setAutoProfileSwitch(true);
+        configManager.flushNow();
+
+        Map<String, com.kizio.jumpdelayfix.model.ServerAdaptiveStats> statsMap = new HashMap<>();
+        JumpDelayFixEngine engine = new JumpDelayFixEngine(configManager, statsMap);
+        engine.init(new StubJumpInput(), enabled -> {}, tempDir);
+        assertEquals(JumpProfile.SMART, engine.getProfile());
+
+        com.kizio.jumpdelayfix.model.ServerAdaptiveStats stats = new com.kizio.jumpdelayfix.model.ServerAdaptiveStats();
+        for (int i = 0; i < 10; i++) {
+            stats.update(0, 1);
+        }
+        statsMap.put("global", stats);
+
+        engine.onClientTick();
+        assertEquals(JumpProfile.STABLE, engine.getProfile());
+
+        assertEquals(JumpProfile.SMART, configManager.resolveProfile("global"));
     }
 }

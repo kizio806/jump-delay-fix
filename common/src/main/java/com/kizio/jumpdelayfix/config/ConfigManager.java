@@ -41,25 +41,27 @@ public final class ConfigManager {
         this.configIo = Objects.requireNonNull(configIo, "configIo");
     }
 
-    public void load(Path configDirectory) {
+    public synchronized void load(Path configDirectory) {
         awaitPendingSaves();
         configFilePath = Objects.requireNonNull(configDirectory, "configDirectory").resolve("jumpdelayfix.properties");
 
         ConfigStorage.LoadedConfig loadedConfig = ConfigStorage.load(configFilePath);
         runtimeConfig = loadedConfig.config().copy();
 
-        serverProfiles.clear();
-        serverProfiles.putAll(loadedConfig.serverProfiles());
+        synchronized (serverProfiles) {
+            serverProfiles.clear();
+            serverProfiles.putAll(loadedConfig.serverProfiles());
+        }
 
         saveCooldownTicks = 0;
         dirty = false;
     }
 
-    public boolean autoProfileSwitch() {
+    public synchronized boolean autoProfileSwitch() {
         return runtimeConfig.autoProfileSwitch();
     }
 
-    public void setAutoProfileSwitch(boolean enabled) {
+    public synchronized void setAutoProfileSwitch(boolean enabled) {
         if (runtimeConfig.autoProfileSwitch() == enabled) {
             return;
         }
@@ -69,15 +71,19 @@ public final class ConfigManager {
     }
 
     public JumpProfile resolveProfile(String serverId) {
-        return serverProfiles.getOrDefault(serverId, JumpProfile.SMART);
+        synchronized (serverProfiles) {
+            return serverProfiles.getOrDefault(serverId, JumpProfile.SMART);
+        }
     }
 
     public void rememberProfile(String serverId, JumpProfile profile) {
-        serverProfiles.put(Objects.requireNonNull(serverId, "serverId"), Objects.requireNonNull(profile, "profile"));
+        synchronized (serverProfiles) {
+            serverProfiles.put(Objects.requireNonNull(serverId, "serverId"), Objects.requireNonNull(profile, "profile"));
+        }
         markDirty();
     }
 
-    public void flushIfDue() {
+    public synchronized void flushIfDue() {
         if (!dirty) {
             return;
         }
@@ -91,36 +97,45 @@ public final class ConfigManager {
         dirty = false;
     }
 
-    public void flushNow() {
+    public synchronized void flushNow() {
         awaitPendingSaves();
         if (!dirty) {
             return;
         }
 
-        ConfigStorage.save(configFilePath, runtimeConfig, serverProfiles);
+        Map<String, JumpProfile> serverProfilesSnapshot;
+        synchronized (serverProfiles) {
+            serverProfilesSnapshot = new LinkedHashMap<>(serverProfiles);
+        }
+
+        ConfigStorage.save(configFilePath, runtimeConfig, serverProfilesSnapshot);
         dirty = false;
         saveCooldownTicks = 0;
     }
 
-    public void resetToDefaults() {
+    public synchronized void resetToDefaults() {
         awaitPendingSaves();
         runtimeConfig = RuntimeConfig.defaults();
-        serverProfiles.clear();
+        synchronized (serverProfiles) {
+            serverProfiles.clear();
+        }
         dirty = true;
         saveCooldownTicks = 0;
         flushNow();
     }
 
-    public void resetForTests() {
+    public synchronized void resetForTests() {
         awaitPendingSaves();
         runtimeConfig = RuntimeConfig.defaults();
-        serverProfiles.clear();
+        synchronized (serverProfiles) {
+            serverProfiles.clear();
+        }
         configFilePath = Path.of("config", "jumpdelayfix.properties");
         saveCooldownTicks = 0;
         dirty = false;
     }
 
-    public void shutdown() {
+    public synchronized void shutdown() {
         awaitPendingSaves();
         configIo.shutdown();
         try {
@@ -133,15 +148,18 @@ public final class ConfigManager {
         }
     }
 
-    private void markDirty() {
+    private synchronized void markDirty() {
         dirty = true;
         saveCooldownTicks = CONFIG_SAVE_DEBOUNCE_TICKS;
     }
 
-    private void persistAsync() {
+    private synchronized void persistAsync() {
         Path filePathSnapshot = configFilePath;
         RuntimeConfig configSnapshot = runtimeConfig.copy();
-        Map<String, JumpProfile> serverProfilesSnapshot = new LinkedHashMap<>(serverProfiles);
+        Map<String, JumpProfile> serverProfilesSnapshot;
+        synchronized (serverProfiles) {
+            serverProfilesSnapshot = new LinkedHashMap<>(serverProfiles);
+        }
 
         pendingSave = pendingSave.exceptionally(exception -> null)
                 .thenRunAsync(() -> ConfigStorage.save(filePathSnapshot, configSnapshot, serverProfilesSnapshot), configIo);
