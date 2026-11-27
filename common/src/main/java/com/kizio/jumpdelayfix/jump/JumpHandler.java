@@ -8,10 +8,15 @@ import java.util.Objects;
 public final class JumpHandler {
 
     private static final JumpHandler NO_OP = new JumpHandler(NoOpJumpInput.INSTANCE, RuntimeState.defaultInstance());
+    // Number of ticks to buffer a jump press before it is considered
     private static final int JUMP_INPUT_BUFFER_TICKS = 3;
+    // Timeout ticks without lift before a jump is considered rejected
     private static final int JUMP_NO_LIFT_TIMEOUT_TICKS = 3;
+    // Maximum ticks to wait for landing after a jump before marking inconclusive
     private static final int JUMP_LANDING_TIMEOUT_TICKS = 20;
+    // Minimum airborne ticks to confirm a successful jump
     private static final int MIN_AIRBORNE_TICKS_FOR_CONFIRMATION = 2;
+    // Minimum vertical delta to consider the jump as having lifted off
     private static final double JUMP_SUCCESS_MIN_HEIGHT_DELTA = 0.005D;
 
     private final JumpInput input;
