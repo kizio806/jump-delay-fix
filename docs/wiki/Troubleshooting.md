@@ -43,10 +43,13 @@ This guide provides solutions to common issues, configuration problems, and erro
 ### 4. Game crashes on launch with `UnsupportedClassVersionError` or `ClassNotFoundException`
 - **Cause:** Incompatible Java runtime version or mismatched mod loader.
 - **Solutions:**
-  - **Check Java Version:** Minecraft **26.2** requires **Java 25**. Make sure your launcher instance is configured to use the appropriate JDK.
+  - **Check Java Version:**
+    - Minecraft **26.x** requires **Java 25**.
+    - Minecraft **1.21.x** requires **Java 21**.
+    - Make sure your launcher instance is configured to use the appropriate JDK.
   - **Check Loader Compatibility:**
-    - If you are running **Fabric**, make sure you installed `jumpdelayfix-fabric-...jar` and have [Fabric API](https://modrinth.com/mod/fabric-api) installed for 26.2.
-    - If you are running **NeoForge**, make sure you installed `jumpdelayfix-neoforge-...jar` (>= 26.2.0.79).
+    - If you are running **Fabric**, make sure you installed `jumpdelayfix-fabric-...jar` and have [Fabric API](https://modrinth.com/mod/fabric-api) installed.
+    - If you are running **NeoForge**, make sure you installed `jumpdelayfix-neoforge-...jar`.
     - Do NOT place both Fabric and NeoForge JARs in the same `mods/` directory.
 
 ---
@@ -73,4 +76,4 @@ Jump Delay Fix logs initialization and configuration events with the `jumpdelayf
 
 If you encounter an issue not covered here:
 - Open an issue on our [GitHub Issue Tracker](https://github.com/kizio806/jump-delay-fix/issues).
-- Include your Minecraft version (26.2), mod loader version, Jump Delay Fix version, and relevant excerpts from `.minecraft/logs/latest.log`.
+- Include your Minecraft version, mod loader version, Jump Delay Fix version, and relevant excerpts from `.minecraft/logs/latest.log`.

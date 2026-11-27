@@ -31,9 +31,9 @@ neoForge {
 neoForge.addModdingDependenciesTo(sourceSets.test)
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:6.1.3')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation platform(libs.junit.bom)
+    testImplementation libs.junit.jupiter
+    testRuntimeOnly libs.junit.platform.launcher
 }
 
 def metadataProperties = [
@@ -108,6 +108,66 @@ tasks.register('verifyDedicatedServerSafe') {
         ]
         def offenders = new LinkedHashSet<String>()
 
+        def parseConstantPoolClasses = { File file ->
+            def referencedClasses = new HashSet<String>()
+            file.withInputStream { is ->
+                def dis = new DataInputStream(is)
+                int magic = dis.readInt()
+                if (magic != 0xCAFEBABE) return referencedClasses
+                dis.readUnsignedShort()
+                dis.readUnsignedShort()
+                int cpCount = dis.readUnsignedShort()
+                def utf8Map = new HashMap<Integer, String>()
+                def classIndices = new ArrayList<Integer>()
+                int i = 1
+                while (i < cpCount) {
+                    int tag = dis.readUnsignedByte()
+                    switch (tag) {
+                        case 1:
+                            utf8Map.put(i, dis.readUTF())
+                            break
+                        case 7:
+                            classIndices.add(dis.readUnsignedShort())
+                            break
+                        case 8:
+                        case 16:
+                        case 19:
+                        case 20:
+                            dis.skipBytes(2)
+                            break
+                        case 3:
+                        case 4:
+                        case 9:
+                        case 10:
+                        case 11:
+                        case 12:
+                        case 17:
+                        case 18:
+                            dis.skipBytes(4)
+                            break
+                        case 5:
+                        case 6:
+                            dis.skipBytes(8)
+                            i++
+                            break
+                        case 15:
+                            dis.skipBytes(3)
+                            break
+                        default:
+                            return referencedClasses
+                    }
+                    i++
+                }
+                for (int classIdx : classIndices) {
+                    def className = utf8Map.get(classIdx)
+                    if (className != null) {
+                        referencedClasses.add(className)
+                    }
+                }
+            }
+            return referencedClasses
+        }
+
         sourceSets.main.output.classesDirs.files.each { classesDir ->
             if (!classesDir.exists()) {
                 return
@@ -121,10 +181,12 @@ tasks.register('verifyDedicatedServerSafe') {
                     return
                 }
 
-                def bytecodeAsText = new String(classFile.bytes, java.nio.charset.StandardCharsets.ISO_8859_1)
+                def referencedClasses = parseConstantPoolClasses(classFile)
                 disallowedPackages.each { disallowed ->
-                    if (bytecodeAsText.contains(disallowed)) {
-                        offenders.add("${relativePath} -> ${disallowed}")
+                    referencedClasses.each { refClass ->
+                        if (refClass.startsWith(disallowed)) {
+                            offenders.add("${relativePath} -> ${refClass}")
+                        }
                     }
                 }
             }

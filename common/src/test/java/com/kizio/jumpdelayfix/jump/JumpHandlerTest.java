@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JumpHandlerTest {
 
@@ -18,6 +20,7 @@ class JumpHandlerTest {
 
     @BeforeEach
     void setUp() {
+        RuntimeState.reset();
         runtimeState = new RuntimeState(true, JumpProfile.SMART);
         input = new FakeJumpInput();
         handler = new JumpHandler(input, runtimeState);
@@ -63,6 +66,32 @@ class JumpHandlerTest {
         isolatedState.setStateEnabled(false);
         isolatedHandler.tick();
         assertEquals(1, isolatedInput.jumpCalls, "Isolated handler must honor injected disabled state");
+    }
+
+    @Test
+    void shouldConstructWithDefaultRuntimeState() {
+        JumpHandler defaultHandler = new JumpHandler(input);
+        assertNotNull(defaultHandler);
+        input.jumpPressed = true;
+        input.onGround = true;
+        defaultHandler.tick();
+        assertEquals(1, input.jumpCalls);
+    }
+
+    @Test
+    void shouldThrowWhenConstructorArgumentsAreNull() {
+        assertThrows(NullPointerException.class, () -> new JumpHandler(null));
+        assertThrows(NullPointerException.class, () -> new JumpHandler(null, runtimeState));
+        assertThrows(NullPointerException.class, () -> new JumpHandler(input, null));
+    }
+
+    @Test
+    void shouldReturnNoOpInstance() {
+        JumpHandler noOp = JumpHandler.noOp();
+        assertNotNull(noOp);
+        noOp.tick();
+        noOp.resetTransientState();
+        assertEquals(0, noOp.getConfirmedJumpCount());
     }
 
     @Test
@@ -175,7 +204,7 @@ class JumpHandlerTest {
 
     @Test
     void shouldNotAdvanceSuccessfulJumpStreakOrReducePenaltyOnInconclusiveTimeout() {
-        RuntimeState.setProfile(JumpProfile.SMART);
+        runtimeState.setStateProfile(JumpProfile.SMART);
         input.jumpPressed = true;
         input.onGround = true;
         handler.tick();
@@ -289,7 +318,7 @@ class JumpHandlerTest {
 
     @Test
     void shouldJumpImmediatelyOnLandingWhenSingleGroundedTickRequired() {
-        RuntimeState.setProfile(JumpProfile.COMPETITIVE);
+        runtimeState.setStateProfile(JumpProfile.COMPETITIVE);
         input.requiredGroundedTicksBeforeJump = 1;
 
         input.jumpPressed = true;
@@ -316,7 +345,7 @@ class JumpHandlerTest {
 
     @Test
     void shouldWaitExtraGroundedTickWhenTwoGroundedTicksRequired() {
-        RuntimeState.setProfile(JumpProfile.SMART);
+        runtimeState.setStateProfile(JumpProfile.SMART);
         input.requiredGroundedTicksBeforeJump = 2;
 
         input.jumpPressed = true;

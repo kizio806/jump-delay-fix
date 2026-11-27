@@ -87,8 +87,12 @@ We maintain dedicated branches and published releases for every major modern Min
 | **26.2** | `v2.0.0+mc26.2.x` | **26.2** | Fabric 0.18.4+ (Fabric API 0.159.0+)<br>NeoForge 26.2.0.79+ | **Java 25** | [`support/26.2.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.2.x) |
 | **26.1** | `v2.0.0+mc26.1.x` | **26.1**, **26.1.1**, **26.1.2** | Fabric 0.18.4+ (Fabric API 0.155.2+)<br>NeoForge 26.1.2.103+ | **Java 25** | [`support/26.1.x`](https://github.com/kizio806/jump-delay-fix/tree/support/26.1.x) |
 | **1.21** | `v2.0.0+mc1.21.9-1.21.11` | **1.21.9**, **1.21.10**, **1.21.11** | Fabric 0.18.4+ (Fabric API 0.134.1+ / 0.138.4+ / 0.141.6+)<br>NeoForge 21.9.16+, 21.10.64+, 21.11.48+ | **Java 21** | [`support/1.21.9-1.21.11`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.9-1.21.11) |
+| **1.21** | `v2.0.0+mc1.21.0-1.21.8` | **1.21.0** – **1.21.8** (all 9 versions) | Fabric 0.18.4+ (Fabric API 0.100.8+)<br>NeoForge 21.0.167+ (through 21.8.57) | **Java 21** | [`support/1.21.0-1.21.8`](https://github.com/kizio806/jump-delay-fix/tree/support/1.21.0-1.21.8) |
+| **1.20** | `v2.0.0+mc1.20.5-1.20.6` | **1.20.5**, **1.20.6** | Fabric 0.18.4+ (Fabric API 0.97.7+)<br>NeoForge 20.5.21+ / 20.6.144 | **Java 21** | [`support/1.20.5-1.20.6`](https://github.com/kizio806/jump-delay-fix/tree/support/1.20.5-1.20.6) |
+| **1.20** | `v2.0.0+mc1.20.2-1.20.4` | **1.20.2** – **1.20.4** | Fabric 0.18.4+ (Fabric API 0.91.0+)<br>NeoForge 20.2.86+ / 20.4.253 | **Java 17** | [`support/1.20.2-1.20.4`](https://github.com/kizio806/jump-delay-fix/tree/support/1.20.2-1.20.4) |
+| **1.20** | `v2.0.0+mc1.20.0-1.20.1` | **1.20.0**, **1.20.1** | Fabric 0.18.4+ (Fabric API 0.83.0+)<br>NeoForge/Forge 47.x (47.3.0) | **Java 17** | [`support/1.20.0-1.20.1`](https://github.com/kizio806/jump-delay-fix/tree/support/1.20.0-1.20.1) |
 
-> 📖 **Full Compatibility & Checksums Matrix:** See [docs/compatibility-matrix.md](docs/compatibility-matrix.md) for detailed verification results across all 16 loader-Minecraft combinations.
+> 📖 **Full Compatibility & Checksums Matrix:** See [docs/compatibility-matrix.md](docs/compatibility-matrix.md) for detailed verification results across all 48 loader-Minecraft combinations.
 
 ---
 
@@ -126,7 +130,7 @@ serverProfile.bWluZWNyYWZ0LmV4YW1wbGUuY29t=SMART
 ## 🛠️ Building from Source
 
 ### Prerequisites
-- JDK 25 (for `main`, `support/26.2.x`, `support/26.1.x`) or JDK 21 (for `support/1.21.9-1.21.11`)
+- JDK 25 (for `main`, `support/26.2.x`, `support/26.1.x`), JDK 21 (for `support/1.21.9-1.21.11`, `support/1.21.0-1.21.8`, `support/1.20.5-1.20.6`), or JDK 17 (for `support/1.20.2-1.20.4`, `support/1.20.0-1.20.1`)
 - Git
 
 ### Build Commands

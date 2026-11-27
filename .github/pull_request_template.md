@@ -29,6 +29,6 @@ Closes #
 
 - [ ] `CHANGELOG.md` updated for user-visible changes
 - [ ] No `TODO` / `FIXME` / wildcard imports added to source
-- [ ] Metadata (`fabric.mod.json`, `mods.toml`) is consistent with `gradle.properties`
+- [ ] Metadata (`fabric.mod.json`, `neoforge.mods.toml`) is consistent with `gradle.properties`
 - [ ] Multi-version ranges (`fabric_game_versions`, `neoforge_game_versions`, `modrinth_game_versions`) remain valid
 - [ ] No client-only classes referenced from common or dedicated-server code

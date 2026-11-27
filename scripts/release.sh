@@ -55,6 +55,18 @@ echo "Target Minecraft Version: $MINECRAFT_VERSION"
 TAG_NAME="v${MOD_VERSION}"
 
 case "$BRANCH" in
+    support/1.20.0-1.20.1)
+        EXPECTED_MC_RANGE="mc1.20.0-1.20.1"
+        ;;
+    support/1.20.2-1.20.4)
+        EXPECTED_MC_RANGE="mc1.20.2-1.20.4"
+        ;;
+    support/1.20.5-1.20.6)
+        EXPECTED_MC_RANGE="mc1.20.5-1.20.6"
+        ;;
+    support/1.21.0-1.21.8)
+        EXPECTED_MC_RANGE="mc1.21.0-1.21.8"
+        ;;
     support/1.21.9-1.21.11)
         EXPECTED_MC_RANGE="mc1.21.9-1.21.11"
         ;;
@@ -82,21 +94,38 @@ if [[ ! -f "CHANGELOG.md" ]]; then
     exit 1
 fi
 
-if ! grep -q -E "^## (\[?${MOD_VERSION}\]?|\[Unreleased\])" CHANGELOG.md; then
-    echo "Error: CHANGELOG.md does not contain an entry for version '${MOD_VERSION}' or '[Unreleased]'."
-    exit 1
+ESCAPED_VERSION="$(printf '%s' "$MOD_VERSION" | sed 's/[+.]/\\&/g')"
+
+if [[ "$MODE" == "publish" ]]; then
+    if ! grep -q -E "^## (\[?${ESCAPED_VERSION}\]?)" CHANGELOG.md; then
+        echo "Error: CHANGELOG.md must contain an explicit entry for version '${MOD_VERSION}' before publishing."
+        exit 1
+    fi
+else
+    if ! grep -q -E "^## (\[?${ESCAPED_VERSION}\]?|\[Unreleased\])" CHANGELOG.md; then
+        echo "Error: CHANGELOG.md does not contain an entry for version '${MOD_VERSION}' or '[Unreleased]'."
+        exit 1
+    fi
 fi
 
 if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-    echo "Error: Local git tag '$TAG_NAME' already exists."
-    exit 1
+    if [[ "$MODE" == "publish" ]]; then
+        echo "Error: Local git tag '$TAG_NAME' already exists."
+        exit 1
+    else
+        echo "Warning: Local git tag '$TAG_NAME' already exists (ignoring in dry-run mode)."
+    fi
 fi
 
 if git remote get-url origin >/dev/null 2>&1; then
     REMOTE_TAG_CHECK=$(git ls-remote --tags origin "refs/tags/${TAG_NAME}" || true)
     if [[ -n "$REMOTE_TAG_CHECK" ]]; then
-        echo "Error: Remote tag '$TAG_NAME' already exists on origin."
-        exit 1
+        if [[ "$MODE" == "publish" ]]; then
+            echo "Error: Remote tag '$TAG_NAME' already exists on origin."
+            exit 1
+        else
+            echo "Warning: Remote tag '$TAG_NAME' already exists on origin (ignoring in dry-run mode)."
+        fi
     fi
 fi
 
@@ -117,10 +146,10 @@ echo "--- 2. Running strict verification and pre-publish gates ---"
 echo "--- 3. Building release artifacts ---"
 ./gradlew --no-daemon buildAll
 
+echo "--- 4. Verifying built artifacts ---"
 FABRIC_JAR="fabric/build/libs/${ARTIFACT_BASE_NAME}-${BASE_VERSION}-${MC_METADATA}-fabric.jar"
 NEOFORGE_JAR="neoforge/build/libs/${ARTIFACT_BASE_NAME}-${BASE_VERSION}-${MC_METADATA}-neoforge.jar"
 
-echo "--- 4. Verifying built artifacts ---"
 if [[ ! -f "$FABRIC_JAR" ]]; then
     echo "Error: Fabric artifact not found: $FABRIC_JAR"
     exit 1

@@ -2,6 +2,7 @@ package com.kizio.jumpdelayfix.fabric.client;
 
 import com.kizio.jumpdelayfix.JumpDelayFix;
 import com.kizio.jumpdelayfix.Constants;
+import com.kizio.jumpdelayfix.client.StatusMessages;
 import com.kizio.jumpdelayfix.fabric.client.input.FabricJumpInput;
 import com.kizio.jumpdelayfix.fabric.client.input.FabricKeyMappings;
 import com.kizio.jumpdelayfix.fabric.client.gui.FabricSettingsScreen;
@@ -38,7 +39,7 @@ public final class FabricClient {
                 ? client.gameDirectory.toPath().resolve("config")
                 : Path.of("config");
 
-        JumpDelayFix.init(new FabricJumpInput(), FabricStatusMessages::sendToggleStatus, configDir);
+        JumpDelayFix.init(new FabricJumpInput(), StatusMessages::sendToggleStatus, configDir);
         LOGGER.info("{} Fabric config directory: {}", Constants.MOD_NAME, configDir.toAbsolutePath());
 
         registerEvents(keyBindings);
@@ -47,14 +48,14 @@ public final class FabricClient {
 
     private static void registerEvents(FabricKeyMappings keyBindings) {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (keyBindings.consumeTogglePress()) {
+            while (keyBindings.consumeTogglePress()) {
                 JumpDelayFix.toggleEnabled();
             }
-            if (keyBindings.consumeProfileCyclePress()) {
-                FabricStatusMessages.sendProfileStatus(JumpDelayFix.cycleProfile());
+            while (keyBindings.consumeProfileCyclePress()) {
+                StatusMessages.sendProfileStatus(JumpDelayFix.cycleProfile());
             }
             if (keyBindings.consumeConfigScreenPress()) {
-                if (client != null) {
+                if (client != null && (client.gui == null || client.gui.screen() == null)) {
                     client.setScreenAndShow(new FabricSettingsScreen(client.gui.screen()));
                 }
             }

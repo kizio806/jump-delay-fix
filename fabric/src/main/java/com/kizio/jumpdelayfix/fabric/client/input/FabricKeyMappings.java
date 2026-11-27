@@ -50,14 +50,17 @@ public final class FabricKeyMappings extends AbstractKeyMappings {
         ));
     }
 
+    @Override
     public boolean consumeTogglePress() {
         return consumePress(toggleKey);
     }
 
+    @Override
     public boolean consumeProfileCyclePress() {
         return consumePress(profileKey);
     }
 
+    @Override
     public boolean consumeConfigScreenPress() {
         return consumePress(configKey);
     }
