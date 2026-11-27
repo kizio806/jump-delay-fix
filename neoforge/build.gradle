@@ -203,6 +203,7 @@ tasks.register('verifyDedicatedServerSafe') {
 
 jar {
     archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-neoforge.jar"
+    archiveClassifier.set('')
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_id}" }
     }
@@ -210,6 +211,7 @@ jar {
 
 tasks.named('sourcesJar') {
     archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-neoforge-sources.jar"
+    archiveClassifier.set('')
 }
 
 tasks.named('jacocoTestReport') {
