@@ -22,8 +22,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LocalizationCompletenessTest {
 
     private static final Gson GSON = new Gson();
-    private static final Path LANG_DIR = Path.of("src", "main", "resources", "assets", "jumpdelayfix", "lang");
+    private static final Path LANG_DIR = resolveLangDir();
     private static final String BASE_LOCALE = "en_us.json";
+
+    private static Path resolveLangDir() {
+        Path relativeSubproject = Path.of("src", "main", "resources", "assets", "jumpdelayfix", "lang");
+        if (Files.isDirectory(relativeSubproject)) {
+            return relativeSubproject;
+        }
+        Path relativeRoot = Path.of("common", "src", "main", "resources", "assets", "jumpdelayfix", "lang");
+        if (Files.isDirectory(relativeRoot)) {
+            return relativeRoot;
+        }
+        throw new IllegalStateException("Unable to locate lang directory relative to cwd: " + Path.of(".").toAbsolutePath());
+    }
 
     @Test
     void shouldContainMultipleLanguageFiles() throws IOException {

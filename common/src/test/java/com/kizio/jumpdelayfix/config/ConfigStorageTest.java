@@ -102,4 +102,23 @@ class ConfigStorageTest {
         assertTrue(loaded.config().autoProfileSwitch());
         assertTrue(loaded.serverProfiles().isEmpty());
     }
+
+    @Test
+    void shouldLoadLegacyUnencodedServerProfiles() throws IOException {
+        Path configFile = tempDir.resolve("legacy.properties");
+        Files.writeString(
+                configFile,
+                """
+                autoProfileSwitch=true
+                serverProfile.mc.hypixel.net=COMPETITIVE
+                serverProfile.play.example.com\\:25565=STABLE
+                """,
+                StandardCharsets.UTF_8
+        );
+
+        ConfigStorage.LoadedConfig loadedConfig = ConfigStorage.load(configFile);
+        assertEquals(2, loadedConfig.serverProfiles().size());
+        assertEquals(JumpProfile.COMPETITIVE, loadedConfig.serverProfiles().get("mc.hypixel.net"));
+        assertEquals(JumpProfile.STABLE, loadedConfig.serverProfiles().get("play.example.com:25565"));
+    }
 }

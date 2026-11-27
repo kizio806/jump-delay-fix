@@ -59,38 +59,14 @@ public final class FabricKeyMappings {
     }
 
     public boolean consumeTogglePress() {
-        if (toggleKey == null) {
-            return false;
-        }
-
-        boolean pressed = false;
-        while (toggleKey.wasPressed()) {
-            pressed = true;
-        }
-        return pressed;
+        return toggleKey != null && toggleKey.wasPressed();
     }
 
     public boolean consumeProfileCyclePress() {
-        if (profileKey == null) {
-            return false;
-        }
-
-        boolean pressed = false;
-        while (profileKey.wasPressed()) {
-            pressed = true;
-        }
-        return pressed;
+        return profileKey != null && profileKey.wasPressed();
     }
 
     public boolean consumeConfigScreenPress() {
-        if (configKey == null) {
-            return false;
-        }
-
-        boolean pressed = false;
-        while (configKey.wasPressed()) {
-            pressed = true;
-        }
-        return pressed;
+        return configKey != null && configKey.wasPressed();
     }
 }

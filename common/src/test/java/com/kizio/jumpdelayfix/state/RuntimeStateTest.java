@@ -78,4 +78,32 @@ class RuntimeStateTest {
         assertTrue(RuntimeState.isEnabled());
         assertEquals(JumpProfile.SMART, RuntimeState.getProfile());
     }
+
+    @Test
+    void shouldSupportInstanceOperations() {
+        RuntimeState instance = new RuntimeState(false, JumpProfile.COMPETITIVE);
+        assertFalse(instance.isStateEnabled());
+        assertEquals(JumpProfile.COMPETITIVE, instance.stateProfile());
+
+        assertTrue(instance.toggleState());
+        assertTrue(instance.isStateEnabled());
+        assertFalse(instance.toggleState());
+        assertFalse(instance.isStateEnabled());
+
+        instance.setStateEnabled(true);
+        assertTrue(instance.isStateEnabled());
+
+        assertEquals(JumpProfile.SMART, instance.cycleStateProfile());
+        assertEquals(JumpProfile.STABLE, instance.cycleStateProfile());
+        assertEquals(JumpProfile.COMPETITIVE, instance.cycleStateProfile());
+
+        instance.setStateProfile(JumpProfile.STABLE);
+        assertEquals(JumpProfile.STABLE, instance.stateProfile());
+
+        assertThrows(NullPointerException.class, () -> instance.setStateProfile(null));
+
+        instance.resetState();
+        assertTrue(instance.isStateEnabled());
+        assertEquals(JumpProfile.SMART, instance.stateProfile());
+    }
 }
