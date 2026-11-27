@@ -42,7 +42,8 @@ sonar {
 }
 
 ext.sharedVersions = [
-        minecraft: providers.gradleProperty('minecraft_version').get()
+        minecraft: providers.gradleProperty('minecraft_version').get(),
+        mappings : providers.gradleProperty('yarn_mappings').get()
 ]
 
 subprojects {
@@ -242,7 +243,7 @@ tasks.register('verifyMinecraftVersionMatrix') {
 
         def fabricRange = fabric_minecraft_version_range.toString().trim()
         def expectedFabricLowerBound = ">=" + minFabricVersion.text
-        def expectedFabricUpperBound = "<${baseVersion.major}.${baseVersion.minor + 1}"
+        def expectedFabricUpperBound = "<" + incrementPatch(maxFabricVersion)
         if (!fabricRange.contains(expectedFabricLowerBound) || !fabricRange.contains(expectedFabricUpperBound)) {
             throw new GradleException(
                     "fabric_minecraft_version_range '${fabricRange}' must include " +
@@ -251,10 +252,13 @@ tasks.register('verifyMinecraftVersionMatrix') {
         }
 
         def neoRange = minecraft_version_range.toString().trim()
-        def expectedNeoRange = "[${baseVersion.major}.${baseVersion.minor},${baseVersion.major}.${baseVersion.minor + 1})"
-        if (neoRange != expectedNeoRange) {
+        def minNeoVersion = neoforgeSupported.first()
+        def maxNeoVersion = neoforgeSupported.last()
+        def expectedPatchNeoRange = "[${minNeoVersion.text},${incrementPatch(maxNeoVersion)})"
+        def expectedMinorNeoRange = "[${baseVersion.major}.${baseVersion.minor},${baseVersion.major}.${baseVersion.minor + 1})"
+        if (neoRange != expectedPatchNeoRange && neoRange != expectedMinorNeoRange) {
             throw new GradleException(
-                    "minecraft_version_range must equal '${expectedNeoRange}' for one-line support, got '${neoRange}'."
+                    "minecraft_version_range must equal '${expectedPatchNeoRange}' or '${expectedMinorNeoRange}', got '${neoRange}'."
             )
         }
     }
