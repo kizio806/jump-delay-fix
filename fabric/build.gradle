@@ -253,7 +253,8 @@ tasks.named('check') {
 }
 
 jar {
-    archiveClassifier = 'dev'
+    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar"
+    archiveClassifier.set('')
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_id}" }
     }
@@ -261,16 +262,27 @@ jar {
 
 tasks.named('sourcesJar') {
     archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources.jar"
-}
-
-tasks.matching { it.name == 'remapJar' }.configureEach {
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar"
-}
-
-tasks.matching { it.name == 'remapSourcesJar' }.configureEach {
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources.jar"
-}
-
-tasks.named('sourcesJar') {
+    archiveClassifier.set('')
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+afterEvaluate {
+    if (tasks.findByName('remapJar') != null) {
+        tasks.named('remapJar') {
+            archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar"
+        }
+        tasks.named('jar') {
+            destinationDirectory.set(layout.buildDirectory.dir('intermediates/libs'))
+            archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-dev.jar"
+        }
+    }
+    if (tasks.findByName('remapSourcesJar') != null) {
+        tasks.named('remapSourcesJar') {
+            archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources.jar"
+        }
+        tasks.named('sourcesJar') {
+            destinationDirectory.set(layout.buildDirectory.dir('intermediates/libs'))
+            archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric-sources-dev.jar"
+        }
+    }
 }
