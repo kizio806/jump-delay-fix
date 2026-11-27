@@ -86,14 +86,60 @@ class ConfigStorageTest {
         RuntimeConfig config = RuntimeConfig.defaults();
         Map<String, JumpProfile> profiles = new HashMap<>();
         profiles.put("valid-server", JumpProfile.SMART);
+        profiles.put(null, JumpProfile.COMPETITIVE);
         profiles.put("", JumpProfile.COMPETITIVE);
         profiles.put("   ", JumpProfile.STABLE);
+        profiles.put("null-profile-server", null);
 
         ConfigStorage.save(configFile, config, profiles);
         ConfigStorage.LoadedConfig loaded = ConfigStorage.load(configFile);
 
         assertEquals(1, loaded.serverProfiles().size());
         assertEquals(JumpProfile.SMART, loaded.serverProfiles().get("valid-server"));
+    }
+
+    @Test
+    void shouldHandleEmptyOrCorruptedServerProfileKeysDuringLoad() throws IOException {
+        Path configFile = tempDir.resolve("corrupted-keys.properties");
+        Files.writeString(
+                configFile,
+                """
+                autoProfileSwitch=true
+                serverProfile.=SMART
+                serverProfile.   =STABLE
+                serverProfile.ICAg=SMART
+                serverProfile.c2VydmVyLWE=COMPETITIVE
+                """,
+                StandardCharsets.UTF_8
+        );
+
+        ConfigStorage.LoadedConfig loaded = ConfigStorage.load(configFile);
+        assertEquals(1, loaded.serverProfiles().size());
+        assertEquals(JumpProfile.COMPETITIVE, loaded.serverProfiles().get("server-a"));
+    }
+
+    @Test
+    void shouldSaveAndLoadWhenFilePathHasNoParentDirectory() throws IOException {
+        Path relativePath = Path.of("jumpdelayfix-relative-test-" + System.currentTimeMillis() + ".properties");
+        try {
+            ConfigStorage.save(relativePath, RuntimeConfig.defaults(), Map.of("local-server", JumpProfile.STABLE));
+            assertTrue(Files.exists(relativePath));
+
+            ConfigStorage.LoadedConfig loaded = ConfigStorage.load(relativePath);
+            assertEquals(JumpProfile.STABLE, loaded.serverProfiles().get("local-server"));
+        } finally {
+            Files.deleteIfExists(relativePath);
+        }
+    }
+
+    @Test
+    void shouldHandleSaveIoFailureGracefullyWithoutThrowing() throws IOException {
+        Path blockingFile = tempDir.resolve("blocking-file");
+        Files.writeString(blockingFile, "block");
+        Path invalidTarget = blockingFile.resolve("child/config.properties");
+
+        ConfigStorage.save(invalidTarget, RuntimeConfig.defaults(), Map.of());
+        assertFalse(Files.exists(invalidTarget));
     }
 
     @Test
