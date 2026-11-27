@@ -214,7 +214,7 @@ tasks.register('verifyRuntimeDependencyCompatibility') {
             def compatibilityConfig = configurations.detachedConfiguration(dependencies.create(notation))
             compatibilityConfig.transitive = false
 
-            def artifact = compatibilityConfig.resolvedConfiguration.resolvedArtifacts.first()
+            def artifact = compatibilityConfig.incoming.artifacts.artifacts.first()
             def metadata = readFabricModMetadata(artifact.file)
             if (metadata == null) {
                 throw new GradleException("Missing fabric.mod.json in resolved dependency ${artifact.moduleVersion.id}")
@@ -253,7 +253,7 @@ tasks.named('check') {
 }
 
 jar {
-    archiveFileName = "${artifactBaseName}-${baseVersion}-${mcMetadata}-fabric.jar"
+    archiveClassifier = 'dev'
     from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_id}" }
     }
